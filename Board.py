@@ -1,0 +1,206 @@
+from Move import Move
+from WordDictionary import WordDictionary
+from collections import Counter
+
+class Board:
+    def __init__(self):
+        self.__board = [[' ' for _ in range(15)] for _ in range(15)]
+        self.__letter_points = set()
+        self.__edge_points = set()
+
+        self.__rows_with_letters = set()
+        self.__cols_with_letters = set()
+
+        self.__words_placed = []
+
+    def get_board(self): return self.__board
+
+    def show_board(self):
+        for row in self.__board:
+            print(' | '.join(row))
+
+    def in_bounds(self, x, y): return 0 <= x <= 14 and 0 <= y <= 14
+
+    def add_letter(self, letter, x, y):
+        self.__board[14-y][x] = letter
+        self.__letter_points.add((letter, x, y)) #Points like Coord
+
+        self.__rows_with_letters.add(y)
+        self.__cols_with_letters.add(x)
+        
+        self.__edge_points.discard((x, y))
+
+        if((self.in_bounds(x + 1, y)) and (not self.get_letter_at_point(x + 1, y))):
+            self.__edge_points.add((x + 1, y))
+
+        if((self.in_bounds(x - 1, y)) and (not self.get_letter_at_point(x - 1, y))):
+            self.__edge_points.add((x - 1, y))
+
+        if((self.in_bounds(x, y + 1)) and (not self.get_letter_at_point(x, y + 1))):
+            self.__edge_points.add((x, y + 1))
+
+        if((self.in_bounds(x, y - 1)) and (not self.get_letter_at_point(x, y - 1))):
+            self.__edge_points.add((x, y - 1))    
+
+    def add_word(self, word, x, y, is_descending):
+        self.__words_placed.append((word, x, y, is_descending))
+
+        for letter in word:
+            self.add_letter(letter, x, y)
+            if (is_descending): y = y - 1
+            else: x = x + 1
+
+    def get_letter_at_point(self, x, y):
+        if(self.in_bounds(x, y) and self.__board[14 - y][x] != ' '):
+            return self.__board[14 - y][x]
+        
+    def get_edge_points(self): return self.__edge_points
+    
+    def get_all_letters(self): return self.__letter_points
+    
+    def get_rows_with_letters(self): return sorted(self.__rows_with_letters)
+    
+    def get_cols_with_letters(self): return sorted(self.__cols_with_letters)
+    
+    def get_words_placed(self): return self.__words_placed
+    
+    def get_word_at_point(self, x, y, is_descending):
+        word = []
+
+        if (is_descending):
+            while ((y < 14) and (self.get_letter_at_point(x, y + 1))):
+                y = y + 1
+        
+        else:
+            while((x > 0) and (self.get_letter_at_point(x - 1, y))):
+                x = x - 1
+
+        while True:
+            if (not self.get_letter_at_point(x, y)):
+                break
+
+            word.append(self.get_letter_at_point(x, y))
+
+            if (is_descending):
+                y = y - 1
+            else:
+                x = x + 1
+
+        return ''.join(word)
+    
+    def get_potential_letters_for_vertical_expansion_at_point(self, x, y):
+        word_above = self.get_word_at_point(x, y + 1, True)
+        word_below = self.get_word_at_point(x, y - 1, True)
+
+        if not word_above and not word_below:
+            return set('abcdefghijklmnopqrstuvwxyz')
+        
+        if self.get_letter_at_point(x, y):
+            return set(self.get_letter_at_point(x, y))
+        
+        potential_letters = set()
+        for letter in 'abcdefghijklmnopqrstuvwxyz':
+            full_word = word_above + letter + word_below
+
+            if wordDict.valid_word(full_word):
+                potential_letters.add(letter)
+
+            if wordDict.partial_word(full_word): #Need a constraint to check if the full word this partial makes would fit on the board
+                potential_letters.add(letter)
+
+        return potential_letters
+    
+    def get_potential_letters_for_horizontal_expansion_at_point(self, x, y):
+        word_left = self.get_word_at_point(x - 1, y, False)
+        word_right = self.get_word_at_point(x + 1, y, False)
+
+        if not word_left and not word_right:
+            return set('abcdefghijklmnopqrstuvwxyz')
+        
+        if self.get_letter_at_point(x, y):
+            return set(self.get_letter_at_point(x, y))
+        
+        potential_letters = set()
+        for letter in 'abcdefghijklmnopqrstuvwxyz':
+            full_word = word_left + letter + word_right
+
+            if wordDict.valid_word(full_word):
+                potential_letters.add(letter)
+
+            if wordDict.partial_word(full_word):
+                potential_letters.add(letter)
+
+        return potential_letters
+    
+    def update_all_constraints(self):
+        self.__horizontal_constraints = {} #When doing vertical expansion we use horizontal constraints
+        self.__vertical_constraints = {} #When doing horizontal expansion we use vertical constraints
+
+        for edge_point in self.__edge_points:
+            x, y = edge_point
+
+            for i in range(15):
+                self.__horizontal_constraints[(i, y)] = self.get_potential_letters_for_vertical_expansion_at_point(i, y)
+                self.__vertical_constraints[(x, i)] = self.get_potential_letters_for_horizontal_expansion_at_point(x, i)
+
+    def get_horizontal_constraints(self): return self.__horizontal_constraints
+
+    def get_vertical_constraints(self): return self.__vertical_constraints
+    
+#####################################################
+wordDict = WordDictionary()
+wd = wordDict.get_word_dictionary()
+b = Board()
+preprocessed_tiles = ['A', 'L', 'I', 'G', 'D', 'H', 'I']
+
+m0 = Move('hello', 7, 0, False)
+m1 = Move('braile', 8, 5, True)
+m2 = Move('jello', 11, 4, True)
+
+b.add_word(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
+b.add_word(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
+b.add_word(m2.get_word(), m2.get_x(), m2.get_y(), m2.get_is_descending())
+b.update_all_constraints()
+
+b.show_board()
+
+print('\n', b.get_words_placed())
+
+print('\n', b.get_edge_points())
+
+print('\n', b.get_cols_with_letters(), b.get_rows_with_letters())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+x_ = 6
+y_ = 0
+
+print('\n', x_, y_,'\n', b.get_horizontal_constraints()[x_, y_], b.get_vertical_constraints()[(x_, y_)])
+
+
+##########################################################################
+
+tiles = [t.lower() for t in preprocessed_tiles]
+number_of_tiles = len(tiles)
+
+tile_counts = Counter(tiles)
+blank_count = tile_counts.get('?', 0)
+blanks_needed = 0
+
+for signature, potential_expansions in wd.items():
+    for edge in b.get_edge_points():
+        x, y = edge
+
+        #We have to expand horizontally and then vertically from each edge
