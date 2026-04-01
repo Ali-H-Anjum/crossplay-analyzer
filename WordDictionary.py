@@ -11,7 +11,7 @@ class WordDictionary:
                 parts = line.strip().split()
 
                 if len(parts) >= 2:
-                    word = parts[1].lower()
+                    word = parts[1].upper()
                     self.__all_words.add(word)
 
                     word_length = len(word)

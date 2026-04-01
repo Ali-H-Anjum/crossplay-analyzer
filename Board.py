@@ -1,6 +1,7 @@
 from Move import Move
 from WordDictionary import WordDictionary
 from collections import Counter
+from gaddagTesting import GADDAG, GADDAGNode
 
 class Board:
     def __init__(self):
@@ -93,13 +94,13 @@ class Board:
         word_below = self.get_word_at_point(x, y - 1, True)
 
         if not word_above and not word_below:
-            return set('abcdefghijklmnopqrstuvwxyz')
+            return set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
         
         if self.get_letter_at_point(x, y):
             return set(self.get_letter_at_point(x, y))
         
         potential_letters = set()
-        for letter in 'abcdefghijklmnopqrstuvwxyz':
+        for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
             full_word = word_above + letter + word_below
 
             if wordDict.valid_word(full_word):
@@ -115,13 +116,13 @@ class Board:
         word_right = self.get_word_at_point(x + 1, y, False)
 
         if not word_left and not word_right:
-            return set('abcdefghijklmnopqrstuvwxyz')
+            return set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
         
         if self.get_letter_at_point(x, y):
             return set(self.get_letter_at_point(x, y))
         
         potential_letters = set()
-        for letter in 'abcdefghijklmnopqrstuvwxyz':
+        for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
             full_word = word_left + letter + word_right
 
             if wordDict.valid_word(full_word):
@@ -153,9 +154,9 @@ wd = wordDict.get_word_dictionary()
 b = Board()
 preprocessed_tiles = ['A', 'L', 'I', 'G', 'D', 'H', 'I']
 
-m0 = Move('hello', 7, 0, False)
-m1 = Move('braile', 8, 5, True)
-m2 = Move('jello', 11, 4, True)
+m0 = Move('HELLO', 7, 0, False)
+m1 = Move('BRAILE', 8, 5, True)
+m2 = Move('JELLO', 11, 4, True)
 
 b.add_word(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
 b.add_word(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
@@ -192,15 +193,26 @@ print('\n', x_, y_,'\n', b.get_horizontal_constraints()[x_, y_], b.get_vertical_
 
 ##########################################################################
 
-tiles = [t.lower() for t in preprocessed_tiles]
+tiles = [t.upper() for t in preprocessed_tiles]
 number_of_tiles = len(tiles)
 
 tile_counts = Counter(tiles)
 blank_count = tile_counts.get('?', 0)
 blanks_needed = 0
 
-for signature, potential_expansions in wd.items():
-    for edge in b.get_edge_points():
-        x, y = edge
+#We have to expand horizontally and then vertically from each edge
 
-        #We have to expand horizontally and then vertically from each edge
+g = GADDAG()
+
+g.add_word("explain")
+
+# with open('wordList.txt', 'r') as file:
+#     for line in file:
+#         for word in line.strip().split():
+#             g.add_word(word)
+
+print(g.is_valid("TEST"))
+
+print(g.is_valid("TESTILP"))
+
+
