@@ -9,7 +9,7 @@ class GADDAGNode:
 class GADDAG:
     def __init__(self):
         self.root = GADDAGNode()
-        self.word_count = 0
+        self.node_count = 1
 
     def add_word(self, word):
         self._add_path(word)
@@ -28,22 +28,25 @@ class GADDAG:
         current = self.root
 
         for char in path:
-            if char not in current.next: current.next[char] = GADDAGNode()
+            if char not in current.next: 
+                current.next[char] = GADDAGNode()
+                self.node_count += 1
             current = current.next[char]
-
-        if not current.is_terminal:
-            current.is_terminal = True
-            self.word_count += 1
-
+            
+        current.is_terminal = True
+            
     def is_valid(self, word):
+        node = self.get_last_node_in_path(word)
+        return node is not None 
+
+    def get_last_node_in_path(self, path):
         current = self.root
 
-        for char in word:
-            if char in current.next: current = current.next[char]
-            else: return False
-            
-        if current.is_terminal: return True
-        else: return False
+        for char in path:
+            if char not in current.next:
+                return None
+            current = current.next[char]
+        return current
 
     def get_all_words(self):
         words = []
@@ -58,17 +61,26 @@ class GADDAG:
             self._dfs_collect(next_node, current_word + char, words)
 
 
+    # def get_moves(self, tiles, board_tiles):
+    #     moves = set()
+
+    #     print(tiles, board_tiles)
+
+    #     for i, letter in enumerate(tiles):
+    #         tiles_remaining = tiles[:i] + tiles[i+1:]
+
+    #         self.expand_letter(self.root, letter, tiles_remaining, board_tiles, letter, moves)
+
+    # def expand_letter(self, node, current_letter, tiles_remaining, board_tiles, current_word, moves):
+    #     if node.is_terminal: moves.add(current_word)
+
+    #     for next_char, next_node in node.next.items():
+    #         board_tile_match = False
+
+    #         for tile, x, y in board_tiles:
+
+
+
 # ####################################
-# g = GADDAG()
 
-# g.add_word("explain")
-
-# # with open('wordList.txt', 'r') as file:
-# #     for line in file:
-# #         for word in line.strip().split():
-# #             g.add_word(word)
-
-# print(g.is_valid("TEST"))
-
-# print(g.is_valid("TESTILP"))
 

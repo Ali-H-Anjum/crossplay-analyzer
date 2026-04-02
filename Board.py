@@ -1,5 +1,4 @@
 from Move import Move
-from WordDictionary import WordDictionary
 from collections import Counter
 from gaddagTesting import GADDAG, GADDAGNode
 
@@ -103,10 +102,7 @@ class Board:
         for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
             full_word = word_above + letter + word_below
 
-            if wordDict.valid_word(full_word):
-                potential_letters.add(letter)
-
-            if wordDict.partial_word(full_word): #Need a constraint to check if the full word this partial makes would fit on the board
+            if g.is_valid(full_word):
                 potential_letters.add(letter)
 
         return potential_letters
@@ -125,10 +121,7 @@ class Board:
         for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
             full_word = word_left + letter + word_right
 
-            if wordDict.valid_word(full_word):
-                potential_letters.add(letter)
-
-            if wordDict.partial_word(full_word):
+            if g.is_valid(full_word):
                 potential_letters.add(letter)
 
         return potential_letters
@@ -149,8 +142,19 @@ class Board:
     def get_vertical_constraints(self): return self.__vertical_constraints
     
 #####################################################
-wordDict = WordDictionary()
-wd = wordDict.get_word_dictionary()
+
+
+g = GADDAG()
+with open('wordList.txt', 'r') as file:
+    for line in file:
+        for word in line.strip().split():
+            g.add_word(word)
+
+#print(g.node_count)
+#print(g.is_valid("TEST"))
+
+#print(g.is_valid("TESTILP"))
+
 b = Board()
 preprocessed_tiles = ['A', 'L', 'I', 'G', 'D', 'H', 'I']
 
@@ -161,34 +165,10 @@ m2 = Move('JELLO', 11, 4, True)
 b.add_word(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
 b.add_word(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
 b.add_word(m2.get_word(), m2.get_x(), m2.get_y(), m2.get_is_descending())
+
 b.update_all_constraints()
 
-b.show_board()
-
-print('\n', b.get_words_placed())
-
-print('\n', b.get_edge_points())
-
-print('\n', b.get_cols_with_letters(), b.get_rows_with_letters())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-x_ = 6
-y_ = 0
-
-print('\n', x_, y_,'\n', b.get_horizontal_constraints()[x_, y_], b.get_vertical_constraints()[(x_, y_)])
+#print('\n', 6, 0,'\n', b.get_horizontal_constraints()[6, 0], b.get_vertical_constraints()[(6, 0)], '\n')
 
 
 ##########################################################################
@@ -202,17 +182,57 @@ blanks_needed = 0
 
 #We have to expand horizontally and then vertically from each edge
 
-g = GADDAG()
+board = b.get_board()
 
-g.add_word("explain")
+board_tiles = b.get_all_letters()
 
-# with open('wordList.txt', 'r') as file:
-#     for line in file:
-#         for word in line.strip().split():
-#             g.add_word(word)
+edge_tiles = b.get_edge_points()
 
-print(g.is_valid("TEST"))
+horizontal_constraints = b.get_horizontal_constraints() #When doing vertical expansion we use horizontal constraints
 
-print(g.is_valid("TESTILP"))
+vertical_constraints = b.get_vertical_constraints()  #When doing horizontal expansion we use vertical constraints
+
+b.show_board()
+
+print('\n', tiles, '\n', board_tiles, '\n', edge_tiles)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# for i in range(15):
+#     offset = i - x_
+#     Gen(offset, None, tiles, g.root())
+
+# def Gen(offset, expansion, tiles, arc):
+#     if b.get_letter_at_point(x_, y_):
+#         letter = b.get_letter_at_point(x_, y_)
+
+#         GoOn(offset, letter, expansion, tiles, NextArc(arc, L), arc)
+
+#     elif number_of_tiles > 0:
+#         for allowed_letter in b.get_vertical_constraints()[(x_, y_)]:
+#             if allowed_letter in tiles:
+#                 GoON
+#             if blank_count > 0:
+#                 for allowed_letter in b.get_vertical_constraints()[(x_, y_)]:
+#                     if allowed_letter in tiles:
+#                         GoOn
+
+
+
+# def GoOn(offset, letter, word, tiles, new_arc, old_arc):
+#     if offset <= 0:
