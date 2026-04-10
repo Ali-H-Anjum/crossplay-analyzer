@@ -7,9 +7,32 @@ class GADDAGNode:
 
 
 class GADDAG:
-    def __init__(self):
-        self.root = GADDAGNode()
-        self.node_count = 1
+    def __init__(self, path='wordList.txt'):
+        self._root = GADDAGNode()
+        self._node_count = 1
+
+        with open(path, 'r') as file:
+            for line in file:
+                for word in line.strip().split():
+                    self.add_word(word)
+
+    def get_root(self):
+        return self._root
+    
+    def get_next(self, node, letter):
+        if letter in node.next:
+            return node.next[letter]
+        return 0
+    
+    def next_arc(self, arc, letter):
+        if arc == 0:
+            return self.get_root()
+        if letter == 0:
+            return self.get_next(arc, '^')
+        return self.get_next(arc, letter)
+    
+    def is_on_arc(self, arc, letter):
+        return self.next_arc(arc, letter) != 0
 
     def add_word(self, word):
         self._add_path(word)
@@ -25,62 +48,28 @@ class GADDAG:
             self._add_path(rotated)
 
     def _add_path(self, path):
-        current = self.root
+        current = self._root
 
         for char in path:
             if char not in current.next: 
                 current.next[char] = GADDAGNode()
-                self.node_count += 1
+                self._node_count += 1
             current = current.next[char]
             
         current.is_terminal = True
-            
-    def is_valid(self, word):
-        node = self.get_last_node_in_path(word)
-        return node is not None 
+    
+    def contains_whole_word(self, word):
+        if not word: return False
+        node = self.get_last_node_in_path(word[::-1] + '^')
+        return node is not None and node.is_terminal
 
     def get_last_node_in_path(self, path):
-        current = self.root
+        current = self._root
 
         for char in path:
-            if char not in current.next:
-                return None
+            if char not in current.next: return None
             current = current.next[char]
         return current
 
-    def get_all_words(self):
-        words = []
-        self._dfs_collect(self.root, "", words)
-        return words
-    
-    def _dfs_collect(self, node, current_word, words):
-        if node.terminal:
-            words.append(current_word)
-
-        for char, next_node in sorted(node.next.items()):
-            self._dfs_collect(next_node, current_word + char, words)
-
-
-    # def get_moves(self, tiles, board_tiles):
-    #     moves = set()
-
-    #     print(tiles, board_tiles)
-
-    #     for i, letter in enumerate(tiles):
-    #         tiles_remaining = tiles[:i] + tiles[i+1:]
-
-    #         self.expand_letter(self.root, letter, tiles_remaining, board_tiles, letter, moves)
-
-    # def expand_letter(self, node, current_letter, tiles_remaining, board_tiles, current_word, moves):
-    #     if node.is_terminal: moves.add(current_word)
-
-    #     for next_char, next_node in node.next.items():
-    #         board_tile_match = False
-
-    #         for tile, x, y in board_tiles:
-
-
-
-# ####################################
-
+   
 
