@@ -63,13 +63,44 @@ class GADDAG:
         node = self.get_last_node_in_path(word[::-1] + '^')
         return node is not None and node.is_terminal
 
-    def get_last_node_in_path(self, path):
-        current = self._root
+    def get_last_node_in_path(self, path, start = None):
+        current = self._root if start is None else start
 
         for char in path:
             if char not in current.next: return None
             current = current.next[char]
         return current
+    
+    def cross_check(self, prefix, suffix):
+        valid_letters = set()
+
+        if prefix:
+            path = prefix[::-1] + '^'
+            node = self.get_last_node_in_path(path)
+
+            if node is None:
+                return valid_letters
+        
+            for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                if letter not in node.next:
+                    continue
+
+                candidate_node = self.get_last_node_in_path(suffix, start=node.next[letter])
+                if candidate_node is not None and candidate_node.is_terminal:
+                    valid_letters.add(letter)
+
+        else:
+            path = suffix[::-1]
+            node = self.get_last_node_in_path(path)
+            if node is None:
+                return valid_letters
+            for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                if letter not in node.next:
+                    continue
+                if node.next[letter].is_terminal:
+                    valid_letters.add(letter)
+
+        return valid_letters
 
    
 

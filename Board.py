@@ -83,6 +83,9 @@ class Board:
         return ''.join(word)
     
     def get_potential_letters_at_point(self, x, y, is_descending, gaddag):
+        if letter := self.get_letter_at_point(x, y):
+            return {letter}
+        
         if is_descending:
             word_before = self.get_word_at_point(x - 1, y, False) #word left
             word_after  = self.get_word_at_point(x + 1, y, False) #word right
@@ -90,16 +93,10 @@ class Board:
             word_before = self.get_word_at_point(x, y + 1, True) #word above
             word_after  = self.get_word_at_point(x, y - 1, True) #word below
 
-
         if not word_before and not word_after:
             return set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
         
-        if letter := self.get_letter_at_point(x, y):
-            return {letter}
-        
-        return {
-            letter for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' if gaddag.contains_whole_word(word_before + letter + word_after)
-        }    
+        return gaddag.cross_check(word_before, word_after)
     
     def update_all_constraints(self, gaddag):
         self._horizontal_constraints = {} #When doing vertical expansion we use horizontal constraints

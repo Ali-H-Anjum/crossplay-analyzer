@@ -1,6 +1,5 @@
 from Move import Move
-from collections import Counter
-from gaddagTesting import GADDAG, GADDAGNode
+from gaddagTesting import GADDAG
 from Board import Board
 from Tiles import Tiles
 
@@ -141,11 +140,11 @@ m0 = Move('HELLO', 7, 0, False)
 m1 = Move('BRAILE', 8, 5, True)
 m2 = Move('JELLO', 11, 4, True)
 
-b.add_word(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
-b.add_word(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
-b.add_word(m2.get_word(), m2.get_x(), m2.get_y(), m2.get_is_descending())
+#b.add_word(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
+#b.add_word(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
+#b.add_word(m2.get_word(), m2.get_x(), m2.get_y(), m2.get_is_descending())
 
-#b.add_word('HAJ', 7, 7, True)
+b.add_word('HAJ', 7, 7, True)
 
 b.update_all_constraints(g)
 
@@ -161,6 +160,8 @@ t = Tiles(['A', 'L', 'I', 'G', 'D', 'H', 'I'])
 #When doing horizontal expansion we use vertical constraints
 
 edge_tiles = b.get_edge_points()
+
+all_tiles = b.get_all_letters()
 
 horizontal_constraints = b.get_horizontal_constraints() 
 
@@ -179,7 +180,11 @@ for x, y in edge_tiles:
     generate_horizontal_moves(b, vertical_constraints, x, y, 0, "", t, g.get_root(), moves)
     generate_vertical_moves(b, horizontal_constraints, x, y, 0, "", t, g.get_root(), moves)
 
+for let, x, y in all_tiles:
+    generate_horizontal_moves(b, vertical_constraints, x, y, 0, "", t, g.get_root(), moves)
+    generate_vertical_moves(b, horizontal_constraints, x, y, 0, "", t, g.get_root(), moves)
 
+print(horizontal_constraints.get((7, 4)), vertical_constraints.get((7, 4)))
 print(moves, len(moves))
 
 
