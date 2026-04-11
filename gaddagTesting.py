@@ -97,5 +97,3 @@ class GADDAG:
 
         return valid_letters
 
-   
-

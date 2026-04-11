@@ -10,9 +10,11 @@ mg = MoveGenerator(g)
             
 b = Board()
 
-t = Tiles(['A', 'L', 'I', 'G', 'D', 'H', 'I'])
+t = Tiles(['A', 'A', 'A', 'A', 'A', 'A', 'A'])
 
-#b.add_word('HAJ', 7, 7, True)
+b.add_word('TOWER', 5, 7, False)
+b.add_word('HOW', 7, 9, True)
+
 #m0 = Move('HELLO', 7, 0, False)
 #m1 = Move('BRAILE', 8, 5, True)
 #m2 = Move('JELLO', 11, 4, True)
