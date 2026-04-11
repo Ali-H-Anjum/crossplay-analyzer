@@ -16,23 +16,18 @@ class GADDAG:
                 for word in line.strip().split():
                     self.add_word(word)
 
-    def get_root(self):
-        return self._root
+    def get_root(self): return self._root
     
-    def get_next(self, node, letter):
-        if letter in node.next:
-            return node.next[letter]
-        return 0
+    def get_next(self, node, letter): return node.next.get(letter, None)
     
     def next_arc(self, arc, letter):
-        if arc == 0:
-            return self.get_root()
-        if letter == 0:
-            return self.get_next(arc, '^')
+        if arc is None: return self.get_root()
+
+        if letter is None: return self.get_next(arc, '^')
+
         return self.get_next(arc, letter)
     
-    def is_on_arc(self, arc, letter):
-        return self.next_arc(arc, letter) != 0
+    def is_on_arc(self, arc, letter): return self.next_arc(arc, letter) is not None
 
     def add_word(self, word):
         self._add_path(word)
