@@ -1,3 +1,5 @@
+import pickle
+
 class GADDAGNode:
     __slots__ = ['next', 'is_terminal']
 
@@ -97,3 +99,8 @@ class GADDAG:
 
         return valid_letters
 
+#######################################
+
+# gaddag = GADDAG()
+# with open('gaddag.pkl', 'wb') as f:
+#     pickle.dump(gaddag, f)

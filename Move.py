@@ -1,45 +1,37 @@
 class Move:
     def __init__(self, word, x, y, is_descending):
-        if not self.in_bounds(x, y):
-            raise ValueError(f"Position ({x}, {y}) is out of bounds. Must be between 0 and 14.")
-        
-        x_end, y_end = self.get_endpoints(word, x, y, is_descending)
+        self._word = word
+        self._x = x
+        self._y = y
+        self._is_descending = is_descending
 
-        if not self.in_bounds(x_end, y_end):
-            raise ValueError(f"End position ({x_end}, {y_end}) is out of bounds. Word '{word}' doesn't fit on board.")
-
-        self.__word = word
-        self.__x = x
-        self.__y = y
-        self.__is_descending = is_descending
-        self.__x_end = x_end
-        self.__y_end = y_end
+        self._x_end, self._y_end = self.get_endpoints(word, x, y, is_descending)
 
     def get_word(self):
-        return self.__word
+        return self._word
     
     def get_x(self):
-        return self.__x
+        return self._x
     
     def get_y(self):
-        return self.__y
+        return self._y
     
     def get_is_descending(self):
-        return self.__is_descending
+        return self._is_descending
     
     def get_x_end(self):
-        return self.__x_end
+        return self._x_end
     
     def get_y_end(self):
-        return self.__y_end
+        return self._y_end
     
     def get_length(self):
-        return len(self.__word)
+        return len(self._word)
     
     def get_letter_at_displacement(self, n):
         if(n < 0 or n > self.get_length() - 1):
             raise ValueError(f"Displacement ({n}) is out of bounds. Must be positive and shorter than the word length")
-        return self.__word[n]
+        return self._word[n]
     
     def get_endpoints(self, word, x, y, is_descending):
         length = len(word)
@@ -50,6 +42,17 @@ class Move:
         return 0 <= x <= 14 and 0 <= y <= 14
 
 ##################################################
-#m = Move("hello", 5, 5, False)
+    def __eq__(self, other):
+        return (self.get_word() == other.get_word() and self.get_x() == other.get_x() and self.get_y() == other.get_y() and self.get_is_descending() == other.get_is_descending())
 
-#print(m.get_x_end(), m.get_y_end(), m.get_length(), m.get_letter_at_displacement(0))
+    def __hash__(self):
+        return hash((self.get_word(), self.get_x(), self.get_y(), self.get_is_descending()))
+    
+    def __str__(self):
+        return "Word: " + self.get_word() + ", Starting Position: (" + str(self.get_x()) + ", " + str(self.get_y()) + "), Descending: " + str(self.get_is_descending())
+    
+    def __lt__(self, other): #Treats moves with the same points the same
+        return False
+    
+    def __repr__(self): #Lets me print the whole set/list
+        return self.__str__()

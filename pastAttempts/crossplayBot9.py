@@ -88,8 +88,8 @@ m0 = Move('hello', 7, 0, False)
 m1 = Move('braile', 8, 5, True)
 m2 = Move('jello', 11, 4, True)
 
-b.add_word(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
-b.add_word(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
-b.add_word(m2.get_word(), m2.get_x(), m2.get_y(), m2.get_is_descending())
+b.add_move(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
+b.add_move(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
+b.add_move(m2.get_word(), m2.get_x(), m2.get_y(), m2.get_is_descending())
 
 searching_for_tiles_in_lane(wd, t, b)
