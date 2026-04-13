@@ -32,8 +32,6 @@ class Game:
         current_player = self.get_current_player()
         tiles = current_player.get_player_tiles()
 
-        moves = set()
-
         print("Player " + str(self._current_player_index) + " has " + str(tiles))
 
         moves = self._moveGenerator.get_all_moves(self._board, tiles)
@@ -42,11 +40,8 @@ class Game:
             print("No moves found")
             self.swap_players()
             return
-        
-        self._moveEvaluator.set_board(self._board)
 
         points_per_move = self._moveEvaluator.sort_by_points(moves)
-
         highest_moves = self._moveEvaluator.get_top_number(points_per_move, 15)
 
         print("Their higher moves are:")
@@ -55,21 +50,11 @@ class Game:
 
         most_points, move_with_most_points = highest_moves[0]
 
-        word, x, y, is_descending = move_with_most_points.get_word(), move_with_most_points.get_x(), move_with_most_points.get_y(), move_with_most_points.get_is_descending() #Keep fixing
-
-        for letter in word:
-            if self._board.get_letter_at_point(x, y):
-                continue
-
-            if letter in tiles.get_tiles():
-                current_player.play_tile(letter)
-            else:
-                current_player.play_tile('?')
-
-            if is_descending: y -= 1
-            else: x += 1
+        tiles_used = current_player.use_tiles_for_move(self._board, move_with_most_points)
 
         self._board.add_move(move_with_most_points)
+
+        current_player.add_score(most_points)
 
         print("They play (" + str(move_with_most_points) + ") for " + str(most_points) + " points")
         self._board.show_board()
@@ -106,6 +91,17 @@ class Game:
 ##########################################################################
 def main():
     game = Game()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
+    game.play_turn()
     game.play_turn()
     game.play_turn()
 

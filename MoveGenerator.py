@@ -5,9 +5,11 @@ class MoveGenerator:
     def __init__(self, gaddag):
         self._gaddag = gaddag
         self._root = self._gaddag.get_root()
-        self._moves = set()
+        
 
     def get_all_moves(self, board, tiles):
+        self._moves = set()
+        
         self._board = board
         self._horizontal_constraints, self._vertical_constraints = self._get_all_constraints()
 
@@ -47,12 +49,7 @@ class MoveGenerator:
         if letter := self._board.get_letter_at_point(x, y):
             return {letter}
 
-        if is_descending:
-            word_before = self._board.get_word_at_point(x - 1, y, False)
-            word_after  = self._board.get_word_at_point(x + 1, y, False)
-        else:
-            word_before = self._board.get_word_at_point(x, y + 1, True)
-            word_after  = self._board.get_word_at_point(x, y - 1, True)
+        word_before, word_after = self._board.get_surrounding_words(x, y, is_descending)
 
         if not word_before and not word_after:
             return self._ALL_LETTERS

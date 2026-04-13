@@ -85,6 +85,15 @@ class Board:
 
         return ''.join(word)
     
+    def get_surrounding_words(self, x, y, is_descending):
+        if is_descending:
+            word_before = self.get_word_at_point(x - 1, y, False)
+            word_after  = self.get_word_at_point(x + 1, y, False)
+        else:
+            word_before = self.get_word_at_point(x, y + 1, True)
+            word_after  = self.get_word_at_point(x, y - 1, True)
+        return word_before, word_after
+    
     def get_double_letter_multipliers(self): return self._double_letter_multipliers
 
     def get_triple_letter_multipliers(self): return self._triple_letter_multipliers
