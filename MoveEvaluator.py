@@ -107,8 +107,8 @@ class MoveEvaluator:
         duplicate_checker = set()
         unique_moves = []
         for points, move in sorted_moves:
-            if move.get_word() not in duplicate_checker:
-                duplicate_checker.add(move.get_word())
+            if move.get_word().upper() not in duplicate_checker:
+                duplicate_checker.add(move.get_word().upper())
                 unique_moves.append((points, move))
 
         return unique_moves[:40]

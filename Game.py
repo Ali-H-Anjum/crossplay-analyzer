@@ -7,14 +7,12 @@ from Player import Player
 from MoveEvaluator import MoveEvaluator
 from gaddagTesting import GADDAG, GADDAGNode
 
-
 import pickle
 
 import cProfile
 
 class Game:
     def __init__(self):
-        
         self._gaddag = GADDAG()
 
         self._moveGenerator = MoveGenerator(self._gaddag)
@@ -29,6 +27,9 @@ class Game:
 
         print("Game Begin")
         print()
+
+    def get_tile_bag(self):
+        return self._tileBag
 
     def play_turn(self):
         current_player = self.get_current_player()
@@ -97,11 +98,11 @@ class Game:
 ##########################################################################
 def main():
     game = Game()
+    while len(game.get_tile_bag().get_tilebag()) > 0:
+        game.play_turn()
     game.play_turn()
     game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    game.play_turn()
+    print("Game Over")
 
 
 
