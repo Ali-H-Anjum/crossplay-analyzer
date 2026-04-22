@@ -6,7 +6,7 @@ from TileBag import Tilebag
 from Player import Player
 from MoveEvaluator import MoveEvaluator
 from gaddagTesting import GADDAG, GADDAGNode
-from Validator import Validator
+
 
 import pickle
 
@@ -26,8 +26,6 @@ class Game:
         self._moveEvaluator = MoveEvaluator(self._board)
 
         self._current_player_index = 0
-
-        self._validator = Validator()
 
         print("Game Begin")
 
