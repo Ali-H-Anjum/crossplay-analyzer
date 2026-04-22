@@ -89,6 +89,10 @@ class MoveEvaluator:
 
     def get_top_number(self, moves, number):
         return moves[:number]
+    
+    def word_finder_sort(self, move_tuple):
+        points, move = move_tuple
+        return (-points, move.get_word(), -move.get_is_descending(), move.get_x(), move.get_y())
 
 
 

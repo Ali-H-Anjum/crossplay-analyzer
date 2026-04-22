@@ -23,10 +23,22 @@ print(t)
 
 moves = mg.get_all_moves(b, t)
 points_per_move = me.sort_by_points(moves)
+
 highest_moves = me.get_top_number(points_per_move, 15)
 most_points, move_with_most_points = highest_moves[0]
 
-for move in highest_moves:
+
+sorted_moves = sorted(points_per_move, key=me.word_finder_sort)
+duplicate_checker = set()
+unique_moves = []
+for points, move in sorted_moves:
+    if move.get_word() not in duplicate_checker:
+        duplicate_checker.add(move.get_word())
+        unique_moves.append((points, move))
+
+top_40_moves = unique_moves[:40]
+
+for move in top_40_moves:
     print(move)
     print()
 
