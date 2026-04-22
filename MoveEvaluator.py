@@ -97,13 +97,21 @@ class MoveEvaluator:
         points_per_move = [(self.calculate_total_points_per_move(move), move) for move in moves]
         points_per_move.sort(reverse=True)
         return points_per_move
-
-    def get_top_number(self, moves, number):
-        return moves[:number]
     
     def word_finder_sort(self, move_tuple):
         points, move = move_tuple
-        return (-points, move.get_word(), -move.get_is_descending(), move.get_x(), move.get_y())
+        return (-points, move.get_word(), -move.get_is_descending(), -move.get_x(), -move.get_y())
+    
+    def sort_by_word_finder(self, moves):
+        sorted_moves = sorted(moves, key=self.word_finder_sort)
+        duplicate_checker = set()
+        unique_moves = []
+        for points, move in sorted_moves:
+            if move.get_word() not in duplicate_checker:
+                duplicate_checker.add(move.get_word())
+                unique_moves.append((points, move))
+
+        return unique_moves[:40]
 
 
 

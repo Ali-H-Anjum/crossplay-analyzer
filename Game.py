@@ -28,12 +28,14 @@ class Game:
         self._current_player_index = 0
 
         print("Game Begin")
+        print()
 
     def play_turn(self):
         current_player = self.get_current_player()
         tiles = current_player.get_player_tiles()
 
         print("Player " + str(self._current_player_index) + " has " + str(tiles))
+        print()
 
         moves = self._moveGenerator.get_all_moves(self._board, tiles)
 
@@ -43,13 +45,15 @@ class Game:
             return
 
         points_per_move = self._moveEvaluator.sort_by_points(moves)
-        highest_moves = self._moveEvaluator.get_top_number(points_per_move, 15)
 
-        # print("Their higher moves are:")
-        # for move in highest_moves:
-        #     print(move)
+        word_finder_moves = self._moveEvaluator.sort_by_word_finder(points_per_move)
 
-        most_points, move_with_most_points = highest_moves[0]
+        print("Their top 40 moves are:")
+        for move in word_finder_moves:
+            print(move)
+        print()
+
+        most_points, move_with_most_points = word_finder_moves[0]
 
         tiles_used = current_player.use_tiles_for_move(self._board, move_with_most_points)
 
@@ -59,6 +63,7 @@ class Game:
 
         print("They play (" + str(move_with_most_points) + ") for " + str(most_points) + " points")
         self._board.show_board()
+        print()
 
         tiles_needed = 7 - len(current_player.get_player_tiles())
         current_player.add_tiles(self._tileBag.draw_tiles(tiles_needed))
@@ -66,8 +71,6 @@ class Game:
         #print("Their new tiles are " + str(current_player.get_player_tiles()))
 
         self.swap_players()
-
-        #self._validator.check_board(self._board.get_board())
 
     def get_current_player(self):
         return self._players[self._current_player_index]

@@ -11,36 +11,28 @@ mg = MoveGenerator(g)
 
 b = Board()
 
-b.add_move(Move('ACETATE', 5, 7, False))
-b.add_move(Move('WIgGERY', 7,11, True))
+b.add_move(Move('LANDAU', 7, 12, True))
+b.add_move(Move('NUDELY', 6, 7, False))
 
 b.show_board()
 me = MoveEvaluator(b)
 
-t = Tiles(['D', 'P', 'C', 'Y', 'O', 'E', 'G'])
+t = Tiles(['E', 'R', 'S', 'B', 'E', 'E', 'S'])
 
 print(t)
+print()
 
 moves = mg.get_all_moves(b, t)
 points_per_move = me.sort_by_points(moves)
 
-highest_moves = me.get_top_number(points_per_move, 15)
+highest_moves = points_per_move[:15]
 most_points, move_with_most_points = highest_moves[0]
 
+word_finder_moves = me.sort_by_word_finder(points_per_move)
 
-sorted_moves = sorted(points_per_move, key=me.word_finder_sort)
-duplicate_checker = set()
-unique_moves = []
-for points, move in sorted_moves:
-    if move.get_word() not in duplicate_checker:
-        duplicate_checker.add(move.get_word())
-        unique_moves.append((points, move))
-
-top_40_moves = unique_moves[:40]
-
-for move in top_40_moves:
+for move in word_finder_moves:
     print(move)
-    print()
+    
 
 print(len(points_per_move))
 
