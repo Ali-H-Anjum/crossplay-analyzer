@@ -22,21 +22,32 @@ class MoveEvaluator:
         DL = self._board.get_double_letter_multipliers()
         TL = self._board.get_triple_letter_multipliers()
         
+        blank_tiles = self._board.get_blank_tiles()
+        
         n = 1
         points = 0
         tiles_used = 0
 
         for letter in word:
+            is_blank = letter.islower() or (x, y) in blank_tiles
+
             if not self._board.get_letter_at_point(x, y):
                 tiles_used += 1
-                if (x, y) in DW: n *= 2
-                elif (x, y) in TW: n *= 3
+                if not is_blank:
+                    if (x, y) in DW: n *= 2
+                    elif (x, y) in TW: n *= 3
 
-                if (x, y) in DL: points +=  points_per_tile.get(letter, 0) * 2
-                elif (x, y) in TL: points += points_per_tile.get(letter, 0) * 3
-                else: points += points_per_tile.get(letter, 0)
+                    if (x, y) in DL: points +=  points_per_tile.get(letter.upper(), 0) * 2
+                    elif (x, y) in TL: points += points_per_tile.get(letter.upper(), 0) * 3
+                    else: points += points_per_tile.get(letter.upper(), 0)
+
+                else:
+                    if (x, y) in DW: n *= 2
+                    elif (x, y) in TW: n *= 3
+
             else:
-                points += points_per_tile.get(letter, 0)
+                if not is_blank:
+                    points += points_per_tile.get(letter.upper(), 0)
 
             if is_descending: y -= 1
             else: x += 1

@@ -86,10 +86,10 @@ class MoveGenerator:
                     self._horizontal_go_on(x, y, x_offset, tile, word, tiles.remove_tile(tile), next_path, placed = True)
 
             if tiles.get_blank_count():
-                for allowed_letter in current_vertical_constraints: #NEED A WAY TO PASS THE '?' FOR POINTS AND ALLOWED_LETTER TO ACTUALLY ADD THE WORD TO THE BOARD
+                for allowed_letter in current_vertical_constraints: #Blanks get passed through as lowercase, won't be seen when calculating points but will be uppercase when added to board
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
-                        self._horizontal_go_on(x, y, x_offset, allowed_letter, word, tiles.remove_tile('?'), next_path, placed = True)
+                        self._horizontal_go_on(x, y, x_offset, allowed_letter.lower(), word, tiles.remove_tile('?'), next_path, placed = True)
 
     def _horizontal_go_on(self, x, y, x_offset, letter, word, tiles, new_path, placed = False):
         current_x = x + x_offset
@@ -149,7 +149,7 @@ class MoveGenerator:
                 for allowed_letter in current_horizontal_constraints:
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
-                        self._vertical_go_on(x, y, y_offset, allowed_letter, word, tiles.remove_tile('?'), next_path, placed = True)
+                        self._vertical_go_on(x, y, y_offset, allowed_letter.lower(), word, tiles.remove_tile('?'), next_path, placed = True)
 
     def _vertical_go_on(self, x, y, y_offset, letter, word, tiles, new_path, placed = False):
         current_y = y + y_offset

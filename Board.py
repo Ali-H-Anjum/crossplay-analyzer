@@ -25,7 +25,10 @@ class Board:
     def in_bounds(self, x, y): return 0 <= x <= 14 and 0 <= y <= 14
 
     def _add_letter(self, letter, x, y):
-        self._board[14-y][x] = letter
+        if letter.islower():
+            self._blank_tiles.add((x, y))
+
+        self._board[14-y][x] = letter.upper() #Necessary for blank tile logic
         self._letter_points.add((x, y)) #Points like Coord
         
         self._edge_points.discard((x, y))
@@ -103,5 +106,7 @@ class Board:
     def get_double_word_multipliers(self): return self._double_word_multipliers
 
     def get_triple_word_multipliers(self): return self._triple_word_multipliers
+
+    def get_blank_tiles(self): return self._blank_tiles
 
     ###################################################################

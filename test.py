@@ -12,7 +12,7 @@ mg = MoveGenerator(g)
 b = Board()
 
 b.add_move(Move('ACETATE', 5, 7, False))
-b.add_move(Move('WIGGERY', 7,11, True))
+b.add_move(Move('WIgGERY', 7,11, True))
 
 b.show_board()
 me = MoveEvaluator(b)
