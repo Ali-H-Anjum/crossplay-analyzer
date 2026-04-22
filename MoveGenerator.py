@@ -16,7 +16,7 @@ class MoveGenerator:
         edge_tiles = board.get_edge_points()
         all_tiles = board.get_all_letters()
 
-        anchors = {(7, 7)} if not edge_tiles else edge_tiles.union(all_tiles) #Gotta include the squares around 7,7, maybe fix it so smaller moves included
+        anchors = {(7, 7)} if not edge_tiles else edge_tiles.union(all_tiles) #Don't need to include all_tiles anymore, still should check word expansions
 
         for x, y in anchors:
             # print(f"Generating moves for anchor ({x}, {y})")
@@ -97,16 +97,17 @@ class MoveGenerator:
         if x_offset <= 0:
             word = letter + word
             letter_to_the_left = self._board.get_letter_at_point(current_x - 1, y)
+            letter_to_the_right_of_anchor = self._board.get_letter_at_point(x + 1, y)
 
             if new_path is not None:
-                if new_path.is_terminal and not letter_to_the_left and placed:
+                if new_path.is_terminal and not letter_to_the_left and not letter_to_the_right_of_anchor and placed:
                     self._moves.add(Move(word, current_x, y, False))
 
                 if current_x > 0:
                     self._generate_horizontal_moves(x, y, x_offset - 1, word, tiles, new_path, placed)
 
                 turn_path = self._gaddag.next_arc(new_path, '^') #Basicaly checks if there is a child node with '^' and traverses to it
-                if turn_path is not None and not letter_to_the_left and current_x <= 14: #If traversed succesfully and theres space to add a letter
+                if turn_path is not None and not letter_to_the_left and current_x <= 14: #Technically, doesn't need a check for if theres room because I already have a method to check if the position is in bounds
                     self._generate_horizontal_moves(x, y, 1, word, tiles, turn_path, placed)
               
         else:
@@ -117,7 +118,7 @@ class MoveGenerator:
                 if not letter_to_the_right and new_path.is_terminal and placed:
                     self._moves.add(Move(word, current_x - len(word) + 1, y, False))
 
-                if current_x <= 14:
+                if current_x <= 14: #Doesn't need check
                     self._generate_horizontal_moves(x, y, x_offset + 1, word, tiles, new_path, placed)
    
     def _generate_vertical_moves(self, x, y, y_offset, word, tiles, path, placed = False):
@@ -156,9 +157,10 @@ class MoveGenerator:
         if y_offset >= 0:
             word = letter + word
             letter_above = self._board.get_letter_at_point(x, current_y + 1)
+            letter_below_anchor = self._board.get_letter_at_point(x, y - 1)
 
             if new_path is not None:
-                if new_path.is_terminal and not letter_above and placed:
+                if new_path.is_terminal and not letter_above and not letter_below_anchor and placed:
                     self._moves.add(Move(word, x, current_y, True))
 
                 if current_y < 14:
