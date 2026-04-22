@@ -6,6 +6,7 @@ from TileBag import Tilebag
 from Player import Player
 from MoveEvaluator import MoveEvaluator
 from gaddagTesting import GADDAG, GADDAGNode
+from Validator import Validator
 
 import pickle
 
@@ -13,8 +14,8 @@ import cProfile
 
 class Game:
     def __init__(self):
-        with open('gaddag.pkl', 'rb') as f:
-            self._gaddag = pickle.load(f)
+        
+        self._gaddag = GADDAG()
 
         self._moveGenerator = MoveGenerator(self._gaddag)
 
@@ -25,6 +26,8 @@ class Game:
         self._moveEvaluator = MoveEvaluator(self._board)
 
         self._current_player_index = 0
+
+        self._validator = Validator()
 
         print("Game Begin")
 
@@ -44,9 +47,9 @@ class Game:
         points_per_move = self._moveEvaluator.sort_by_points(moves)
         highest_moves = self._moveEvaluator.get_top_number(points_per_move, 15)
 
-        print("Their higher moves are:")
-        for move in highest_moves:
-            print(move)
+        # print("Their higher moves are:")
+        # for move in highest_moves:
+        #     print(move)
 
         most_points, move_with_most_points = highest_moves[0]
 
@@ -62,9 +65,11 @@ class Game:
         tiles_needed = 7 - len(current_player.get_player_tiles())
         current_player.add_tiles(self._tileBag.draw_tiles(tiles_needed))
 
-        print("Their new tiles are " + str(current_player.get_player_tiles()))
+        #print("Their new tiles are " + str(current_player.get_player_tiles()))
 
         self.swap_players()
+
+        #self._validator.check_board(self._board.get_board())
 
     def get_current_player(self):
         return self._players[self._current_player_index]
@@ -96,14 +101,9 @@ def main():
     game.play_turn()
     game.play_turn()
     game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    game.play_turn()
+
+
+
 
     
 

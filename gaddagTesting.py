@@ -1,5 +1,3 @@
-import pickle
-
 class GADDAGNode:
     __slots__ = ['next', 'is_terminal']
 
@@ -12,11 +10,17 @@ class GADDAG:
     def __init__(self, path='wordList.txt'):
         self._root = GADDAGNode()
         self._node_count = 1
+        self._word_set = set()
 
         with open(path, 'r') as file:
             for line in file:
                 for word in line.strip().split():
                     self.add_word(word)
+
+                    self._word_set.add(word)
+
+    def in_gaddag(self, word):
+        return word in self._word_set
 
     def get_root(self): return self._root
     
@@ -25,22 +29,19 @@ class GADDAG:
     def next_arc(self, arc, letter):
         if arc is None: return self.get_root()
 
-        if letter is None: return self.get_next(arc, '^')
-
-        return self.get_next(arc, letter)
+        return arc.next.get(letter, None)
     
     def is_on_arc(self, arc, letter): return self.next_arc(arc, letter) is not None
 
     def add_word(self, word):
-        self._add_path(word)
 
         length = len(word)
 
         for i in range(1, length + 1):
-            before = word[:i][::-1]
-            after = word[i:]
-            if i == length: rotated = before
-            else: rotated = before + '^' + after
+            prefix = word[:i][::-1]
+            suffix = word[i:]
+            if i == length: rotated = prefix
+            else: rotated = prefix + '^' + suffix
             
             self._add_path(rotated)
 
@@ -71,31 +72,10 @@ class GADDAG:
     def cross_check(self, prefix, suffix):
         valid_letters = set()
 
-        if prefix:
-            path = prefix[::-1] + '^'
-            node = self.get_last_node_in_path(path)
-
-            if node is None:
-                return valid_letters
-        
-            for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-                if letter not in node.next:
-                    continue
-
-                candidate_node = self.get_last_node_in_path(suffix, start=node.next[letter])
-                if candidate_node is not None and candidate_node.is_terminal:
-                    valid_letters.add(letter)
-
-        else:
-            path = suffix[::-1]
-            node = self.get_last_node_in_path(path)
-            if node is None:
-                return valid_letters
-            for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-                if letter not in node.next:
-                    continue
-                if node.next[letter].is_terminal:
-                    valid_letters.add(letter)
+        for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            word = prefix + letter + suffix
+            if self.in_gaddag(word):
+                valid_letters.add(letter)
 
         return valid_letters
 
@@ -104,3 +84,4 @@ class GADDAG:
 # gaddag = GADDAG()
 # with open('gaddag.pkl', 'wb') as f:
 #     pickle.dump(gaddag, f)
+

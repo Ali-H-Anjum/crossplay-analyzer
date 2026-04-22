@@ -14,6 +14,8 @@ class Board:
         self._double_word_multipliers = {(11,7),(7,11),(3,7),(7,3),(13,1),(13,13),(1,13),(1,1)}
         self._triple_word_multipliers = {(14,11),(11,14),(3,14),(0,11),(0,3),(3,0),(11,0),(14,3)}
 
+        self._blank_tiles = set()
+
     def get_board(self): return self._board
 
     def show_board(self):
@@ -101,3 +103,5 @@ class Board:
     def get_double_word_multipliers(self): return self._double_word_multipliers
 
     def get_triple_word_multipliers(self): return self._triple_word_multipliers
+
+    ###################################################################

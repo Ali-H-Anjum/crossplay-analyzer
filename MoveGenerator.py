@@ -16,9 +16,14 @@ class MoveGenerator:
         edge_tiles = board.get_edge_points()
         all_tiles = board.get_all_letters()
 
-        anchors = {(7, 7)} if not edge_tiles else (edge_tiles | all_tiles) #Gotta include the squares around 7,7, maybe fix it so smaller moves included
+        anchors = {(7, 7)} if not edge_tiles else edge_tiles.union(all_tiles) #Gotta include the squares around 7,7, maybe fix it so smaller moves included
 
         for x, y in anchors:
+            print(f"Generating moves for anchor ({x}, {y})")
+            print(f"Horizontal constraints: {self._horizontal_constraints.get((x, y), set('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))}")
+            print(f"Vertical constraints: {self._vertical_constraints.get((x, y), set('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))}")
+            print()
+
             self._generate_horizontal_moves(x, y, 0, "", tiles, self._root)
             self._generate_vertical_moves(x, y, 0, "", tiles, self._root)
 
@@ -73,7 +78,6 @@ class MoveGenerator:
             current_vertical_constraints = self._vertical_constraints.get((current_x, y), set('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
 
             for tile in tiles.get_unique_tiles():
-
                 if tile not in current_vertical_constraints:
                     continue
 
@@ -82,11 +86,10 @@ class MoveGenerator:
                     self._horizontal_go_on(x, y, x_offset, tile, word, tiles.remove_tile(tile), next_path, placed = True)
 
             if tiles.get_blank_count():
-                tiles_without_blank = tiles.remove_tile('?')
-                for allowed_letter in current_vertical_constraints:
+                for allowed_letter in current_vertical_constraints: #NEED A WAY TO PASS THE '?' FOR POINTS AND ALLOWED_LETTER TO ACTUALLY ADD THE WORD TO THE BOARD
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
-                        self._horizontal_go_on(x, y, x_offset, allowed_letter, word, tiles_without_blank, next_path, placed = True)
+                        self._horizontal_go_on(x, y, x_offset, allowed_letter, word, tiles.remove_tile('?'), next_path, placed = True)
 
     def _horizontal_go_on(self, x, y, x_offset, letter, word, tiles, new_path, placed = False):
         current_x = x + x_offset
@@ -99,8 +102,8 @@ class MoveGenerator:
                 if current_x > 0:
                     self._generate_horizontal_moves(x, y, x_offset - 1, word, tiles, new_path, placed)
 
-                turn_path = self._gaddag.next_arc(new_path, None)
-                if turn_path is not None and not letter_to_the_left:
+                turn_path = self._gaddag.next_arc(new_path, '^') #Basicaly checks if there is a child node with '^' and traverses to it
+                if turn_path is not None and not letter_to_the_left: #If traversed succesfully and theres space to add a letter
                         if turn_path.is_terminal and placed:
                             self._moves.add(Move(word, current_x, y, False))
 
@@ -144,11 +147,10 @@ class MoveGenerator:
                     self._vertical_go_on(x, y, y_offset, tile, word, tiles.remove_tile(tile), next_path, placed = True)
 
             if tiles.get_blank_count():
-                tiles_without_blank = tiles.remove_tile('?')
                 for allowed_letter in current_horizontal_constraints:
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
-                        self._vertical_go_on(x, y, y_offset, allowed_letter, word, tiles_without_blank, next_path, placed = True)
+                        self._vertical_go_on(x, y, y_offset, allowed_letter, word, tiles.remove_tile('?'), next_path, placed = True)
 
     def _vertical_go_on(self, x, y, y_offset, letter, word, tiles, new_path, placed = False):
         current_y = y + y_offset
@@ -161,10 +163,9 @@ class MoveGenerator:
                 if current_y < 14:
                     self._generate_vertical_moves(x, y, y_offset + 1, word, tiles, new_path, placed)
 
-                turn_path = self._gaddag.next_arc(new_path, None)
-                if turn_path is not None:
-                    if not letter_above:
-                        if turn_path.is_terminal and placed:
+                turn_path = self._gaddag.next_arc(new_path, '^')
+                if turn_path is not None and not letter_above:
+                        if turn_path.is_terminal and placed: #Instead of checking if the next path is terminal, we should be checking if the the current one is. This bit of code excludes cases where the word is expanded from its last letter, in which case it wont have a ^ in the gaddag
                             self._moves.add(Move(word, x, current_y, True))
 
                         if current_y >= 0:

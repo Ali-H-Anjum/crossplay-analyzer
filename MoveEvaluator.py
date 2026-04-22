@@ -79,7 +79,7 @@ class MoveEvaluator:
     
     def calculate_sweep(self, tiles_used):
         if tiles_used == 7:
-            return 60
+            return 40
         return 0
 
     def sort_by_points(self, moves):
