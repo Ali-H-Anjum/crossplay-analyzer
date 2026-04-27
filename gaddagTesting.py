@@ -22,9 +22,11 @@ class GADDAG:
                 for word in line.strip().split():
                     self.add_word(word)
 
-    def get_root(self): return self._root
+    def get_root(self): 
+        return self._root
     
-    def get_next(self, node, letter): return node.arcs[_CHAR_INDEX[letter]]
+    def get_next(self, node, letter): 
+        return node.arcs[_CHAR_INDEX[letter]]
     
     def next_arc(self, arc, letter):
         index = _CHAR_INDEX[letter]
@@ -33,7 +35,6 @@ class GADDAG:
     def is_on_arc(self, arc, letter): return self.next_arc(arc, letter) is not None
 
     def add_word(self, word):
-
         length = len(word)
 
         for i in range(1, length + 1):
@@ -71,7 +72,6 @@ class GADDAG:
 
         return current
 
-    
     def cross_check(self, prefix, suffix):
         if not prefix and not suffix:
             return set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')

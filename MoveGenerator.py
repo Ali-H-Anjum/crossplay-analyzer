@@ -11,7 +11,7 @@ class MoveGenerator:
         self._moves = set()
         
         self._board = board
-        self._horizontal_constraints, self._vertical_constraints = self._get_all_constraints()
+        self._cross_checks = self._compute_all_cross_checks()
 
         edge_tiles = board.get_edge_points()
         all_tiles = board.get_all_letters()
@@ -29,9 +29,8 @@ class MoveGenerator:
 
         return self._moves
     
-    def _get_all_constraints(self):
-        horizontal_constraints = {}
-        vertical_constraints = {}
+    def _compute_all_cross_checks(self):
+        checks = {}
 
         computed_cols = set()
         computed_rows = set()
@@ -40,15 +39,15 @@ class MoveGenerator:
 
             if x not in computed_cols:
                 for i in range(15):
-                    horizontal_constraints[(x, i)] = self._get_potential_letters(x, i, True)
+                    checks[(x, i, True)] = self._get_potential_letters(x, i, is_descending=True)
                 computed_cols.add(x)
 
             if y not in computed_rows:
                 for i in range(15):
-                    vertical_constraints[(i, y)] = self._get_potential_letters(i, y, False)
+                    checks[(i, y, False)] = self._get_potential_letters(i, y, is_descending=False)
                 computed_rows.add(y)
         
-        return horizontal_constraints, vertical_constraints
+        return checks
 
     def _get_potential_letters(self, x, y, is_descending):
         if letter := self._board.get_letter_at_point(x, y):
@@ -72,25 +71,29 @@ class MoveGenerator:
                 self._horizontal_go_on(x, y, x_offset, current_letter, word, tiles, next_path, placed)
 
         elif tiles:
-            current_vertical_constraints = self._vertical_constraints.get((current_x, y), set('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
+            current_vertical_constraints = self._cross_checks.get((current_x, y, False), self._ALL_LETTERS)
 
-            for tile in tiles.get_unique_tiles():
+            for tile in set(tiles.get_unique_tiles()):
                 if tile not in current_vertical_constraints:
                     continue
 
                 next_path = self._gaddag.next_arc(path, tile)
                 if next_path is not None:
                     tiles.remove_tile(tile)
-                    self._horizontal_go_on(x, y, x_offset, tile, word, tiles, next_path, placed = True)
-                    tiles.restore_tile(tile)
+                    try:
+                        self._horizontal_go_on(x, y, x_offset, tile, word, tiles, next_path, placed = True)
+                    finally:
+                        tiles.restore_tile(tile)
 
             if tiles.get_blank_count():
                 for allowed_letter in current_vertical_constraints: #Blanks get passed through as lowercase, won't be seen when calculating points but will be uppercase when added to board
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
                         tiles.remove_tile('?')
-                        self._horizontal_go_on(x, y, x_offset, allowed_letter.lower(), word, tiles, next_path, placed = True)
-                        tiles.restore_tile('?')
+                        try:
+                            self._horizontal_go_on(x, y, x_offset, allowed_letter.lower(), word, tiles, next_path, placed = True)
+                        finally:
+                            tiles.restore_tile('?')
 
     def _horizontal_go_on(self, x, y, x_offset, letter, word, tiles, new_path, placed = False):
         current_x = x + x_offset
@@ -133,25 +136,29 @@ class MoveGenerator:
                 self._vertical_go_on(x, y, y_offset, current_letter, word, tiles, next_path, placed)
         
         elif tiles:
-            current_horizontal_constraints = self._horizontal_constraints.get((x, current_y), set('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
+            current_horizontal_constraints = self._cross_checks.get((x, current_y, True), self._ALL_LETTERS)
 
-            for tile in tiles.get_unique_tiles():
+            for tile in set(tiles.get_unique_tiles()):
                 if tile not in current_horizontal_constraints:
                     continue
 
                 next_path = self._gaddag.next_arc(path, tile)
                 if next_path is not None:
                     tiles.remove_tile(tile)
-                    self._vertical_go_on(x, y, y_offset, tile, word, tiles, next_path, placed = True)
-                    tiles.restore_tile(tile)
+                    try:
+                        self._vertical_go_on(x, y, y_offset, tile, word, tiles, next_path, placed = True)
+                    finally:
+                        tiles.restore_tile(tile)
 
             if tiles.get_blank_count():
                 for allowed_letter in current_horizontal_constraints:
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
                         tiles.remove_tile('?')
-                        self._vertical_go_on(x, y, y_offset, allowed_letter.lower(), word, tiles, next_path, placed = True)
-                        tiles.restore_tile('?')
+                        try:
+                            self._vertical_go_on(x, y, y_offset, allowed_letter.lower(), word, tiles, next_path, placed = True)
+                        finally:
+                            tiles.restore_tile('?')
 
     def _vertical_go_on(self, x, y, y_offset, letter, word, tiles, new_path, placed = False):
         current_y = y + y_offset

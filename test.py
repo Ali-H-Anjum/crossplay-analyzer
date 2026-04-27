@@ -2,10 +2,12 @@ from Board import Board
 from Move import Move
 from Tiles import Tiles
 from MoveGenerator import MoveGenerator
-from gaddagTesting import GADDAG
+from gaddagTesting import GADDAG, GADDAGNode
 from MoveEvaluator import MoveEvaluator
+import pickle
 
-g = GADDAG()
+with open('gaddag.pkl', 'rb') as f:
+    g = pickle.load(f)
 
 mg = MoveGenerator(g)
 
