@@ -64,9 +64,6 @@ class MoveGenerator:
     def _generate_horizontal_moves(self, x, y, x_offset, word, tiles, path, placed = False):
         current_x = x + x_offset
 
-        if not self._board.in_bounds(current_x, y):
-            return
-
         current_letter = self._board.get_letter_at_point(current_x, y)
 
         if current_letter:
@@ -111,7 +108,7 @@ class MoveGenerator:
                     self._generate_horizontal_moves(x, y, x_offset - 1, word, tiles, new_path, placed)
 
                 turn_path = self._gaddag.next_arc(new_path, '^') #Basicaly checks if there is a child node with '^' and traverses to it
-                if turn_path is not None and not letter_to_the_left and current_x <= 14: #Technically, doesn't need a check for if theres room because I already have a method to check if the position is in bounds
+                if turn_path is not None and not letter_to_the_left and x < 14: #Technically, doesn't need a check for if theres room because I already have a method to check if the position is in bounds
                     self._generate_horizontal_moves(x, y, 1, word, tiles, turn_path, placed)
               
         else:
@@ -122,14 +119,11 @@ class MoveGenerator:
                 if not letter_to_the_right and new_path.is_terminal and placed:
                     self._moves.add(Move(word, current_x - len(word) + 1, y, False))
 
-                if current_x <= 14: #Doesn't need check
+                if current_x < 14: #Doesn't need check
                     self._generate_horizontal_moves(x, y, x_offset + 1, word, tiles, new_path, placed)
    
     def _generate_vertical_moves(self, x, y, y_offset, word, tiles, path, placed = False):
         current_y = y + y_offset
-
-        if not self._board.in_bounds(x, current_y):
-            return
         
         current_letter = self._board.get_letter_at_point(x, current_y)
 
@@ -175,7 +169,7 @@ class MoveGenerator:
                     self._generate_vertical_moves(x, y, y_offset + 1, word, tiles, new_path, placed)
 
                 turn_path = self._gaddag.next_arc(new_path, '^')
-                if turn_path is not None and not letter_above and current_y >= 0:
+                if turn_path is not None and not letter_above and y > 0:
                     self._generate_vertical_moves(x, y, -1, word, tiles, turn_path, placed)
 
         else:
@@ -186,5 +180,5 @@ class MoveGenerator:
                 if not letter_below and new_path.is_terminal and placed:
                     self._moves.add(Move(word, x, current_y + len(word) - 1, True))
                 
-                if current_y >= 0:
+                if current_y > 0:
                     self._generate_vertical_moves(x, y, y_offset - 1, word, tiles, new_path, placed)     

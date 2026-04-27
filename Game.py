@@ -67,6 +67,9 @@ class Game:
         self._board.show_board()
         print()
 
+        print("They now have " + str(current_player.get_score()) + " points")
+        print()
+
         tiles_needed = 7 - len(current_player.get_player_tiles())
         current_player.add_tiles(self._tileBag.draw_tiles(tiles_needed))
 
