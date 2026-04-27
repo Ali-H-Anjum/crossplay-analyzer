@@ -5,9 +5,20 @@ class Tiles:
         self._unique_tiles = set(tiles) - {'?'}
 
     def remove_tile(self, tile):
-        tile_index = self._tiles.index(tile)
-        return Tiles(self._tiles[:tile_index] + self._tiles[tile_index + 1:])
-    
+        self._tiles.remove(tile)
+        if tile == '?':
+            self._blank_count -= 1
+        else:
+            if tile not in self._tiles:
+                self._unique_tiles.remove(tile)
+
+    def restore_tile(self, tile):
+        self._tiles.append(tile)  # order doesn't matter for generation
+        if tile == '?':
+            self._blank_count += 1
+        else:
+            self._unique_tiles.add(tile)
+
     def add_tiles(self, tiles):
         self._tiles.extend(tiles)
         self._blank_count = self._tiles.count('?')

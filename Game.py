@@ -13,7 +13,8 @@ import cProfile
 
 class Game:
     def __init__(self):
-        self._gaddag = GADDAG()
+        with open('gaddag.pkl', 'rb') as f:
+            self._gaddag = pickle.load(f)
 
         self._moveGenerator = MoveGenerator(self._gaddag)
 
@@ -78,22 +79,6 @@ class Game:
     
     def swap_players(self):
         self._current_player_index = 1 - self._current_player_index
-
-
-
-#b.add_word('TOWER', 5, 7, False)
-#b.add_word('HOW', 7, 9, True)
-
-#m0 = Move('HELLO', 7, 0, False)
-#m1 = Move('BRAILE', 8, 5, True)
-#m2 = Move('JELLO', 11, 4, True)
-#b.add_word(m0.get_word(), m0.get_x(), m0.get_y(), m0.get_is_descending())
-#b.add_word(m1.get_word(), m1.get_x(), m1.get_y(), m1.get_is_descending())
-#b.add_word(m2.get_word(), m2.get_x(), m2.get_y(), m2.get_is_descending())
-
-#We have to expand horizontally and then vertically from each edge
-#When doing vertical expansion we use horizontal constraints
-#When doing horizontal expansion we use vertical constraints
 
 ##########################################################################
 def main():

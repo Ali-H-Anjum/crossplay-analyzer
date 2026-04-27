@@ -83,13 +83,17 @@ class MoveGenerator:
 
                 next_path = self._gaddag.next_arc(path, tile)
                 if next_path is not None:
-                    self._horizontal_go_on(x, y, x_offset, tile, word, tiles.remove_tile(tile), next_path, placed = True)
+                    tiles.remove_tile(tile)
+                    self._horizontal_go_on(x, y, x_offset, tile, word, tiles, next_path, placed = True)
+                    tiles.restore_tile(tile)
 
             if tiles.get_blank_count():
                 for allowed_letter in current_vertical_constraints: #Blanks get passed through as lowercase, won't be seen when calculating points but will be uppercase when added to board
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
-                        self._horizontal_go_on(x, y, x_offset, allowed_letter.lower(), word, tiles.remove_tile('?'), next_path, placed = True)
+                        tiles.remove_tile('?')
+                        self._horizontal_go_on(x, y, x_offset, allowed_letter.lower(), word, tiles, next_path, placed = True)
+                        tiles.restore_tile('?')
 
     def _horizontal_go_on(self, x, y, x_offset, letter, word, tiles, new_path, placed = False):
         current_x = x + x_offset
@@ -143,13 +147,17 @@ class MoveGenerator:
 
                 next_path = self._gaddag.next_arc(path, tile)
                 if next_path is not None:
-                    self._vertical_go_on(x, y, y_offset, tile, word, tiles.remove_tile(tile), next_path, placed = True)
+                    tiles.remove_tile(tile)
+                    self._vertical_go_on(x, y, y_offset, tile, word, tiles, next_path, placed = True)
+                    tiles.restore_tile(tile)
 
             if tiles.get_blank_count():
                 for allowed_letter in current_horizontal_constraints:
                     next_path = self._gaddag.next_arc(path, allowed_letter)
                     if next_path is not None:
-                        self._vertical_go_on(x, y, y_offset, allowed_letter.lower(), word, tiles.remove_tile('?'), next_path, placed = True)
+                        tiles.remove_tile('?')
+                        self._vertical_go_on(x, y, y_offset, allowed_letter.lower(), word, tiles, next_path, placed = True)
+                        tiles.restore_tile('?')
 
     def _vertical_go_on(self, x, y, y_offset, letter, word, tiles, new_path, placed = False):
         current_y = y + y_offset

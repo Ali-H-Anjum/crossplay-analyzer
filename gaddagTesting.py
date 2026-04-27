@@ -1,3 +1,4 @@
+# import pickle
 class GADDAGNode:
     __slots__ = ['next', 'is_terminal']
 
