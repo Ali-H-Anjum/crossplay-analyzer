@@ -1,4 +1,5 @@
-# import pickle
+import pickle
+import os
 
 _CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ^'
 _CHAR_INDEX = {c: i for i, c in enumerate(_CHARS)}
@@ -13,14 +14,23 @@ class GADDAGNode:
 
 
 class GADDAG:
-    def __init__(self, path='wordList.txt'):
-        self._root = GADDAGNode()
-        self._node_count = 1
+    def __init__(self, path='wordList.txt', cache_path = 'gaddag.pkl'):
+        if os.path.exists(cache_path):
+            with open(cache_path, 'rb') as f:
+                cached = pickle.load(f)
+                self._root = cached._root
+                self._node_count = cached._node_count
+        else:
+            self._root = GADDAGNode()
+            self._node_count = 1
 
-        with open(path, 'r') as file:
-            for line in file:
-                for word in line.strip().split():
-                    self.add_word(word)
+            with open(path, 'r') as file:
+                for line in file:
+                    for word in line.strip().split():
+                        self.add_word(word)
+
+            with open(cache_path, 'wb') as f:
+                pickle.dump(self, f)
 
     def get_root(self): 
         return self._root
@@ -110,9 +120,5 @@ class GADDAG:
 
         return valid
 
-#######################################
 
-# gaddag = GADDAG()
-# with open('gaddag.pkl', 'wb') as f:
-#     pickle.dump(gaddag, f)
 

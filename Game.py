@@ -7,14 +7,11 @@ from Player import Player
 from MoveEvaluator import MoveEvaluator
 from gaddagTesting import GADDAG, GADDAGNode
 
-import pickle
-
 import cProfile
 
 class Game:
     def __init__(self):
-        with open('gaddag.pkl', 'rb') as f:
-            self._gaddag = pickle.load(f)
+        self._gaddag = GADDAG()
 
         self._moveGenerator = MoveGenerator(self._gaddag)
 
