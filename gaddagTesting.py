@@ -42,7 +42,8 @@ class GADDAG:
         index = _CHAR_INDEX[letter]
         return arc.arcs[index] if arc is not None else self._root.arcs[index]
     
-    def is_on_arc(self, arc, letter): return self.next_arc(arc, letter) is not None
+    def is_on_arc(self, arc, letter): 
+        return self.next_arc(arc, letter) is not None
 
     def add_word(self, word):
         length = len(word)
