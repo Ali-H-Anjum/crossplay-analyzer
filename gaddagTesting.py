@@ -16,17 +16,11 @@ class GADDAG:
     def __init__(self, path='wordList.txt'):
         self._root = GADDAGNode()
         self._node_count = 1
-        self._word_set = set()
 
         with open(path, 'r') as file:
             for line in file:
                 for word in line.strip().split():
                     self.add_word(word)
-
-                    self._word_set.add(word)
-
-    def in_gaddag(self, word):
-        return word in self._word_set
 
     def get_root(self): return self._root
     
@@ -79,14 +73,42 @@ class GADDAG:
 
     
     def cross_check(self, prefix, suffix):
-        valid_letters = set()
+        if not prefix and not suffix:
+            return set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        
+        rev_prefix = prefix[::-1]
+        valid = set()
 
-        for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-            word = prefix + letter + suffix
-            if self.in_gaddag(word):
-                valid_letters.add(letter)
+        for L in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            node = self._root.arcs[_CHAR_INDEX[L]]
+            if node is None:
+                continue
 
-        return valid_letters
+            ok = True
+            for c in rev_prefix:
+                node = node.arcs[_CHAR_INDEX[c]]
+                if node is None:
+                    ok = False
+                    break
+            if not ok:
+                continue
+
+            if suffix:
+                node = node.arcs[_CHAR_INDEX['^']]
+                if node is None:
+                    continue
+                for c in suffix:
+                    node = node.arcs[_CHAR_INDEX[c]]
+                    if node is None:
+                        ok = False
+                        break
+                if not ok:
+                    continue
+
+            if node.is_terminal:
+                valid.add(L)
+
+        return valid
 
 #######################################
 
