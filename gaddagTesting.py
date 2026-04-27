@@ -1,9 +1,14 @@
 # import pickle
+
+_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ^'
+_CHAR_INDEX = {c: i for i, c in enumerate(_CHARS)}
+
+
 class GADDAGNode:
-    __slots__ = ['next', 'is_terminal']
+    __slots__ = ['arcs', 'is_terminal']
 
     def __init__(self):
-        self.next = {}
+        self.arcs = [None] * 27
         self.is_terminal = False
 
 
@@ -25,12 +30,11 @@ class GADDAG:
 
     def get_root(self): return self._root
     
-    def get_next(self, node, letter): return node.next.get(letter, None)
+    def get_next(self, node, letter): return node.arcs[_CHAR_INDEX[letter]]
     
     def next_arc(self, arc, letter):
-        if arc is None: return self.get_root()
-
-        return arc.next.get(letter, None)
+        index = _CHAR_INDEX[letter]
+        return arc.arcs[index] if arc is not None else self._root.arcs[index]
     
     def is_on_arc(self, arc, letter): return self.next_arc(arc, letter) is not None
 
@@ -50,10 +54,11 @@ class GADDAG:
         current = self._root
 
         for char in path:
-            if char not in current.next: 
-                current.next[char] = GADDAGNode()
+            index = _CHAR_INDEX[char]
+            if current.arcs[index] is None:
+                current.arcs[index] = GADDAGNode()
                 self._node_count += 1
-            current = current.next[char]
+            current = current.arcs[index]
             
         current.is_terminal = True
     
@@ -66,9 +71,12 @@ class GADDAG:
         current = self._root if start is None else start
 
         for char in path:
-            if char not in current.next: return None
-            current = current.next[char]
+            index = _CHAR_INDEX[char]
+            current = current.arcs[index]
+            if current is None: return None
+
         return current
+
     
     def cross_check(self, prefix, suffix):
         valid_letters = set()

@@ -16,7 +16,7 @@ class MoveGenerator:
         edge_tiles = board.get_edge_points()
         all_tiles = board.get_all_letters()
 
-        anchors = {(7, 7)} if not edge_tiles else edge_tiles.union(all_tiles) #Don't need to include all_tiles anymore, still should check word expansions
+        anchors = {(7, 7)} if not edge_tiles else edge_tiles #Seems to be correct but if need be I can add all_tiles back
 
         for x, y in anchors:
             # print(f"Generating moves for anchor ({x}, {y})")

@@ -13,6 +13,8 @@ b = Board()
 
 b.add_move(Move('LANDAU', 7, 12, True))
 b.add_move(Move('NUDELY', 6, 7, False))
+b.add_move(Move('BESES', 5, 6, False))
+
 
 b.show_board()
 me = MoveEvaluator(b)
@@ -34,7 +36,7 @@ for move in word_finder_moves:
     print(move)
     
 
-print(len(points_per_move))
+print(len(moves))
 
 # word_before, word_after = b.get_surrounding_words(10, 8, False)
 
