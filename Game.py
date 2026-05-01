@@ -7,8 +7,6 @@ from Player import Player
 from MoveEvaluator import MoveEvaluator
 from gaddagTesting import GADDAG, GADDAGNode
 
-import cProfile
-
 class Game:
     def __init__(self):
         self._gaddag = GADDAG()
@@ -47,10 +45,10 @@ class Game:
 
         word_finder_moves = self._moveEvaluator.sort_by_word_finder(points_per_move)
 
-        print("Their top 40 moves are:")
-        for move in word_finder_moves:
-            print(move)
-        print()
+        # print("Their top 40 moves are:")
+        # for move in word_finder_moves:
+        #     print(move)
+        # print()
 
         most_points, move_with_most_points = word_finder_moves[0]
 
@@ -80,23 +78,6 @@ class Game:
     def swap_players(self):
         self._current_player_index = 1 - self._current_player_index
 
-##########################################################################
-def main():
-    game = Game()
-    while len(game.get_tile_bag().get_tilebag()) > 0:
-        game.play_turn()
-    game.play_turn()
-    game.play_turn()
-    print("Game Over")
-
-
-
-
-    
-
-
-if __name__ == "__main__":
-    cProfile.run('main()')
     
 
 
