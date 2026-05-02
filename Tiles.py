@@ -29,8 +29,8 @@ class Tiles:
         self._blank_count = self._tiles.count('?')
         self._unique_tiles = set(self._tiles) - {'?'}
 
-    def get_tiles(self):
-        return self._tiles
+    def get_tiles(self): #Immutable
+        return tuple(self._tiles) 
 
     def get_unique_tiles(self):
         return self._unique_tiles

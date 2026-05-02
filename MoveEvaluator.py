@@ -15,8 +15,6 @@ class MoveEvaluator:
         return points
 
     def calculate_points_from_main_word(self, move):
-        word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
-
         DW = self._board.get_double_word_multipliers()
         TW = self._board.get_triple_word_multipliers()
         DL = self._board.get_double_letter_multipliers()
@@ -28,11 +26,38 @@ class MoveEvaluator:
         points = 0
         tiles_used = 0
 
-        for letter in word:
+        # word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
+
+        # for letter in word:
+        #     is_blank = letter.islower() or (x, y) in blank_tiles
+
+        #     if not self._board.get_letter_at_point(x, y):
+        #         tiles_used += 1
+        #         if not is_blank:
+        #             if (x, y) in DW: n *= 2
+        #             elif (x, y) in TW: n *= 3
+
+        #             if (x, y) in DL: points +=  points_per_tile.get(letter.upper(), 0) * 2
+        #             elif (x, y) in TL: points += points_per_tile.get(letter.upper(), 0) * 3
+        #             else: points += points_per_tile.get(letter.upper(), 0)
+
+        #         else:
+        #             if (x, y) in DW: n *= 2
+        #             elif (x, y) in TW: n *= 3
+
+        #     else:
+        #         if not is_blank:
+        #             points += points_per_tile.get(letter.upper(), 0)
+
+        #     if is_descending: y -= 1
+        #     else: x += 1
+
+        for letter, x, y in move.get_letter_positions():
             is_blank = letter.islower() or (x, y) in blank_tiles
 
             if not self._board.get_letter_at_point(x, y):
                 tiles_used += 1
+                
                 if not is_blank:
                     if (x, y) in DW: n *= 2
                     elif (x, y) in TW: n *= 3
@@ -49,21 +74,24 @@ class MoveEvaluator:
                 if not is_blank:
                     points += points_per_tile.get(letter.upper(), 0)
 
-            if is_descending: y -= 1
-            else: x += 1
             
         return points * n, tiles_used
     
     def calculate_points_for_all_cross_moves(self, move):
-        word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
         total = 0
+        # word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
 
-        for letter in word:
+        # for letter in word:
+        #     if not self._board.get_letter_at_point(x, y):
+        #         total += self.calculate_points_per_cross(letter, x, y, is_descending)
+
+        #     if is_descending: y -= 1
+        #     else: x += 1
+
+        for letter, x, y in move.get_letter_positions():
             if not self._board.get_letter_at_point(x, y):
-                total += self.calculate_points_per_cross(letter, x, y, is_descending)
+                total += self.calculate_points_per_cross(letter, x, y, move.get_is_descending())
 
-            if is_descending: y -= 1
-            else: x += 1
 
         return total
 
@@ -112,8 +140,3 @@ class MoveEvaluator:
                 unique_moves.append((points, move))
 
         return unique_moves[:40]
-
-
-
-
-

@@ -7,6 +7,8 @@ class Move:
 
         self._x_end, self._y_end = self.get_endpoints(word, x, y, is_descending)
 
+        self._letter_positions = self.calculate_letter_positions()
+
     def get_word(self):
         return self._word
     
@@ -25,6 +27,9 @@ class Move:
     def get_y_end(self):
         return self._y_end
     
+    def get_letter_positions(self):
+        return self._letter_positions
+    
     def get_length(self):
         return len(self._word)
     
@@ -37,9 +42,19 @@ class Move:
         length = len(word)
         if(is_descending): return x, y - length + 1
         else: return x + length - 1, y
-    
-    def in_bounds(self, x, y):
-        return 0 <= x <= 14 and 0 <= y <= 14
+
+    def calculate_letter_positions(self): 
+        letter_positions = []
+        x, y = self._x, self._y
+
+        for letter in self._word:
+            letter_positions.append((letter, x, y))
+            if self._is_descending:
+                y -= 1
+            else:
+                x += 1
+
+        return tuple(letter_positions)
 
 ##################################################
     def __eq__(self, other):

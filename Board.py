@@ -16,7 +16,7 @@ class Board:
 
         self._blank_tiles = set()
 
-    def get_board(self): return self._board
+    def get_board(self): return tuple(tuple(row) for row in self._board) #Immutable
 
     def show_board(self):
         for row in self._board:
@@ -51,12 +51,17 @@ class Board:
 
     def add_move(self, move):
         self._moves_made.append(move)  
-        word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
-        
-        for letter in word:
+
+        for letter, x, y in move.get_letter_positions():
             self._add_letter(letter, x, y)
-            if is_descending: y = y - 1
-            else: x = x + 1
+
+
+        # word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
+        
+        # for letter in word:
+        #     self._add_letter(letter, x, y)
+        #     if is_descending: y = y - 1
+        #     else: x = x + 1
 
     def get_letter_at_point(self, x, y):
         if not self.in_bounds(x, y): return None

@@ -120,6 +120,3 @@ class GADDAG:
                 valid.add(L)
 
         return valid
-
-
-

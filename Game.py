@@ -78,6 +78,17 @@ class Game:
     def swap_players(self):
         self._current_player_index = 1 - self._current_player_index
 
+
+    ####### AI METHODS #######
+
+    def _get_board_state(self):
+        return self._board.get_board()
+    
+    def _get_trays_state(self):
+        return tuple(player.get_player_tiles() for player in self._players)
+
+
+
     
 
 

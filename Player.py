@@ -20,18 +20,30 @@ class Player: #Holds their tiles, all the moves they made, their score
     
     def use_tiles_for_move(self, board, move):
         tiles_used = 0
-        word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
 
-        for letter in word:
-            if not board.get_letter_at_point(x, y):
-                if letter in self._player_tiles.get_tiles():
-                    self.play_tile(letter)
-                else:
-                    self.play_tile('?')
-                tiles_used += 1
+        # word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
 
-            if is_descending: y -= 1
-            else: x += 1
+        # for letter in word:
+        #     if not board.get_letter_at_point(x, y):
+        #         if letter in self._player_tiles.get_tiles():
+        #             self.play_tile(letter)
+        #         else:
+        #             self.play_tile('?')
+        #         tiles_used += 1
+
+        #     if is_descending: y -= 1
+        #     else: x += 1
+
+        for letter, x, y in move.get_letter_positions():
+            if board.get_letter_at_point(x, y):
+                continue
+
+            if letter in self._player_tiles.get_tiles():
+                self.play_tile(letter)
+            else:
+                self.play_tile('?')
+
+            tiles_used += 1
 
         return tiles_used
 
