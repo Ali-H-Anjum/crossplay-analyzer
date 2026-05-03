@@ -15,7 +15,7 @@ The move generation algorithm uses a GADDAG data structure, designed with guidan
 
 ```bash
 pip install -e .
-python scripts/game_runner.py --mode simulate
+python scripts/game_runner.py
 ```
 
 ## WordList
