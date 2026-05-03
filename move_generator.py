@@ -91,7 +91,7 @@ class MoveGenerator:
                     try:
                         self._go_on(anchor_x, anchor_y, offset, tile, word, tiles, next_path, True, is_vertical)
                     finally:
-                        tiles.restore_tile(tile)
+                        tiles.add_tile(tile)
 
             if tiles.get_blank_count():
                 for letter in cross:
@@ -101,7 +101,7 @@ class MoveGenerator:
                         try:
                             self._go_on(anchor_x, anchor_y, offset, letter.lower(), word, tiles, next_path, True, is_vertical)
                         finally:
-                            tiles.restore_tile('?')
+                            tiles.add_tile('?')
 
     def _go_on(self, anchor_x, anchor_y, offset, letter, word, tiles, new_path, placed, is_vertical):
 

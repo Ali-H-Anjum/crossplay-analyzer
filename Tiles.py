@@ -12,7 +12,7 @@ class Tiles:
             if tile not in self._tiles:
                 self._unique_tiles.remove(tile)
 
-    def restore_tile(self, tile):
+    def add_tile(self, tile):
         self._tiles.append(tile)  # order doesn't matter for generation
         if tile == '?':
             self._blank_count += 1
@@ -20,14 +20,8 @@ class Tiles:
             self._unique_tiles.add(tile)
 
     def add_tiles(self, tiles):
-        self._tiles.extend(tiles)
-        self._blank_count = self._tiles.count('?')
-        self._unique_tiles = set(self._tiles) - {'?'}
-
-    def play_tile(self, tile):
-        self._tiles.remove(tile)
-        self._blank_count = self._tiles.count('?')
-        self._unique_tiles = set(self._tiles) - {'?'}
+        for tile in tiles:
+            self.add_tile(tile)
 
     def get_tiles(self):
         return self._tiles

@@ -13,7 +13,7 @@ class Game:
         self._moveGenerator = MoveGenerator(self._gaddag)
 
         self._tileBag = Tilebag()
-        self._players = [Player(Tiles(self._tileBag.draw_tiles(7))), Player(Tiles(self._tileBag.draw_tiles(7)))]
+        self._players = [Player(self._tileBag.draw_tiles(7)), Player(self._tileBag.draw_tiles(7))]
         self._board = Board()
 
         self._moveEvaluator = MoveEvaluator(self._board)
@@ -50,7 +50,7 @@ class Game:
 
         most_points, move_with_most_points = word_finder_moves[0]
 
-        current_player.use_tiles_for_move(self._board, move_with_most_points)
+        self.use_tiles(current_player, move_with_most_points)
 
         self._board.add_move(move_with_most_points)
 
@@ -63,7 +63,7 @@ class Game:
         print("They now have " + str(current_player.get_score()) + " points")
         print()
 
-        tiles_needed = 7 - len(current_player.get_player_tiles())
+        tiles_needed = current_player.tiles_needed()
         current_player.add_tiles(self._tileBag.draw_tiles(tiles_needed))
 
         #print("Their new tiles are " + str(current_player.get_player_tiles()))
@@ -78,6 +78,15 @@ class Game:
 
     def has_tiles_remaining(self):
         return len(self._tileBag) > 0
+    
+    def use_tiles(self, player, move):
+        for letter, x, y in move.get_letter_positions():
+            if self._board.get_letter_at_point(x, y):
+                continue
+            if letter in player.get_player_tiles().get_tiles():
+                player.remove_tile(letter)
+            else:
+                player.remove_tile('?')
 
     ####### AI METHODS #######
 

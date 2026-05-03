@@ -8,8 +8,6 @@ class Board:
 
         self._blank_tiles = set()
 
-
-
     def get_board(self): return tuple(tuple(row) for row in self._board) #Immutable
 
     def set_board(self, tuple_board): #Should overload this in constructor

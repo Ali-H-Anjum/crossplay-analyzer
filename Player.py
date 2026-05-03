@@ -1,6 +1,8 @@
-class Player: #Holds their tiles, all the moves they made, their score
+from tiles import Tiles
+
+class Player: 
     def __init__(self, tiles):
-        self._player_tiles = tiles
+        self._player_tiles = Tiles(tiles)
         self._score = 0
 
     def get_player_tiles(self):
@@ -9,8 +11,8 @@ class Player: #Holds their tiles, all the moves they made, their score
     def add_tiles(self, tiles):
         self._player_tiles.add_tiles(tiles)
 
-    def play_tile(self, tile):
-        self._player_tiles.play_tile(tile)
+    def remove_tile(self, tile):
+        self._player_tiles.remove_tile(tile)
 
     def add_score(self, score):
         self._score += score
@@ -18,28 +20,9 @@ class Player: #Holds their tiles, all the moves they made, their score
     def get_score(self):
         return self._score
     
-    def use_tiles_for_move(self, board, move):
-        # word, x, y, is_descending = move.get_word(), move.get_x(), move.get_y(), move.get_is_descending()
-
-        # for letter in word:
-        #     if not board.get_letter_at_point(x, y):
-        #         if letter in self._player_tiles.get_tiles():
-        #             self.play_tile(letter)
-        #         else:
-        #             self.play_tile('?')
-        #         tiles_used += 1
-
-        #     if is_descending: y -= 1
-        #     else: x += 1
-
-        for letter, x, y in move.get_letter_positions():
-            if board.get_letter_at_point(x, y):
-                continue
-
-            if letter in self._player_tiles.get_tiles():
-                self.play_tile(letter)
-            else:
-                self.play_tile('?')
-
-    def is_sweep(self):
-        return len(self._player_tiles) == 0
+    def tiles_needed(self):
+        return 7 - len(self._player_tiles)
+    
+    def __len__(self):
+        return len(self._player_tiles)
+    
