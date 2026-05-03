@@ -6,5 +6,5 @@ There is a lot of changes to be made structurally and to make move generation mo
 
 I used the research papers to help design my move generation algorithm utilizing a GADDAG data structure
 
-This project uses the NASPA Word List (NWL 2023). Due to copyright, the wordlist is not included. Obtain a copy and place it in the project root.
+This project uses the NASPA Word List (NWL 2023). Due to copyright, the wordlist is not included. Obtain a copy and place it in the project src.
 
