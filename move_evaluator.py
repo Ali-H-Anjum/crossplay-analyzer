@@ -1,12 +1,35 @@
-from Move import Move
+from move import Move
 
 points_per_tile = {'?': 0, 'A': 1, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 4, 'G': 4, 'H': 3,'I': 1, 'J': 10, 'K': 6, 'L': 2, 'M': 3,
                     'N': 1, 'O': 1, 'P': 3, 'Q': 10,'R': 1, 'S': 1, 'T': 1, 'U': 2, 'V': 6, 'W': 5, 'X': 8, 'Y': 4, 'Z': 10}
 
+MULT_NONE, MULT_DL, MULT_TL, MULT_DW, MULT_TW = 0, 1, 2, 3, 4
+
 class MoveEvaluator:
+    _MULT = {
+        # DL = 1
+        (9,7):1,(7,9):1,(5,7):1,(7,5):1,(14,7):1,(7,14):1,(0,7):1,(7,0):1,
+        (12,10):1,(11,11):1,(10,12):1,(4,12):1,(3,11):1,(2,10):1,
+        (2,4):1,(3,3):1,(4,2):1,(10,2):1,(11,3):1,(12,4):1,
+        # TL = 2
+        (10,9):2,(9,10):2,(5,10):2,(4,9):2,(4,5):2,(5,4):2,(9,4):2,(10,5):2,
+        (13,6):2,(13,8):2,(8,13):2,(6,13):2,(1,8):2,(1,6):2,(6,1):2,(8,1):2,
+        (14,0):2,(14,14):2,(0,14):2,(0,0):2,
+        # DW = 3
+        (11,7):3,(7,11):3,(3,7):3,(7,3):3,
+        (13,1):3,(13,13):3,(1,13):3,(1,1):3,
+        # TW = 4
+        (14,11):4,(11,14):4,(3,14):4,(0,11):4,(0,3):4,
+        (3,0):4,(11,0):4,(14,3):4
+    }
+
+    
 
     def __init__(self, board):
         self._board = board
+
+    def get_multiplier(self, x, y):
+        return self._MULT.get((x, y), 0)
 
     def calculate_total_points_per_move(self, move):
         points, tiles_used = self.calculate_points_from_main_word(move)
@@ -14,12 +37,7 @@ class MoveEvaluator:
         points += self.calculate_sweep(tiles_used)
         return points
 
-    def calculate_points_from_main_word(self, move):
-        DW = self._board.get_double_word_multipliers()
-        TW = self._board.get_triple_word_multipliers()
-        DL = self._board.get_double_letter_multipliers()
-        TL = self._board.get_triple_letter_multipliers()
-        
+    def calculate_points_from_main_word(self, move):       
         blank_tiles = self._board.get_blank_tiles()
         
         n = 1
@@ -57,19 +75,15 @@ class MoveEvaluator:
 
             if not self._board.get_letter_at_point(x, y):
                 tiles_used += 1
+                mult = self.get_multiplier(x, y)
+
+                if mult == MULT_DW: n *= 2
+                elif mult == MULT_TW: n *= 3
                 
                 if not is_blank:
-                    if (x, y) in DW: n *= 2
-                    elif (x, y) in TW: n *= 3
-
-                    if (x, y) in DL: points +=  points_per_tile.get(letter.upper(), 0) * 2
-                    elif (x, y) in TL: points += points_per_tile.get(letter.upper(), 0) * 3
+                    if mult == MULT_DL: points += points_per_tile[letter.upper()] * 2
+                    elif mult == MULT_TL: points += points_per_tile[letter.upper()] * 3
                     else: points += points_per_tile.get(letter.upper(), 0)
-
-                else:
-                    if (x, y) in DW: n *= 2
-                    elif (x, y) in TW: n *= 3
-
             else:
                 if not is_blank:
                     points += points_per_tile.get(letter.upper(), 0)

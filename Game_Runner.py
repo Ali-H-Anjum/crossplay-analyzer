@@ -1,13 +1,19 @@
-from Game import Game
+from game import Game
 import cProfile
 
 def simulate_one_game():
     game = Game()
-    while len(game.get_tile_bag().get_tilebag()) > 0:
+    while game.has_tiles_remaining():
         game.play_turn()
     game.play_turn()
     game.play_turn()
     print("Game Over")
+
+def testing():
+    game = Game()
+    s0 = game.get_initial_state()
+    print(game.actions(s0))
+
 
 def main():
     simulate_one_game()

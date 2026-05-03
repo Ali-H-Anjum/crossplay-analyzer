@@ -1,4 +1,4 @@
-from Move import Move
+from move import Move
 class MoveGenerator:
     _ALL_LETTERS = set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 

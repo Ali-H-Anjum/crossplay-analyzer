@@ -1,11 +1,10 @@
-from Move import Move
-from Board import Board
-from Tiles import Tiles
-from MoveGenerator import MoveGenerator
-from TileBag import Tilebag
-from Player import Player
-from MoveEvaluator import MoveEvaluator
-from gaddagTesting import GADDAG, GADDAGNode
+from board import Board
+from tiles import Tiles
+from move_generator import MoveGenerator
+from tile_bag import Tilebag
+from player import Player
+from move_evaluator import MoveEvaluator
+from gaddag import GADDAG, GADDAGNode
 
 class Game:
     def __init__(self):
@@ -21,11 +20,10 @@ class Game:
 
         self._current_player_index = 0
 
+        self._initial_state = self.get_state()
+
         print("Game Begin")
         print()
-
-    def get_tile_bag(self):
-        return self._tileBag
 
     def play_turn(self):
         current_player = self.get_current_player()
@@ -52,7 +50,7 @@ class Game:
 
         most_points, move_with_most_points = word_finder_moves[0]
 
-        tiles_used = current_player.use_tiles_for_move(self._board, move_with_most_points)
+        current_player.use_tiles_for_move(self._board, move_with_most_points)
 
         self._board.add_move(move_with_most_points)
 
@@ -78,14 +76,61 @@ class Game:
     def swap_players(self):
         self._current_player_index = 1 - self._current_player_index
 
+    def has_tiles_remaining(self):
+        return len(self._tileBag) > 0
 
     ####### AI METHODS #######
 
     def _get_board_state(self):
         return self._board.get_board()
     
-    def _get_trays_state(self):
-        return tuple(player.get_player_tiles() for player in self._players)
+    def _get_tile_trays_state(self):
+        return tuple(player.get_player_tiles().get_tiles() for player in self._players)
+    
+    def _get_tile_bag_state(self):
+        return self._tileBag.get_tilebag()
+    
+    def _get_scores_state(self):
+        return tuple(player.get_score() for player in self._players)
+    
+    def _get_current_player_state(self):
+        return self._current_player_index
+    
+    def get_state(self):
+        return (self._get_board_state(), self._get_tile_trays_state(), self._get_tile_bag_state(), self._get_scores_state(), self._get_current_player_state())
+    
+
+    def get_initial_state(self):
+        return self._initial_state
+    
+    def to_move(self, state):
+        return state[4]
+    
+    def actions(self, state):
+        board, tile_trays, tile_bag, scores, current_player = state
+
+        temp_board = Board()
+        temp_board.set_board(board)
+
+        temp_tray = Tiles(tile_trays[current_player])
+
+        return self._moveGenerator.get_all_moves(temp_board, temp_tray)
+    
+    def result(self, state, action):
+        board, tile_trays, tile_bag, scores, current_player = state
+
+        temp_board = Board()
+        temp_board.set_board(board)
+
+        temp_board.add_move(action)
+
+
+
+
+
+
+
+        
 
 
 

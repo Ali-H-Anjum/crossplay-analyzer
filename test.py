@@ -1,9 +1,9 @@
-from Board import Board
-from Move import Move
-from Tiles import Tiles
-from MoveGenerator import MoveGenerator
-from gaddagTesting import GADDAG, GADDAGNode
-from MoveEvaluator import MoveEvaluator
+from board import Board
+from move import Move
+from tiles import Tiles
+from move_generator import MoveGenerator
+from gaddag import GADDAG, GADDAGNode
+from move_evaluator import MoveEvaluator
 
 import cProfile
 
@@ -23,6 +23,13 @@ def main():
 
 
     b.show_board()
+    # print()
+
+    # c = Board()
+    # c.set_board(b.get_board())
+    # c.show_board()
+
+
     me = MoveEvaluator(b)
 
     t = Tiles(['E', 'R', 'S', 'B', 'E', 'E', 'S'])
