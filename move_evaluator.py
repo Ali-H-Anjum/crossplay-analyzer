@@ -26,6 +26,9 @@ class MoveEvaluator:
     def __init__(self, board):
         self._board = board
 
+    def set_board(self, board):
+        self._board = board
+
     def get_multiplier(self, x, y):
         return self._MULT.get((x, y), 0)
 

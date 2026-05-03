@@ -5,8 +5,6 @@ class Move:
         self._y = y
         self._is_descending = is_descending
 
-        self._x_end, self._y_end = self.get_endpoints(word, x, y, is_descending)
-
         self._letter_positions = self.calculate_letter_positions()
 
     def get_word(self):
@@ -21,27 +19,11 @@ class Move:
     def get_is_descending(self):
         return self._is_descending
     
-    def get_x_end(self):
-        return self._x_end
-    
-    def get_y_end(self):
-        return self._y_end
-    
     def get_letter_positions(self):
         return self._letter_positions
     
     def get_length(self):
-        return len(self._word)
-    
-    def get_letter_at_displacement(self, n):
-        if(n < 0 or n > self.get_length() - 1):
-            raise ValueError(f"Displacement ({n}) is out of bounds. Must be positive and shorter than the word length")
-        return self._word[n]
-    
-    def get_endpoints(self, word, x, y, is_descending):
-        length = len(word)
-        if(is_descending): return x, y - length + 1
-        else: return x + length - 1, y
+        return len(self._word)    
 
     def calculate_letter_positions(self): 
         letter_positions = []

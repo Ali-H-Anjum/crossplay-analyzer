@@ -79,7 +79,7 @@ class Game:
     def has_tiles_remaining(self):
         return len(self._tileBag) > 0
     
-    def use_tiles(self, player, move):
+    def use_tiles(self, player, move): #Should be broken up
         for letter, x, y in move.get_letter_positions():
             if self._board.get_letter_at_point(x, y):
                 continue
@@ -130,8 +130,12 @@ class Game:
 
         temp_board = Board()
         temp_board.set_board(board)
+        self._moveEvaluator.set_board(temp_board)
 
         temp_board.add_move(action)
+        self.use_tiles(self._players[current_player], action)
+
+        self._moveEvaluator.calculate_total_points_per_move(action)
 
 
 
