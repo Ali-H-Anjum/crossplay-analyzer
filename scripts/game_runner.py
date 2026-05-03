@@ -1,4 +1,4 @@
-from src.game import Game
+from game import Game
 import cProfile
 
 def simulate_one_game():

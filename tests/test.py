@@ -1,9 +1,9 @@
-from src.board import Board
-from src.move import Move
-from src.tiles import Tiles
-from src.move_generator import MoveGenerator
-from src.gaddag import GADDAG, GADDAGNode
-from src.move_evaluator import MoveEvaluator
+from board import Board
+from move import Move
+from tiles import Tiles
+from move_generator import MoveGenerator
+from gaddag import GADDAG, GADDAGNode
+from move_evaluator import MoveEvaluator
 
 import cProfile
 
