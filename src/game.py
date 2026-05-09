@@ -1,5 +1,5 @@
 from board import Board
-from tiles import Tiles
+from tray import Tray
 from move_generator import MoveGenerator
 from tile_bag import Tilebag
 from player import Player
@@ -8,22 +8,15 @@ from gaddag import GADDAG, GADDAGNode
 
 class Game:
     def __init__(self):
-        self._gaddag = GADDAG()
-
-        self._moveGenerator = MoveGenerator(self._gaddag)
-
-        self._tileBag = Tilebag()
-        self._players = [Player(self._tileBag.draw_tiles(7)), Player(self._tileBag.draw_tiles(7))]
         self._board = Board()
-
-        self._moveEvaluator = MoveEvaluator(self._board)
-
+        self._tileBag = Tilebag()
+        self._players = [Player(self._tileBag.draw_tiles(7)), Player(self._tileBag.draw_tiles(7))] #MAX, MIN
         self._current_player_index = 0
+        self._turns_since_tilebag_empty = 0
 
-        self._initial_state = self.get_state()
-
-        print("Game Begin")
-        print()
+        self._gaddag = GADDAG()
+        self._moveGenerator = MoveGenerator(self._gaddag)
+        self._moveEvaluator = MoveEvaluator(self._board)
 
     def play_turn(self):
         current_player = self.get_current_player()
@@ -88,54 +81,117 @@ class Game:
             else:
                 player.remove_tile('?')
 
-    ####### AI METHODS #######
+    ##################### AI METHODS #####################
+    
+    def snapshot(self):
+        return (
+            self._board.snapshot(), #Tuple grid board, Tuple anchor positions, Tuple blank positions
+            self._tileBag.snapshot(), #Tuple tileBag
+            self._players[0].snapshot(), #Tuple first player tiles, Int first player score
+            self._players[1].snapshot(), #Tuple second player tiles, Int second player score
+            self._current_player_index, # Int current player index
+            self._turns_since_tilebag_empty
+        )
+    
+    def restore(self, game_snapshot):
+        board_snapshot, tile_bag_snapshot, player0_snapshot, player1_snapshot, self._current_player_index, self._turns_since_tilebag_empty = game_snapshot
 
-    def _get_board_state(self):
-        return self._board.get_board()
+        self._board.restore(board_snapshot)
+        self._tileBag.restore(tile_bag_snapshot)
+        self._players[0].restore(player0_snapshot)
+        self._players[1].restore(player1_snapshot)
     
-    def _get_tile_trays_state(self):
-        return tuple(player.get_player_tiles().get_tiles() for player in self._players)
+    def to_move(self, game_snapshot):
+        return game_snapshot[4]
     
-    def _get_tile_bag_state(self):
-        return self._tileBag.get_tilebag()
-    
-    def _get_scores_state(self):
-        return tuple(player.get_score() for player in self._players)
-    
-    def _get_current_player_state(self):
-        return self._current_player_index
-    
-    def get_state(self):
-        return (self._get_board_state(), self._get_tile_trays_state(), self._get_tile_bag_state(), self._get_scores_state(), self._get_current_player_state())
-    
+    def actions(self, game_snapshot):
+        original = self.snapshot() #Save original state
 
-    def get_initial_state(self):
-        return self._initial_state
+        self.restore(game_snapshot) #Load new state
+
+        current_player = self.get_current_player()
+        tiles = current_player.get_player_tiles()
+        moves = self._moveGenerator.get_all_moves(self._board, tiles)
+
+        self.restore(original) #Load original state
+
+        return moves
     
-    def to_move(self, state):
-        return state[4]
+    def result(self, game_snapshot, action):
+        self.restore(game_snapshot)
+
+        current_player = self.get_current_player()
+        self._moveEvaluator.set_board(self._board)
+        self._board.add_move(action)
+
+        self.use_tiles(current_player, action)
+
+        points = self._moveEvaluator.calculate_total_points_per_move(action)
+
+        current_player.add_score(points)
+
+        tiles_needed = current_player.tiles_needed()
+
+        current_player.add_tiles(self._tileBag.draw_tiles(tiles_needed))
+
+        if not self.has_tiles_remaining():
+            self._turns_since_tilebag_empty += 1
+
+        self.swap_players()
+
+        return self.snapshot()
     
-    def actions(self, state):
-        board, tile_trays, tile_bag, scores, current_player = state
+    # def is_terminal(self, game_snapshot):
+    #     return game_snapshot[5] >= 2
 
-        temp_board = Board()
-        temp_board.set_board(board)
-
-        temp_tray = Tiles(tile_trays[current_player])
-
-        return self._moveGenerator.get_all_moves(temp_board, temp_tray)
+    def is_cutoff(self, depth):
+        return depth > 0
     
-    def result(self, state, action):
-        board, tile_trays, tile_bag, scores, current_player = state
+    def eval(self, game_snapshot, player):
+        # self.restore(game_snapshot)
 
-        temp_board = Board()
-        temp_board.set_board(board)
-        self._moveEvaluator.set_board(temp_board)
+        board_snapshot, tile_bag_snapshot, player0_snapshot, player1_snapshot, self._current_player_index, self._turns_since_tilebag_empty = game_snapshot
 
-        temp_board.add_move(action)
-        self.use_tiles(self._players[current_player], action)
+        score_difference = player0_snapshot[1] - player1_snapshot[1]
 
-        self._moveEvaluator.calculate_total_points_per_move(action)
+        if player == 0: return score_difference
+        else: return -score_difference
+        
+    
+    def show_state(self, game_snapshot):
+        original = self.snapshot()
+        self.restore(game_snapshot)
+        board_snapshot, tile_bag_snapshot, player0_snapshot, player1_snapshot, self._current_player_index, self._turns_since_tilebag_empty = self.snapshot()
+
+        self._board.show_board()
+
+        print("The anchor positions on the board are: " + str(board_snapshot[1]))
+        print()
+
+        print("The blank positions on the board are: " + str(board_snapshot[2]))
+        print()
+        
+        print("The tile bag has these tiles: " + str(tile_bag_snapshot))
+        print()
+
+        print("Player 0's tray has: " + str(player0_snapshot[0]) + " and they have " + str(player0_snapshot[1]) + " points")
+        print()
+
+        print("Player 1's tray has: " + str(player1_snapshot[0]) + " and they have " + str(player1_snapshot[1]) + " points")
+        print()
+
+        print("The current player is: " + str(self._current_player_index))
+        print()
+
+        print("The number of turns since the tile bag was empty is: " + str(self._turns_since_tilebag_empty))
+        print()
+
+        self.restore(original)
+
+
+
+
+
 
 
 

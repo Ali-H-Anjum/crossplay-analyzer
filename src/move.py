@@ -1,5 +1,5 @@
 class Move:
-    def __init__(self, word, x, y, is_descending):
+    def __init__(self, word: str, x: int, y: int, is_descending: bool):
         self._word = word
         self._x = x
         self._y = y
@@ -39,7 +39,7 @@ class Move:
         return tuple(letter_positions)
 
 ##################################################
-    def __eq__(self, other):
+    def __eq__(self, other: Move):
         return (self.get_word() == other.get_word() and self.get_x() == other.get_x() and self.get_y() == other.get_y() and self.get_is_descending() == other.get_is_descending())
 
     def __hash__(self):

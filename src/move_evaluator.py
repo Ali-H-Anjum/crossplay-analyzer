@@ -1,4 +1,5 @@
 from move import Move
+from board import Board
 
 points_per_tile = {'?': 0, 'A': 1, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 4, 'G': 4, 'H': 3,'I': 1, 'J': 10, 'K': 6, 'L': 2, 'M': 3,
                     'N': 1, 'O': 1, 'P': 3, 'Q': 10,'R': 1, 'S': 1, 'T': 1, 'U': 2, 'V': 6, 'W': 5, 'X': 8, 'Y': 4, 'Z': 10}
@@ -23,23 +24,23 @@ class MoveEvaluator:
         (3,0):4,(11,0):4,(14,3):4
     }
 
-    def __init__(self, board):
+    def __init__(self, board: Board):
         self._board = board
 
-    def set_board(self, board):
+    def set_board(self, board: Board):
         self._board = board
 
-    def get_multiplier(self, x, y):
+    def get_multiplier(self, x: int, y: int):
         return self._MULT.get((x, y), 0)
 
-    def calculate_total_points_per_move(self, move):
+    def calculate_total_points_per_move(self, move: Move):
         points, tiles_used = self.calculate_points_from_main_word(move)
         points += self.calculate_points_for_all_cross_moves(move)
         points += self.calculate_sweep(tiles_used)
         return points
 
-    def calculate_points_from_main_word(self, move):       
-        blank_tiles = self._board.get_blank_tiles()
+    def calculate_points_from_main_word(self, move: Move):       
+        blank_tiles = self._board.get_blank_positions()
         
         n = 1
         points = 0
@@ -65,7 +66,7 @@ class MoveEvaluator:
 
         return points * n, tiles_used
     
-    def calculate_points_for_all_cross_moves(self, move):
+    def calculate_points_for_all_cross_moves(self, move: Move):
         total = 0
 
         for letter, x, y in move.get_letter_positions():
@@ -75,7 +76,7 @@ class MoveEvaluator:
 
         return total
 
-    def calculate_points_per_cross(self, letter, x, y, is_descending):
+    def calculate_points_per_cross(self, letter: chr, x: int, y: int, is_descending: bool):
         word_before, word_after = self._board.get_surrounding_words(x, y, is_descending)
 
         if not word_before and not word_after:
@@ -96,7 +97,7 @@ class MoveEvaluator:
         points, _ = self.calculate_points_from_main_word(cross_move)
         return points
     
-    def calculate_sweep(self, tiles_used):
+    def calculate_sweep(self, tiles_used: int):
         if tiles_used == 7:
             return 40
         return 0

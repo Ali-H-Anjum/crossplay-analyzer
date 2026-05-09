@@ -1,19 +1,22 @@
 from move import Move
+from board import Board
+from tray import Tray
+from gaddag import GADDAG, GADDAGNode
+
 class MoveGenerator:
     _ALL_LETTERS = set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
-    def __init__(self, gaddag):
+    def __init__(self, gaddag: GADDAG):
         self._gaddag = gaddag
         self._root = self._gaddag.get_root()
         
-
-    def get_all_moves(self, board, tiles):
+    def get_all_moves(self, board: Board, tiles: Tray):
         self._moves = set()
         
         self._board = board
         self._cross_checks = self._compute_all_cross_checks()
 
-        edge_tiles = board.get_edge_points()
+        edge_tiles = board.get_anchor_positions()
 
         anchors = {(7, 7)} if not edge_tiles else edge_tiles #Seems to be correct but if need be I can add all_tiles back
 
@@ -37,7 +40,7 @@ class MoveGenerator:
         computed_cols = set()
         computed_rows = set()
 
-        for x, y in self._board.get_edge_points():
+        for x, y in self._board.get_anchor_positions():
 
             if x not in computed_cols:
                 for i in range(15):
@@ -51,7 +54,7 @@ class MoveGenerator:
         
         return checks
 
-    def _get_potential_letters(self, x, y, is_descending):
+    def _get_potential_letters(self, x: int, y: int, is_descending: bool):
         if letter := self._board.get_letter_at_point(x, y):
             return {letter}
 
@@ -62,10 +65,10 @@ class MoveGenerator:
 
         return self._gaddag.cross_check(word_before, word_after)
     
-    def _pos(self, anchor_x, anchor_y, offset, is_vertical):
+    def _pos(self, anchor_x: int, anchor_y: int, offset: int, is_vertical: bool):
         return (anchor_x, anchor_y - offset) if is_vertical else (anchor_x + offset, anchor_y)
     
-    def _gen(self, anchor_x, anchor_y, offset, word, tiles, path, placed, is_vertical):
+    def _gen(self, anchor_x: int, anchor_y: int, offset: int, word: str, tiles: Tray, path: GADDAGNode, placed: bool, is_vertical: bool):
         current_x, current_y = self._pos(anchor_x, anchor_y, offset, is_vertical)
 
         if not (0 <= current_x < 15 and 0 <= current_y < 15):
@@ -103,7 +106,7 @@ class MoveGenerator:
                         finally:
                             tiles.add_tile('?')
 
-    def _go_on(self, anchor_x, anchor_y, offset, letter, word, tiles, new_path, placed, is_vertical):
+    def _go_on(self, anchor_x: int, anchor_y: int, offset: int, letter: chr, word: str, tiles: Tray, new_path: GADDAGNode, placed: bool, is_vertical: bool):
 
         current_x, current_y = self._pos(anchor_x, anchor_y, offset, is_vertical)
 

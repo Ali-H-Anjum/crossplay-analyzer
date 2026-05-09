@@ -1,6 +1,6 @@
 from board import Board
 from move import Move
-from tiles import Tiles
+from tray import Tray
 from move_generator import MoveGenerator
 from gaddag import GADDAG, GADDAGNode
 from move_evaluator import MoveEvaluator
@@ -32,7 +32,7 @@ def main():
 
     me = MoveEvaluator(b)
 
-    t = Tiles(['E', 'R', 'S', 'B', 'E', 'E', 'S'])
+    t = Tray(['E', 'R', 'S', 'B', 'E', 'E', 'S'])
 
     print(t)
     print()
