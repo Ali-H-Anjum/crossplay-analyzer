@@ -113,9 +113,12 @@ class Game:
         tiles = current_player.get_player_tiles()
         moves = self._moveGenerator.get_all_moves(self._board, tiles)
 
+        self._moveEvaluator.set_board(self._board)
+        points_per_move = self._moveEvaluator.sort_by_points(moves) #Assigns points to moves
+
         self.restore(original) #Load original state
 
-        return moves
+        return points_per_move
     
     def result(self, game_snapshot, action):
         self.restore(game_snapshot)
@@ -132,20 +135,23 @@ class Game:
 
         tiles_needed = current_player.tiles_needed()
 
-        current_player.add_tiles(self._tileBag.draw_tiles(tiles_needed))
+        current_player.add_tiles(self._tileBag.draw_tiles(tiles_needed)) #Need to hide this information
 
         if not self.has_tiles_remaining():
             self._turns_since_tilebag_empty += 1
 
         self.swap_players()
 
-        return self.snapshot()
+        new_snapshot = self.snapshot()
+        self.restore(game_snapshot)
+
+        return new_snapshot
     
     # def is_terminal(self, game_snapshot):
     #     return game_snapshot[5] >= 2
 
-    def is_cutoff(self, depth):
-        return depth > 0
+    # def is_cutoff(self, depth):
+    #     return depth > 0
     
     def eval(self, game_snapshot, player):
         # self.restore(game_snapshot)

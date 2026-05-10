@@ -1,8 +1,9 @@
-Player 0's tray has: ('L', 'N', 'U', 'U', 'S', 'I', 'T') and they have 0 points
+5/9 When running minimax-H with depth of 3: took abysmally long 
 
 Used minimax-H with depth of 1:
-
+Player 0's tray has: ('L', 'N', 'U', 'U', 'S', 'I', 'T') and they have 0 points
 Word: INSULT, Starting Position: (2, 7), Descending: False
+This was the move with the most points, so that makes sense
 
 Cprofile:
 
@@ -122,3 +123,567 @@ Cprofile:
      2086    0.001    0.000    0.001    0.000 {method 'remove' of 'list' objects}
      1794    0.000    0.000    0.000    0.000 {method 'remove' of 'set' objects}
      3540    0.001    0.000    0.001    0.000 {method 'upper' of 'str' objects}
+
+
+
+
+     Used minimax-H with depth of 2:
+     Player 0's tray has: ('O', 'V', 'G', 'Y', 'D', 'I', 'U') and they have 0 points
+     Player 1's tray has: ('A', 'Q', 'E', 'I', 'E', 'O', 'R') and they have 0 points
+     Word: IVY, Starting Position: (7, 8), Descending: True
+     This only gave 15 points (7th place on WF), the most possible was GUV in the same position/verticality for 18
+
+     If player 0 played GUV for 18, then player 1's best move would be QI,6,6,F or QUAERE,8,8,T for 16 points each
+     If 2nd place for 18, then 16 points
+     3rd 17, 17 pt
+     4th 17, 14 pt
+     5th 16, 25 pt
+     6th 15, 20 pt
+
+     With IVY for 15, player 1's best move would be AERIE,9,8,F for 12 points
+
+     My eval function simply calculates MAX score minus MIN score:
+     1: 2
+     2: 2
+     3: 0
+     4: 3
+     5: -9
+     6: -5
+     7: 3
+
+     Curious about if it was picked due to eval or lowest possible points for player 1's move, Im guessing the latter
+
+     Cprofile:
+
+              15510877 function calls (14602013 primitive calls) in 10.987 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        3    0.000    0.000    0.000    0.000 <frozen _collections_abc>:345(__subclasshook__)
+    26984    0.009    0.000    0.018    0.000 <frozen abc>:117(__instancecheck__)
+      3/1    0.000    0.000    0.000    0.000 <frozen abc>:121(__subclasscheck__)
+        1    0.000    0.000   10.987   10.987 <string>:1(<module>)
+        1    0.000    0.000    0.002    0.002 board.py:12(show_board)
+  2181046    0.392    0.000    0.392    0.000 board.py:17(in_bounds)
+    26982    0.036    0.000    0.812    0.000 board.py:19(add_move)
+    91628    0.171    0.000    0.772    0.000 board.py:25(_add_letter)
+   366512    0.246    0.000    0.550    0.000 board.py:37(_add_edge)
+        1    0.000    0.000    0.000    0.000 board.py:4(__init__)
+  1814534    0.630    0.000    0.955    0.000 board.py:41(get_letter_at_point)
+     1424    0.003    0.000    0.006    0.000 board.py:47(get_word_at_point)
+    20292    0.012    0.000    0.037    0.000 board.py:66(get_surrounding_words)
+      358    0.000    0.000    0.000    0.000 board.py:75(get_anchor_positions)
+    26982    0.003    0.000    0.003    0.000 board.py:77(get_blank_positions)
+    27164    0.106    0.000    0.202    0.000 board.py:85(snapshot)
+   434624    0.096    0.000    0.096    0.000 board.py:87(<genexpr>)
+    27342    0.126    0.000    0.126    0.000 board.py:92(restore)
+        1    1.091    1.091    3.802    3.802 gaddag.py:17(__init__)
+        1    0.000    0.000    0.000    0.000 gaddag.py:35(get_root)
+  1663646    0.285    0.000    0.285    0.000 gaddag.py:41(next_arc)
+     1424    0.016    0.000    0.017    0.000 gaddag.py:86(cross_check)
+        1    0.000    0.000    3.802    3.802 game.py:10(__init__)
+        1    0.000    0.000    0.000    0.000 game.py:104(to_move)
+      179    0.001    0.000    4.543    0.025 game.py:107(actions)
+    26982    0.116    0.000    2.093    0.000 game.py:120(result)
+    26983    0.004    0.000    0.004    0.000 game.py:147(is_cutoff)
+    26804    0.006    0.000    0.006    0.000 game.py:150(eval)
+        1    0.000    0.000    0.004    0.004 game.py:161(show_state)
+    27161    0.004    0.000    0.004    0.000 game.py:66(get_current_player)
+    26982    0.004    0.000    0.004    0.000 game.py:69(swap_players)
+    26982    0.008    0.000    0.030    0.000 game.py:72(has_tiles_remaining)
+    26982    0.032    0.000    0.084    0.000 game.py:75(use_tiles)
+    27164    0.036    0.000    0.284    0.000 game.py:86(snapshot)
+    27342    0.037    0.000    0.278    0.000 game.py:96(restore)
+        1    0.000    0.000    6.702    6.702 game_runner.py:14(minimax_search)
+  26805/1    0.019    0.000    6.702    6.702 game_runner.py:19(max_value)
+      178    0.037    0.000    6.669    0.037 game_runner.py:33(min_value)
+        1    0.000    0.000   10.508   10.508 game_runner.py:49(testing)
+        1    0.480    0.480   10.987   10.987 game_runner.py:58(main)
+    52465    0.006    0.000    0.006    0.000 move.py:10(get_word)
+    52465    0.006    0.000    0.006    0.000 move.py:13(get_x)
+    52465    0.006    0.000    0.006    0.000 move.py:16(get_y)
+    52465    0.006    0.000    0.006    0.000 move.py:19(get_is_descending)
+    35476    0.016    0.000    0.079    0.000 move.py:2(__init__)
+   107928    0.012    0.000    0.012    0.000 move.py:22(get_letter_positions)
+    35476    0.045    0.000    0.064    0.000 move.py:28(calculate_letter_positions)
+     8494    0.018    0.000    0.025    0.000 move.py:42(__eq__)
+    35476    0.050    0.000    0.074    0.000 move.py:45(__hash__)
+        1    0.000    0.000    0.000    0.000 move.py:48(__str__)
+    26982    0.004    0.000    0.004    0.000 move_evaluator.py:100(calculate_sweep)
+        1    0.000    0.000    0.000    0.000 move_evaluator.py:27(__init__)
+    26982    0.003    0.000    0.003    0.000 move_evaluator.py:30(set_board)
+    26982    0.026    0.000    0.327    0.000 move_evaluator.py:36(calculate_total_points_per_move)
+    26982    0.109    0.000    0.212    0.000 move_evaluator.py:42(calculate_points_from_main_word)
+    26982    0.033    0.000    0.084    0.000 move_evaluator.py:69(calculate_points_for_all_cross_moves)
+366922/10468    0.814    0.000    4.402    0.000 move_generator.py:109(_go_on)
+      179    0.005    0.000    4.536    0.025 move_generator.py:13(get_all_moves)
+      179    0.008    0.000    0.085    0.000 move_generator.py:37(_compute_all_cross_checks)
+    21360    0.012    0.000    0.077    0.000 move_generator.py:57(_get_potential_letters)
+  1703846    0.195    0.000    0.195    0.000 move_generator.py:68(_pos)
+474488/2850    1.536    0.000    4.445    0.002 move_generator.py:71(_gen)
+        1    0.000    0.000    0.000    0.000 move_generator.py:9(__init__)
+    26982    0.011    0.000    0.015    0.000 player.py:11(add_tiles)
+    26982    0.008    0.000    0.033    0.000 player.py:17(tiles_needed)
+    26982    0.004    0.000    0.004    0.000 player.py:20(add_score)
+    54328    0.020    0.000    0.033    0.000 player.py:32(snapshot)
+    54684    0.020    0.000    0.101    0.000 player.py:38(restore)
+        2    0.000    0.000    0.000    0.000 player.py:4(__init__)
+      179    0.000    0.000    0.000    0.000 player.py:8(get_player_tiles)
+       15    0.000    0.000    0.000    0.000 random.py:245(_randbelow_with_getrandbits)
+    26984    0.036    0.000    0.070    0.000 random.py:365(sample)
+    26984    0.027    0.000    0.105    0.000 tile_bag.py:18(draw_tiles)
+    26982    0.008    0.000    0.011    0.000 tile_bag.py:27(__len__)
+    27164    0.013    0.000    0.013    0.000 tile_bag.py:33(snapshot)
+    27342    0.015    0.000    0.015    0.000 tile_bag.py:36(restore)
+        1    0.000    0.000    0.000    0.000 tile_bag.py:4(__init__)
+   341586    0.172    0.000    0.275    0.000 tray.py:15(add_tile)
+        2    0.000    0.000    0.000    0.000 tray.py:2(__init__)
+    26982    0.004    0.000    0.004    0.000 tray.py:22(add_tiles)
+   392760    0.043    0.000    0.043    0.000 tray.py:29(get_unique_tiles)
+   392760    0.045    0.000    0.045    0.000 tray.py:32(get_blank_count)
+    26982    0.008    0.000    0.012    0.000 tray.py:38(__len__)
+   392760    0.088    0.000    0.088    0.000 tray.py:41(__bool__)
+    54328    0.013    0.000    0.013    0.000 tray.py:46(snapshot)
+    54684    0.066    0.000    0.080    0.000 tray.py:49(restore)
+   341586    0.184    0.000    0.299    0.000 tray.py:7(remove_tile)
+    26984    0.008    0.000    0.008    0.000 {built-in method _abc._abc_instancecheck}
+      3/1    0.000    0.000    0.000    0.000 {built-in method _abc._abc_subclasscheck}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open}
+        1    2.711    2.711    2.711    2.711 {built-in method _pickle.load}
+        1    0.000    0.000   10.987   10.987 {built-in method builtins.exec}
+    35476    0.007    0.000    0.007    0.000 {built-in method builtins.hash}
+    26984    0.014    0.000    0.031    0.000 {built-in method builtins.isinstance}
+188030/134066    0.041    0.000    0.057    0.000 {built-in method builtins.len}
+    26984    0.005    0.000    0.005    0.000 {built-in method builtins.min}
+       31    0.004    0.000    0.004    0.000 {built-in method builtins.print}
+        2    0.000    0.000    0.000    0.000 {built-in method math.ceil}
+        2    0.000    0.000    0.000    0.000 {built-in method math.log}
+        1    0.000    0.000    0.000    0.000 {built-in method nt._path_exists}
+        1    0.000    0.000    0.000    0.000 {method '__enter__' of '_io._IOBase' objects}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_io._IOBase' objects}
+   644018    0.122    0.000    0.221    0.000 {method 'add' of 'set' objects}
+   468606    0.067    0.000    0.067    0.000 {method 'append' of 'list' objects}
+       15    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+        2    0.000    0.000    0.000    0.000 {method 'count' of 'list' objects}
+    54684    0.014    0.000    0.014    0.000 {method 'count' of 'tuple' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+    91628    0.020    0.000    0.020    0.000 {method 'discard' of 'set' objects}
+   484388    0.095    0.000    0.095    0.000 {method 'get' of 'dict' objects}
+       17    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+   183256    0.028    0.000    0.028    0.000 {method 'islower' of 'str' objects}
+     1439    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+   341600    0.070    0.000    0.070    0.000 {method 'remove' of 'list' objects}
+   287324    0.045    0.000    0.045    0.000 {method 'remove' of 'set' objects}
+   183256    0.033    0.000    0.033    0.000 {method 'upper' of 'str' objects}
+
+
+   Slight misunderstanding, depth 0 returns the most points at a given move
+   Average branching factor varies wildly depending on if the game is in opening, middle, closing phases. Generally 200 seems a decent metric
+
+   Going to apply alpha beta now and then go back to see if I can make the program more efficient.
+
+   Succesfully applied, now to look at the improvements per max_depth
+
+   max depth = 0: 274 function calls (270 primitive calls) in 4.273 seconds
+   max depth = 1: 676771 function calls (650861 primitive calls) in 5.829 seconds
+   max depth = 2: 18146174 function calls (16786467 primitive calls) in 12.110 seconds
+
+   Even max_depth 2 is stalling sometimes:
+
+   30030008 function calls (27707208 primitive calls) in 18.155 seconds
+      Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        3    0.000    0.000    0.000    0.000 <frozen _collections_abc>:345(__subclasshook__)
+     3716    0.002    0.000    0.004    0.000 <frozen abc>:117(__instancecheck__)
+      3/1    0.000    0.000    0.000    0.000 <frozen abc>:121(__subclasscheck__)
+        1    0.000    0.000   18.155   18.155 <string>:1(<module>)
+        1    0.000    0.000    0.002    0.002 board.py:12(show_board)
+  3371368    0.664    0.000    0.664    0.000 board.py:17(in_bounds)
+     3714    0.006    0.000    0.131    0.000 board.py:19(add_move)
+    12916    0.028    0.000    0.124    0.000 board.py:25(_add_letter)
+    51664    0.039    0.000    0.087    0.000 board.py:37(_add_edge)
+        1    0.000    0.000    0.000    0.000 board.py:4(__init__)
+  3319704    1.242    0.000    1.895    0.000 board.py:41(get_letter_at_point)
+     3544    0.007    0.000    0.016    0.000 board.py:47(get_word_at_point)
+    48208    0.030    0.000    0.097    0.000 board.py:66(get_surrounding_words)
+      814    0.000    0.000    0.000    0.000 board.py:75(get_anchor_positions)
+     3714    0.001    0.000    0.001    0.000 board.py:77(get_blank_positions)
+     4124    0.019    0.000    0.036    0.000 board.py:85(snapshot)
+    65984    0.017    0.000    0.017    0.000 board.py:87(<genexpr>)
+     8244    0.045    0.000    0.045    0.000 board.py:92(restore)
+        1    1.121    1.121    3.785    3.785 gaddag.py:17(__init__)
+        1    0.000    0.000    0.000    0.000 gaddag.py:35(get_root)
+  4066106    0.839    0.000    0.839    0.000 gaddag.py:41(next_arc)
+     3544    0.056    0.000    0.060    0.000 gaddag.py:86(cross_check)
+        1    0.000    0.000    3.785    3.785 game.py:10(__init__)
+        1    0.000    0.000    0.000    0.000 game.py:104(to_move)
+      407    0.003    0.000   13.470    0.033 game.py:107(actions)
+     3714    0.021    0.000    0.385    0.000 game.py:122(result)
+     3308    0.001    0.000    0.001    0.000 game.py:155(eval)
+        1    0.000    0.000    0.004    0.004 game.py:166(show_state)
+     4121    0.001    0.000    0.001    0.000 game.py:66(get_current_player)
+     3714    0.001    0.000    0.001    0.000 game.py:69(swap_players)
+     3714    0.001    0.000    0.005    0.000 game.py:72(has_tiles_remaining)
+     3714    0.005    0.000    0.013    0.000 game.py:75(use_tiles)
+     4124    0.007    0.000    0.051    0.000 game.py:86(snapshot)
+     8244    0.014    0.000    0.101    0.000 game.py:96(restore)
+        1    0.496    0.496   18.155   18.155 game_runner.py:108(main)
+        1    0.000    0.000   13.870   13.870 game_runner.py:52(alpha_beta_search)
+   3309/1    0.003    0.000   13.870   13.870 game_runner.py:60(max_value_ab)
+      406    0.010    0.000   13.792    0.034 game_runner.py:78(min_value_ab)
+        1    0.000    0.000   17.659   17.659 game_runner.py:96(testing)
+   181877    0.024    0.000    0.024    0.000 move.py:10(get_word)
+   181877    0.022    0.000    0.022    0.000 move.py:13(get_x)
+   181877    0.022    0.000    0.022    0.000 move.py:16(get_y)
+   181877    0.021    0.000    0.021    0.000 move.py:19(get_is_descending)
+   115720    0.054    0.000    0.284    0.000 move.py:2(__init__)
+    14856    0.002    0.000    0.002    0.000 move.py:22(get_letter_positions)
+   115720    0.163    0.000    0.230    0.000 move.py:28(calculate_letter_positions)
+    33078    0.074    0.000    0.104    0.000 move.py:42(__eq__)
+   115720    0.171    0.000    0.255    0.000 move.py:45(__hash__)
+        1    0.000    0.000    0.000    0.000 move.py:48(__str__)
+     3714    0.001    0.000    0.001    0.000 move_evaluator.py:100(calculate_sweep)
+        1    0.000    0.000    0.000    0.000 move_evaluator.py:27(__init__)
+     3714    0.001    0.000    0.001    0.000 move_evaluator.py:30(set_board)
+     3714    0.004    0.000    0.052    0.000 move_evaluator.py:36(calculate_total_points_per_move)
+     3714    0.018    0.000    0.034    0.000 move_evaluator.py:42(calculate_points_from_main_word)
+     3714    0.005    0.000    0.013    0.000 move_evaluator.py:69(calculate_points_for_all_cross_moves)
+1009476/22846    2.447    0.000   13.032    0.001 move_generator.py:109(_go_on)
+      407    0.022    0.000   13.396    0.033 move_generator.py:13(get_all_moves)
+      407    0.022    0.000    0.239    0.001 move_generator.py:37(_compute_all_cross_checks)
+    50940    0.032    0.000    0.216    0.000 move_generator.py:57(_get_potential_letters)
+  4722826    0.592    0.000    0.592    0.000 move_generator.py:68(_pos)
+1332520/7090    4.390    0.000   13.135    0.002 move_generator.py:71(_gen)
+        1    0.000    0.000    0.000    0.000 move_generator.py:9(__init__)
+     3714    0.002    0.000    0.002    0.000 player.py:11(add_tiles)
+     3714    0.001    0.000    0.006    0.000 player.py:17(tiles_needed)
+     3714    0.001    0.000    0.001    0.000 player.py:20(add_score)
+     8248    0.004    0.000    0.006    0.000 player.py:32(snapshot)
+    16488    0.007    0.000    0.036    0.000 player.py:38(restore)
+        2    0.000    0.000    0.000    0.000 player.py:4(__init__)
+      407    0.000    0.000    0.000    0.000 player.py:8(get_player_tiles)
+       14    0.000    0.000    0.000    0.000 random.py:245(_randbelow_with_getrandbits)
+     3716    0.007    0.000    0.014    0.000 random.py:365(sample)
+     3716    0.005    0.000    0.021    0.000 tile_bag.py:18(draw_tiles)
+     3714    0.001    0.000    0.002    0.000 tile_bag.py:27(__len__)
+     4124    0.002    0.000    0.002    0.000 tile_bag.py:33(snapshot)
+     8244    0.006    0.000    0.006    0.000 tile_bag.py:36(restore)
+        1    0.000    0.000    0.000    0.000 tile_bag.py:4(__init__)
+   941676    0.500    0.000    0.803    0.000 tray.py:15(add_tile)
+        2    0.000    0.000    0.000    0.000 tray.py:2(__init__)
+     3714    0.001    0.000    0.001    0.000 tray.py:22(add_tiles)
+  1084548    0.130    0.000    0.130    0.000 tray.py:29(get_unique_tiles)
+  1084548    0.126    0.000    0.126    0.000 tray.py:32(get_blank_count)
+     3714    0.001    0.000    0.002    0.000 tray.py:38(__len__)
+  1085000    0.262    0.000    0.262    0.000 tray.py:41(__bool__)
+     8248    0.002    0.000    0.002    0.000 tray.py:46(snapshot)
+    16488    0.024    0.000    0.029    0.000 tray.py:49(restore)
+   941676    0.520    0.000    0.835    0.000 tray.py:7(remove_tile)
+     3716    0.002    0.000    0.002    0.000 {built-in method _abc._abc_instancecheck}
+      3/1    0.000    0.000    0.000    0.000 {built-in method _abc._abc_subclasscheck}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open}
+        1    2.664    2.664    2.664    2.664 {built-in method _pickle.load}
+        1    0.000    0.000   18.155   18.155 {built-in method builtins.exec}
+   115720    0.024    0.000    0.024    0.000 {built-in method builtins.hash}
+     3716    0.003    0.000    0.006    0.000 {built-in method builtins.isinstance}
+101555/94127    0.021    0.000    0.024    0.000 {built-in method builtins.len}
+      406    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+     7024    0.002    0.000    0.002    0.000 {built-in method builtins.min}
+      438    0.055    0.000    0.055    0.000 {built-in method builtins.print}
+        2    0.000    0.000    0.000    0.000 {built-in method math.ceil}
+        2    0.000    0.000    0.000    0.000 {built-in method math.log}
+        1    0.000    0.000    0.000    0.000 {built-in method nt._path_exists}
+        1    0.000    0.000    0.000    0.000 {method '__enter__' of '_io._IOBase' objects}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_io._IOBase' objects}
+  1119089    0.240    0.000    0.598    0.000 {method 'add' of 'set' objects}
+  1365442    0.211    0.000    0.211    0.000 {method 'append' of 'list' objects}
+       14    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+        2    0.000    0.000    0.000    0.000 {method 'count' of 'list' objects}
+    16488    0.005    0.000    0.005    0.000 {method 'count' of 'tuple' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+    12916    0.003    0.000    0.003    0.000 {method 'discard' of 'set' objects}
+  1097464    0.231    0.000    0.231    0.000 {method 'get' of 'dict' objects}
+       18    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+    25832    0.005    0.000    0.005    0.000 {method 'islower' of 'str' objects}
+     3559    0.001    0.000    0.001    0.000 {method 'join' of 'str' objects}
+   941690    0.204    0.000    0.204    0.000 {method 'remove' of 'list' objects}
+   695736    0.111    0.000    0.111    0.000 {method 'remove' of 'set' objects}
+    25832    0.005    0.000    0.005    0.000 {method 'upper' of 'str' objects}
+
+
+
+    Running alpha_beta right after minimax:
+             20972354 function calls (19822346 primitive calls) in 14.635 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        3    0.000    0.000    0.000    0.000 <frozen _collections_abc>:345(__subclasshook__)
+    35730    0.013    0.000    0.026    0.000 <frozen abc>:117(__instancecheck__)
+      3/1    0.000    0.000    0.000    0.000 <frozen abc>:121(__subclasscheck__)
+        1    0.000    0.000   14.635   14.635 <string>:1(<module>)
+        1    0.000    0.000    0.002    0.002 board.py:12(show_board)
+  2789077    0.550    0.000    0.550    0.000 board.py:17(in_bounds)
+    35728    0.057    0.000    1.223    0.000 board.py:19(add_move)
+   127064    0.258    0.000    1.161    0.000 board.py:25(_add_letter)
+   508256    0.367    0.000    0.826    0.000 board.py:37(_add_edge)
+        1    0.000    0.000    0.000    0.000 board.py:4(__init__)
+  2280821    0.852    0.000    1.300    0.000 board.py:41(get_letter_at_point)
+     1312    0.002    0.000    0.006    0.000 board.py:47(get_word_at_point)
+    19688    0.013    0.000    0.039    0.000 board.py:66(get_surrounding_words)
+      364    0.000    0.000    0.000    0.000 board.py:75(get_anchor_positions)
+    35728    0.005    0.000    0.005    0.000 board.py:77(get_blank_positions)
+    35913    0.154    0.000    0.293    0.000 board.py:85(snapshot)
+   574608    0.139    0.000    0.139    0.000 board.py:87(<genexpr>)
+    71822    0.339    0.000    0.339    0.000 board.py:92(restore)
+        1    1.094    1.094    4.038    4.038 gaddag.py:17(__init__)
+        1    0.000    0.000    0.000    0.000 gaddag.py:35(get_root)
+  2280016    0.454    0.000    0.454    0.000 gaddag.py:41(next_arc)
+     1312    0.023    0.000    0.025    0.000 gaddag.py:86(cross_check)
+        1    0.000    0.000    4.038    4.038 game.py:10(__init__)
+        2    0.000    0.000    0.000    0.000 game.py:104(to_move)
+      182    0.001    0.000    6.549    0.036 game.py:107(actions)
+    35728    0.181    0.000    3.459    0.000 game.py:122(result)
+    35548    0.010    0.000    0.010    0.000 game.py:155(eval)
+        1    0.000    0.000    0.004    0.004 game.py:166(show_state)
+    35910    0.006    0.000    0.006    0.000 game.py:66(get_current_player)
+    35728    0.006    0.000    0.006    0.000 game.py:69(swap_players)
+    35728    0.012    0.000    0.042    0.000 game.py:72(has_tiles_remaining)
+    35728    0.048    0.000    0.124    0.000 game.py:75(use_tiles)
+    35913    0.052    0.000    0.409    0.000 game.py:86(snapshot)
+    71822    0.102    0.000    0.751    0.000 game.py:96(restore)
+        1    0.489    0.489   14.635   14.635 game_runner.py:108(main)
+        1    0.000    0.000    6.241    6.241 game_runner.py:14(minimax_search)
+  31015/1    0.016    0.000    6.241    6.241 game_runner.py:22(max_value)
+       90    0.055    0.001    6.220    0.069 game_runner.py:36(min_value)
+        1    0.000    0.000    3.862    3.862 game_runner.py:52(alpha_beta_search)
+   4535/1    0.003    0.000    3.862    3.862 game_runner.py:60(max_value_ab)
+       90    0.011    0.000    3.844    0.043 game_runner.py:78(min_value_ab)
+        1    0.000    0.000   14.145   14.145 game_runner.py:96(testing)
+   127190    0.016    0.000    0.016    0.000 move.py:10(get_word)
+   127190    0.016    0.000    0.016    0.000 move.py:13(get_x)
+   127190    0.016    0.000    0.016    0.000 move.py:16(get_y)
+   127190    0.015    0.000    0.015    0.000 move.py:19(get_is_descending)
+    83868    0.039    0.000    0.200    0.000 move.py:2(__init__)
+   142912    0.019    0.000    0.019    0.000 move.py:22(get_letter_positions)
+    83868    0.114    0.000    0.161    0.000 move.py:28(calculate_letter_positions)
+    21660    0.048    0.000    0.067    0.000 move.py:42(__eq__)
+    83868    0.122    0.000    0.182    0.000 move.py:45(__hash__)
+        2    0.000    0.000    0.000    0.000 move.py:48(__str__)
+    35728    0.005    0.000    0.005    0.000 move_evaluator.py:100(calculate_sweep)
+        1    0.000    0.000    0.000    0.000 move_evaluator.py:27(__init__)
+    35728    0.005    0.000    0.005    0.000 move_evaluator.py:30(set_board)
+    35728    0.037    0.000    0.485    0.000 move_evaluator.py:36(calculate_total_points_per_move)
+    35728    0.163    0.000    0.318    0.000 move_evaluator.py:42(calculate_points_from_main_word)
+    35728    0.048    0.000    0.124    0.000 move_evaluator.py:69(calculate_points_for_all_cross_moves)
+456532/12260    1.133    0.000    6.353    0.001 move_generator.py:109(_go_on)
+      182    0.014    0.000    6.516    0.036 move_generator.py:13(get_all_moves)
+      182    0.010    0.000    0.097    0.001 move_generator.py:37(_compute_all_cross_checks)
+    20640    0.013    0.000    0.087    0.000 move_generator.py:57(_get_potential_letters)
+  2218020    0.275    0.000    0.275    0.000 move_generator.py:68(_pos)
+601356/2628    2.160    0.000    6.405    0.002 move_generator.py:71(_gen)
+        1    0.000    0.000    0.000    0.000 move_generator.py:9(__init__)
+    35728    0.015    0.000    0.022    0.000 player.py:11(add_tiles)
+    35728    0.012    0.000    0.049    0.000 player.py:17(tiles_needed)
+    35728    0.006    0.000    0.006    0.000 player.py:20(add_score)
+    71826    0.029    0.000    0.047    0.000 player.py:32(snapshot)
+   143644    0.055    0.000    0.270    0.000 player.py:38(restore)
+        2    0.000    0.000    0.000    0.000 player.py:4(__init__)
+      182    0.000    0.000    0.000    0.000 player.py:8(get_player_tiles)
+       14    0.000    0.000    0.000    0.000 random.py:245(_randbelow_with_getrandbits)
+    35730    0.055    0.000    0.105    0.000 random.py:365(sample)
+    35730    0.041    0.000    0.157    0.000 tile_bag.py:18(draw_tiles)
+    35728    0.011    0.000    0.015    0.000 tile_bag.py:27(__len__)
+    35913    0.018    0.000    0.018    0.000 tile_bag.py:33(snapshot)
+    71822    0.040    0.000    0.040    0.000 tile_bag.py:36(restore)
+        1    0.000    0.000    0.000    0.000 tile_bag.py:4(__init__)
+   405268    0.221    0.000    0.353    0.000 tray.py:15(add_tile)
+        2    0.000    0.000    0.000    0.000 tray.py:2(__init__)
+    35728    0.006    0.000    0.006    0.000 tray.py:22(add_tiles)
+   507528    0.060    0.000    0.060    0.000 tray.py:29(get_unique_tiles)
+   507528    0.062    0.000    0.062    0.000 tray.py:32(get_blank_count)
+    35728    0.012    0.000    0.018    0.000 tray.py:38(__len__)
+   507528    0.121    0.000    0.121    0.000 tray.py:41(__bool__)
+    71826    0.018    0.000    0.018    0.000 tray.py:46(snapshot)
+   143644    0.177    0.000    0.215    0.000 tray.py:49(restore)
+   405268    0.253    0.000    0.414    0.000 tray.py:7(remove_tile)
+    35730    0.013    0.000    0.013    0.000 {built-in method _abc._abc_instancecheck}
+      3/1    0.000    0.000    0.000    0.000 {built-in method _abc._abc_subclasscheck}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open}
+        1    2.943    2.943    2.943    2.943 {built-in method _pickle.load}
+        1    0.000    0.000   14.635   14.635 {built-in method builtins.exec}
+    83868    0.017    0.000    0.017    0.000 {built-in method builtins.hash}
+    35730    0.020    0.000    0.046    0.000 {built-in method builtins.isinstance}
+273742/202286    0.064    0.000    0.086    0.000 {built-in method builtins.len}
+       90    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+    40264    0.008    0.000    0.008    0.000 {built-in method builtins.min}
+      214    0.027    0.000    0.027    0.000 {built-in method builtins.print}
+        2    0.000    0.000    0.000    0.000 {built-in method math.ceil}
+        2    0.000    0.000    0.000    0.000 {built-in method math.log}
+        1    0.000    0.000    0.000    0.000 {built-in method nt._path_exists}
+        1    0.000    0.000    0.000    0.000 {method '__enter__' of '_io._IOBase' objects}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_io._IOBase' objects}
+   856525    0.188    0.000    0.437    0.000 {method 'add' of 'set' objects}
+   707392    0.110    0.000    0.110    0.000 {method 'append' of 'list' objects}
+       14    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+        2    0.000    0.000    0.000    0.000 {method 'count' of 'list' objects}
+   143644    0.038    0.000    0.038    0.000 {method 'count' of 'tuple' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+   127064    0.029    0.000    0.029    0.000 {method 'discard' of 'set' objects}
+   634592    0.135    0.000    0.135    0.000 {method 'get' of 'dict' objects}
+       17    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+   254128    0.043    0.000    0.043    0.000 {method 'islower' of 'str' objects}
+     1327    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+   405282    0.091    0.000    0.091    0.000 {method 'remove' of 'list' objects}
+   404796    0.069    0.000    0.069    0.000 {method 'remove' of 'set' objects}
+   254128    0.049    0.000    0.049    0.000 {method 'upper' of 'str' objects}
+
+   Need to incorporate proper move ordering
+
+   My alpha-beta is not pruning at all
+
+   I finally got pruning to work.
+
+   On max_depth of 2:
+   Minimax Nodes explored: 55759
+   Alpha-Beta Nodes explored: 2614
+
+   Cprofile:
+   47201176 function calls (44834687 primitive calls) in 27.304 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        3    0.000    0.000    0.000    0.000 <frozen _collections_abc>:345(__subclasshook__)
+    58373    0.022    0.000    0.044    0.000 <frozen abc>:117(__instancecheck__)
+      3/1    0.000    0.000    0.000    0.000 <frozen abc>:121(__subclasscheck__)
+        1    0.000    0.000   27.304   27.304 <string>:1(<module>)
+        1    0.000    0.000    0.002    0.002 board.py:12(show_board)
+  6934888    1.387    0.000    1.387    0.000 board.py:17(in_bounds)
+    58371    0.084    0.000    1.803    0.000 board.py:19(add_move)
+   183760    0.377    0.000    1.711    0.000 board.py:25(_add_letter)
+   735040    0.538    0.000    1.221    0.000 board.py:37(_add_edge)
+        1    0.000    0.000    0.000    0.000 board.py:4(__init__)
+  6199848    2.293    0.000    3.529    0.000 board.py:41(get_letter_at_point)
+    65892    0.106    0.000    0.256    0.000 board.py:47(get_word_at_point)
+   396776    0.272    0.000    0.947    0.000 board.py:66(get_surrounding_words)
+     1980    0.000    0.000    0.000    0.000 board.py:75(get_anchor_positions)
+   226835    0.028    0.000    0.028    0.000 board.py:77(get_blank_positions)
+    59364    0.274    0.000    0.506    0.000 board.py:85(snapshot)
+   949824    0.232    0.000    0.232    0.000 board.py:87(<genexpr>)
+   118724    0.574    0.000    0.574    0.000 board.py:92(restore)
+        1    1.052    1.052    3.899    3.899 gaddag.py:17(__init__)
+        1    0.000    0.000    0.000    0.000 gaddag.py:35(get_root)
+  3114864    0.639    0.000    0.639    0.000 gaddag.py:41(next_arc)
+     8944    0.118    0.000    0.127    0.000 gaddag.py:86(cross_check)
+        1    0.000    0.000    3.899    3.899 game.py:10(__init__)
+        2    0.000    0.000    0.000    0.000 game.py:104(to_move)
+      990    0.004    0.000   17.320    0.017 game.py:107(actions)
+    58371    0.297    0.000    5.448    0.000 game.py:123(result)
+    57383    0.015    0.000    0.015    0.000 game.py:156(eval)
+        1    0.000    0.000    0.003    0.003 game.py:167(show_state)
+    59361    0.010    0.000    0.010    0.000 game.py:66(get_current_player)
+    58371    0.011    0.000    0.011    0.000 game.py:69(swap_players)
+    58371    0.021    0.000    0.072    0.000 game.py:72(has_tiles_remaining)
+    58371    0.074    0.000    0.189    0.000 game.py:75(use_tiles)
+    59364    0.088    0.000    0.704    0.000 game.py:86(snapshot)
+   118724    0.169    0.000    1.250    0.000 game.py:96(restore)
+        1    0.000    0.000   26.850   26.850 game_runner.py:112(testing)
+        1    0.454    0.454   27.304   27.304 game_runner.py:124(main)
+        1    0.000    0.000   14.633   14.633 game_runner.py:14(minimax_search)
+  55265/1    0.035    0.000   14.633   14.633 game_runner.py:26(max_value)
+      494    0.101    0.000   14.536    0.029 game_runner.py:41(min_value)
+        1    0.000    0.000    8.315    8.315 game_runner.py:58(alpha_beta_search)
+   2120/1    0.004    0.000    8.314    8.314 game_runner.py:70(max_value_ab)
+      494    0.000    0.000    0.000    0.000 game_runner.py:78(<lambda>)
+      494    0.008    0.000    8.211    0.017 game_runner.py:91(min_value_ab)
+    55264    0.005    0.000    0.005    0.000 game_runner.py:99(<lambda>)
+   613362    0.063    0.000    0.063    0.000 move.py:10(get_word)
+   250438    0.031    0.000    0.031    0.000 move.py:13(get_x)
+   240922    0.029    0.000    0.029    0.000 move.py:16(get_y)
+   510178    0.060    0.000    0.060    0.000 move.py:19(get_is_descending)
+   208872    0.096    0.000    0.442    0.000 move.py:2(__init__)
+   513464    0.064    0.000    0.064    0.000 move.py:22(get_letter_positions)
+   208872    0.248    0.000    0.346    0.000 move.py:28(calculate_letter_positions)
+   230718    0.194    0.000    0.268    0.000 move.py:42(__eq__)
+   151924    0.222    0.000    0.332    0.000 move.py:45(__hash__)
+        2    0.000    0.000    0.000    0.000 move.py:48(__str__)
+   190310    0.018    0.000    0.018    0.000 move.py:51(__lt__)
+   169887    0.024    0.000    0.024    0.000 move_evaluator.py:100(calculate_sweep)
+      990    0.042    0.000    4.145    0.004 move_evaluator.py:105(sort_by_points)
+        1    0.000    0.000    0.000    0.000 move_evaluator.py:27(__init__)
+    59361    0.009    0.000    0.009    0.000 move_evaluator.py:30(set_board)
+   334332    0.106    0.000    0.165    0.000 move_evaluator.py:33(get_multiplier)
+   169887    0.168    0.000    4.604    0.000 move_evaluator.py:36(calculate_total_points_per_move)
+   226835    1.746    0.000    2.692    0.000 move_evaluator.py:42(calculate_points_from_main_word)
+   169887    0.372    0.000    2.083    0.000 move_evaluator.py:69(calculate_points_for_all_cross_moves)
+   277384    0.179    0.000    1.359    0.000 move_evaluator.py:79(calculate_points_per_cross)
+977324/47620    2.424    0.000   12.307    0.000 move_generator.py:109(_go_on)
+      990    0.031    0.000   13.133    0.013 move_generator.py:13(get_all_moves)
+      990    0.054    0.000    0.569    0.001 move_generator.py:37(_compute_all_cross_checks)
+   126360    0.080    0.000    0.513    0.000 move_generator.py:57(_get_potential_letters)
+  4593204    0.576    0.000    0.576    0.000 move_generator.py:68(_pos)
+1280548/17892    4.033    0.000   12.533    0.001 move_generator.py:71(_gen)
+        1    0.000    0.000    0.000    0.000 move_generator.py:9(__init__)
+    58371    0.026    0.000    0.037    0.000 player.py:11(add_tiles)
+    58371    0.020    0.000    0.080    0.000 player.py:17(tiles_needed)
+    58371    0.011    0.000    0.011    0.000 player.py:20(add_score)
+   118728    0.048    0.000    0.079    0.000 player.py:32(snapshot)
+   237448    0.095    0.000    0.439    0.000 player.py:38(restore)
+        2    0.000    0.000    0.000    0.000 player.py:4(__init__)
+      990    0.000    0.000    0.000    0.000 player.py:8(get_player_tiles)
+       14    0.000    0.000    0.000    0.000 random.py:245(_randbelow_with_getrandbits)
+    58373    0.093    0.000    0.180    0.000 random.py:365(sample)
+    58373    0.068    0.000    0.267    0.000 tile_bag.py:18(draw_tiles)
+    58371    0.018    0.000    0.025    0.000 tile_bag.py:27(__len__)
+    59364    0.031    0.000    0.031    0.000 tile_bag.py:33(snapshot)
+   118724    0.069    0.000    0.069    0.000 tile_bag.py:36(restore)
+        1    0.000    0.000    0.000    0.000 tile_bag.py:4(__init__)
+   879776    0.467    0.000    0.758    0.000 tray.py:15(add_tile)
+        2    0.000    0.000    0.000    0.000 tray.py:2(__init__)
+    58371    0.010    0.000    0.010    0.000 tray.py:22(add_tiles)
+  1065776    0.128    0.000    0.128    0.000 tray.py:29(get_unique_tiles)
+  1065776    0.124    0.000    0.124    0.000 tray.py:32(get_blank_count)
+    58371    0.019    0.000    0.029    0.000 tray.py:38(__len__)
+  1065780    0.254    0.000    0.254    0.000 tray.py:41(__bool__)
+   118728    0.031    0.000    0.031    0.000 tray.py:46(snapshot)
+   237448    0.281    0.000    0.344    0.000 tray.py:49(restore)
+   879776    0.463    0.000    0.753    0.000 tray.py:7(remove_tile)
+    58373    0.022    0.000    0.022    0.000 {built-in method _abc._abc_instancecheck}
+      3/1    0.000    0.000    0.000    0.000 {built-in method _abc._abc_subclasscheck}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open}
+        1    2.847    2.847    2.847    2.847 {built-in method _pickle.load}
+        1    0.000    0.000   27.304   27.304 {built-in method builtins.exec}
+   151924    0.032    0.000    0.032    0.000 {built-in method builtins.hash}
+    58373    0.035    0.000    0.079    0.000 {built-in method builtins.isinstance}
+507214/390472    0.115    0.000    0.152    0.000 {built-in method builtins.len}
+      494    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+    60492    0.012    0.000    0.012    0.000 {built-in method builtins.min}
+       34    0.003    0.000    0.003    0.000 {built-in method builtins.print}
+      495    0.010    0.000    0.015    0.000 {built-in method builtins.sorted}
+        2    0.000    0.000    0.000    0.000 {built-in method math.ceil}
+        2    0.000    0.000    0.000    0.000 {built-in method math.log}
+        1    0.000    0.000    0.000    0.000 {built-in method nt._path_exists}
+        1    0.000    0.000    0.000    0.000 {method '__enter__' of '_io._IOBase' objects}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_io._IOBase' objects}
+  1600913    0.361    0.000    0.820    0.000 {method 'add' of 'set' objects}
+  1569276    0.246    0.000    0.246    0.000 {method 'append' of 'list' objects}
+       14    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+        2    0.000    0.000    0.000    0.000 {method 'count' of 'list' objects}
+   237448    0.063    0.000    0.063    0.000 {method 'count' of 'tuple' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+   183760    0.044    0.000    0.044    0.000 {method 'discard' of 'set' objects}
+  2026200    0.415    0.000    0.415    0.000 {method 'get' of 'dict' objects}
+       16    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+   838556    0.132    0.000    0.132    0.000 {method 'islower' of 'str' objects}
+    65907    0.014    0.000    0.014    0.000 {method 'join' of 'str' objects}
+   879790    0.195    0.000    0.195    0.000 {method 'remove' of 'list' objects}
+   543048    0.096    0.000    0.096    0.000 {method 'remove' of 'set' objects}
+      990    0.087    0.000    0.246    0.000 {method 'sort' of 'list' objects}
+   838556    0.155    0.000    0.155    0.000 {method 'upper' of 'str' objects}
+
+I commented out the minimax so I can focus on alpha-beta
+
+Trying again to reach a max depth of 3:
