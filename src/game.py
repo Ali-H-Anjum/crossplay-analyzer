@@ -36,10 +36,10 @@ class Game:
 
         word_finder_moves = self._moveEvaluator.sort_by_word_finder(points_per_move)
 
-        # print("Their top 40 moves are:")
-        # for move in word_finder_moves:
-        #     print(move)
-        # print()
+        print("Their top 40 moves are:")
+        for move in word_finder_moves:
+            print(move)
+        print()
 
         most_points, move_with_most_points = word_finder_moves[0]
 
@@ -113,12 +113,12 @@ class Game:
         tiles = current_player.get_player_tiles()
         moves = self._moveGenerator.get_all_moves(self._board, tiles)
 
-        self._moveEvaluator.set_board(self._board)
-        points_per_move = self._moveEvaluator.sort_by_points(moves) #Assigns points to moves
+        # self._moveEvaluator.set_board(self._board)
+        # points_per_move = self._moveEvaluator.sort_by_points(moves) #Assigns points to moves
 
         self.restore(original) #Load original state
 
-        return points_per_move
+        return moves
     
     def result(self, game_snapshot, action):
         self.restore(game_snapshot)
@@ -152,16 +152,6 @@ class Game:
 
     # def is_cutoff(self, depth):
     #     return depth > 0
-    
-    def eval(self, game_snapshot, player):
-        # self.restore(game_snapshot)
-
-        board_snapshot, tile_bag_snapshot, player0_snapshot, player1_snapshot, self._current_player_index, self._turns_since_tilebag_empty = game_snapshot
-
-        score_difference = player0_snapshot[1] - player1_snapshot[1]
-
-        if player == 0: return score_difference
-        else: return -score_difference
         
     
     def show_state(self, game_snapshot):

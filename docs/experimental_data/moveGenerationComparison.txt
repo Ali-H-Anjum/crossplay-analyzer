@@ -1,0 +1,50 @@
+(22, Word: BEE, Starting Position: (4, 5), Descending: False)
+(21, Word: REBS, Starting Position: (9, 8), Descending: False)
+(20, Word: REB, Starting Position: (9, 8), Descending: False)
+(18, Word: BE, Starting Position: (4, 5), Descending: False)
+(18, Word: BENES, Starting Position: (5, 10), Descending: False)
+(18, Word: BREDES, Starting Position: (4, 9), Descending: False)
+(17, Word: BEER, Starting Position: (11, 8), Descending: False)
+(17, Word: BEES, Starting Position: (11, 8), Descending: False)
+(17, Word: BREDE, Starting Position: (4, 9), Descending: False)
+(17, Word: BREE, Starting Position: (11, 8), Descending: False)
+(17, Word: REBEL, Starting Position: (10, 11), Descending: True)
+(16, Word: BES, Starting Position: (11, 8), Descending: False)
+(16, Word: BESES, Starting Position: (9, 10), Descending: True)
+(16, Word: BRED, Starting Position: (4, 9), Descending: False)
+(16, Word: BREES, Starting Position: (9, 10), Descending: True)
+(15, Word: BEERY, Starting Position: (11, 11), Descending: True)
+(15, Word: BEL, Starting Position: (10, 9), Descending: True)
+(15, Word: BENE, Starting Position: (5, 10), Descending: False)
+(15, Word: BENS, Starting Position: (5, 10), Descending: False)
+(15, Word: NEBS, Starting Position: (7, 10), Descending: False)
+(15, Word: RESEE, Starting Position: (2, 5), Descending: False)
+(14, Word: BEN, Starting Position: (5, 10), Descending: False)
+(14, Word: NEB, Starting Position: (7, 10), Descending: False)
+(13, Word: ESES, Starting Position: (8, 5), Descending: False)
+(13, Word: ESSE, Starting Position: (8, 5), Descending: False)
+(13, Word: REE, Starting Position: (4, 5), Descending: False)
+(13, Word: SEE, Starting Position: (4, 5), Descending: False)
+(12, Word: BLESSER, Starting Position: (6, 12), Descending: False)
+(12, Word: BREEDS, Starting Position: (3, 9), Descending: False)
+(12, Word: ESS, Starting Position: (8, 5), Descending: False)
+(12, Word: SEEDERS, Starting Position: (4, 9), Descending: False)
+(11, Word: BREED, Starting Position: (3, 9), Descending: False)
+(11, Word: BYRES, Starting Position: (11, 8), Descending: True)
+(11, Word: REBELS, Starting Position: (3, 12), Descending: False)
+(11, Word: SERE, Starting Position: (2, 5), Descending: False)
+(11, Word: SERENES, Starting Position: (3, 10), Descending: False)
+(10, Word: BASSER, Starting Position: (6, 11), Descending: False)
+(10, Word: BEERS, Starting Position: (5, 6), Descending: True)
+(10, Word: BEYS, Starting Position: (11, 9), Descending: True)
+(10, Word: BLESS, Starting Position: (6, 12), Descending: False)
+283
+
+Need test.py to match this output
+
+105275 function calls (99240 primitive calls) in 4.481 seconds
+
+Overtime, this should shrink
+
+After some OOP reduction in move generation:
+88949 function calls (82914 primitive calls) in 4.298 seconds

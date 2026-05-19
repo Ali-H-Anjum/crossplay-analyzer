@@ -2,7 +2,7 @@ from move import Move
 
 class Board:
     def __init__(self):
-        self._board = [[' ' for _ in range(15)] for _ in range(15)]
+        self._board = [[None] * 15 for _ in range(15)]
         self._anchor_positions = set()
         self._blank_positions = set()
 
@@ -11,7 +11,7 @@ class Board:
         
     def show_board(self):
         for row in self._board:
-            print(' | '.join(row))
+            print(' | '.join(cell if cell is not None else ' ' for cell in row))
         print()
 
     def in_bounds(self, x: int, y: int): return 0 <= x <= 14 and 0 <= y <= 14
@@ -40,8 +40,6 @@ class Board:
 
     def get_letter_at_point(self, x: int, y: int):
         if not self.in_bounds(x, y): return None
-        if self._board[14 - y][x] == ' ': return None
-
         return self._board[14 - y][x]
         
     def get_word_at_point(self, x: int, y: int, is_descending: bool):

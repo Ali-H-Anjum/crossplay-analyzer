@@ -12,6 +12,8 @@ class MoveGenerator:
         
     def get_all_moves(self, board: Board, tiles: Tray):
         self._moves = set()
+
+        self.boardstate, self.anchorstate, self.blankstate = board.snapshot()
         
         self._board = board
         self._cross_checks = self._compute_all_cross_checks()
@@ -29,8 +31,8 @@ class MoveGenerator:
             # self._generate_horizontal_moves(x, y, 0, "", tiles, self._root)
             # self._generate_vertical_moves(x, y, 0, "", tiles, self._root)
 
-            self._gen(x, y, 0, "", tiles, self._root, False, is_vertical=False)
-            self._gen(x, y, 0, "", tiles, self._root, False, is_vertical=True)
+            self._gen(x, y, 0, "", tiles, self._root, placed = False, is_vertical = False)
+            self._gen(x, y, 0, "", tiles, self._root, placed = False, is_vertical = True)
 
         return self._moves
     
@@ -55,7 +57,8 @@ class MoveGenerator:
         return checks
 
     def _get_potential_letters(self, x: int, y: int, is_descending: bool):
-        if letter := self._board.get_letter_at_point(x, y):
+        letter = self.boardstate[14 - y][x]
+        if letter:
             return {letter}
 
         word_before, word_after = self._board.get_surrounding_words(x, y, is_descending)
@@ -70,11 +73,8 @@ class MoveGenerator:
     
     def _gen(self, anchor_x: int, anchor_y: int, offset: int, word: str, tiles: Tray, path: GADDAGNode, placed: bool, is_vertical: bool):
         current_x, current_y = self._pos(anchor_x, anchor_y, offset, is_vertical)
-
-        if not (0 <= current_x < 15 and 0 <= current_y < 15):
-            return 
         
-        current_letter = self._board.get_letter_at_point(current_x, current_y)
+        current_letter = self.boardstate[14 - current_y][current_x]
 
         if current_letter: #IF a letter L is already on this square then
             next_path = self._gaddag.next_arc(path, current_letter)
@@ -116,13 +116,13 @@ class MoveGenerator:
 
         if offset <= 0:
             word = letter + word
-            no_letter_directly_back = not self._board.get_letter_at_point(back_of_current_x, back_of_current_y)
-            no_letter_in_front_of_anchor = not self._board.get_letter_at_point(front_of_anchor_x, front_of_anchor_y)
+            no_letter_directly_back = (not (self.boardstate[14 - back_of_current_y][back_of_current_x] if 0 <= back_of_current_x and back_of_current_y < 15 else None))
+            no_letter_in_front_of_anchor = (not (self.boardstate[14 - front_of_anchor_y][front_of_anchor_x] if front_of_anchor_x < 15 and 0 <= front_of_anchor_y else None))
 
             if new_path.is_terminal and no_letter_directly_back and no_letter_in_front_of_anchor and placed:
                 self._moves.add(Move(word, current_x, current_y, is_vertical))
 
-            if 0 <= back_of_current_x < 15 and 0 <= back_of_current_y < 15:
+            if 0 <= back_of_current_x and back_of_current_y < 15:
                 self._gen(anchor_x, anchor_y, offset - 1, word, tiles, new_path, placed, is_vertical)
 
             turn_path = self._gaddag.next_arc(new_path, '^')
@@ -132,13 +132,13 @@ class MoveGenerator:
         else:
             word = word + letter
             front_of_current_x, front_of_current_y = self._pos(anchor_x, anchor_y, offset + 1, is_vertical)  # one step further after
-            no_letter_directly_front = not self._board.get_letter_at_point(front_of_current_x, front_of_current_y)
+            no_letter_directly_front = (not (self.boardstate[14 - front_of_current_y][front_of_current_x] if front_of_current_x < 15 and 0 <= front_of_current_y else None))
 
             if no_letter_directly_front and new_path.is_terminal and placed:
                 sx, sy = self._pos(anchor_x, anchor_y, offset - len(word) + 1, is_vertical)
                 self._moves.add(Move(word, sx, sy, is_vertical))
 
-            if 0 <= front_of_current_x < 15 and 0 <= front_of_current_y < 15:
+            if front_of_current_x < 15 and 0 <= front_of_current_y:
                 self._gen(anchor_x, anchor_y, offset + 1, word, tiles, new_path, placed, is_vertical)
         
 
