@@ -1,4 +1,6 @@
 from game import Game
+import random
+import math
 
 class Depth_Limited_Minimax_Agent: 
     def __init__(self, game: Game, max_depth):
@@ -93,7 +95,7 @@ class OrderedAlphaBetaAgent:
         else:
             value, move = self.min_value(state, 0, -float('inf'), float('inf'))
 
-        print(f"Alpha-Beta Nodes explored: {self.nodes_explored} {move}")
+        print(f"Alpha-Beta Nodes explored: {self.nodes_explored} \n {move}")
         return move, value
 
     def max_value(self, state, depth, alpha, beta):
@@ -141,4 +143,97 @@ class OrderedAlphaBetaAgent:
                 break
 
         return minimum_value, best_action
+    
+
+
+
+
+class MCTSNode:
+    """A node in the MCTS tree."""
+
+    def __init__(self, state, parent=None, action=None):
+        self.state = state
+        self.parent = parent
+        self.action = action        # action that led to this node
+        self.children = []
+        self.visits = 0
+        self.wins = 0
+        self.untried_actions = None  # filled on first expansion
+
+    def ucb1(self, C=1.41):
+        """Upper Confidence Bound for Trees."""
+        if self.visits == 0:
+            return float('inf')
+        return (self.wins / self.visits) + C * math.sqrt(
+            math.log(self.parent.visits) / self.visits
+        )
+
+
+class MCTSAgent:
+    """Monte Carlo Tree Search agent."""
+
+    def __init__(self, game, n_simulations=1000, balance_constant = 1.41):
+        self.game = game
+        self.n_simulations = n_simulations
+        self.balance_constant = balance_constant
+
+    def search(self, state):
+        """Return the best action after running MCTS."""
+        root = MCTSNode(state)
+        root.untried_actions = list(self.game.actions(state))
+
+        for i in range(self.n_simulations):
+            node = self._select(root)
+            node = self._expand(node)
+            result = self._simulate(node.state)
+            print(i)
+            self._backpropagate(node, result)
+            
+
+        # pick child with most visits (most robust choice)
+        best_child = max(root.children, key=lambda c: c.visits)
+        return best_child.action
+
+    def _select(self, node):
+        """Walk down the tree using UCB1 until we find an expandable node."""
+        while node.untried_actions is not None and len(node.untried_actions) == 0:
+            if not node.children:
+                return node
+            node = max(node.children, key=lambda c: c.ucb1(self.balance_constant))
+        return node
+
+    def _expand(self, node):
+        """Add one new child to the node."""
+        if node.untried_actions is None:
+            node.untried_actions = list(self.game.actions(node.state))
+        if not node.untried_actions or self.game.is_terminal(node.state):
+            return node
+        action = node.untried_actions.pop()
+        new_state = self.game.result(node.state, action)
+        child = MCTSNode(new_state, parent=node, action=action)
+        child.untried_actions = list(self.game.actions(new_state))
+        node.children.append(child)
+        return child
+
+    def _simulate(self, state):
+        """Play randomly from state to a terminal state. Return utility for player 1."""
+        while not self.game.is_terminal(state):
+            if self.game.actions(state) == set():
+                break
+            action = random.choice(list(self.game.actions(state)))
+            state = self.game.result(state, action)
+        return self.game.utility(state, 1)
+
+    def _backpropagate(self, node, result):
+        """Update visits and wins up the tree."""
+        while node is not None:
+            node.visits += 1
+            # count as a win if the result favors the player who just moved
+            player_at_node = self.game.to_move(node.state)
+            if result == -player_at_node:  # the player who moved TO this node won
+                node.wins += 1
+            elif result == 0:
+                node.wins += 0.5  # draws count as half
+            node = node.parent
+
     

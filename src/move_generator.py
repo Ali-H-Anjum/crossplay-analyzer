@@ -3,6 +3,8 @@ from board import Board
 from tray import Tray
 from gaddag import GADDAG, GADDAGNode
 
+from collections import Counter
+
 class MoveGenerator:
     _ALL_LETTERS = set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
@@ -10,15 +12,15 @@ class MoveGenerator:
         self._gaddag = gaddag
         self._root = self._gaddag.get_root()
         
-    def get_all_moves(self, board: Board, tiles: Tray):
+    def get_all_moves(self, board_state, tray_state):
         self._moves = set()
 
-        self.boardstate, self.anchorstate, self.blankstate = board.snapshot()
+        self.boardstate, self.anchors, self.blanks= board_state
+        tray_counter = Counter(tray_state)
         
-        self._board = board
         self._cross_checks = self._compute_all_cross_checks()
 
-        edge_tiles = board.get_anchor_positions()
+        edge_tiles = self.anchors
 
         anchors = {(7, 7)} if not edge_tiles else edge_tiles #Seems to be correct but if need be I can add all_tiles back
 
@@ -31,8 +33,8 @@ class MoveGenerator:
             # self._generate_horizontal_moves(x, y, 0, "", tiles, self._root)
             # self._generate_vertical_moves(x, y, 0, "", tiles, self._root)
 
-            self._gen(x, y, 0, "", tiles, self._root, placed = False, is_vertical = False)
-            self._gen(x, y, 0, "", tiles, self._root, placed = False, is_vertical = True)
+            self._gen(x, y, 0, "", tray_counter, self._root, placed = False, is_vertical = False)
+            self._gen(x, y, 0, "", tray_counter, self._root, placed = False, is_vertical = True)
 
         return self._moves
     
@@ -42,7 +44,7 @@ class MoveGenerator:
         computed_cols = set()
         computed_rows = set()
 
-        for x, y in self._board.get_anchor_positions():
+        for x, y in self.anchors:
 
             if x not in computed_cols:
                 for i in range(15):
@@ -57,11 +59,47 @@ class MoveGenerator:
         return checks
 
     def _get_potential_letters(self, x: int, y: int, is_descending: bool):
+
+        def get_word_at_point(x, y, is_descending):
+            word = []
+
+            if is_descending:
+                while y < 14 and self.boardstate[14 - (y + 1)][x]:
+                    y += 1
+                
+                while y >= 0:
+                    letter = self.boardstate[14 - y][x]
+                    if not letter:
+                        break
+                    word.append(letter)
+                    y -= 1
+            else:
+                while x > 0 and self.boardstate[14 - y][x - 1]:
+                    x -= 1
+            
+                while x < 15:
+                    letter = self.boardstate[14 - y][x]
+                    if not letter:
+                        break
+                    word.append(letter)
+                    x += 1
+
+            return ''.join(word)
+
+        def get_surrounding_words(x, y, is_descending):
+            if is_descending:
+                word_before = get_word_at_point(x - 1, y, False) if 0 < x - 1 and self.boardstate[14 - y][x - 1] else ''
+                word_after  = get_word_at_point(x + 1, y, False) if x + 1 < 14 and self.boardstate[14 - y][x + 1] else ''
+            else:
+                word_before = get_word_at_point(x, y + 1, True) if y + 1 < 14 and self.boardstate[14 - (y + 1)][x] else ''
+                word_after  = get_word_at_point(x, y - 1, True) if 0 < y - 1 and self.boardstate[14 - (y - 1)][x] else ''
+            return word_before, word_after
+
         letter = self.boardstate[14 - y][x]
         if letter:
-            return {letter}
+            return letter
 
-        word_before, word_after = self._board.get_surrounding_words(x, y, is_descending)
+        word_before, word_after = get_surrounding_words(x, y, is_descending)
 
         if not word_before and not word_after:
             return self._ALL_LETTERS
@@ -71,7 +109,7 @@ class MoveGenerator:
     def _pos(self, anchor_x: int, anchor_y: int, offset: int, is_vertical: bool):
         return (anchor_x, anchor_y - offset) if is_vertical else (anchor_x + offset, anchor_y)
     
-    def _gen(self, anchor_x: int, anchor_y: int, offset: int, word: str, tiles: Tray, path: GADDAGNode, placed: bool, is_vertical: bool):
+    def _gen(self, anchor_x: int, anchor_y: int, offset: int, word: str, tray: Counter, path: GADDAGNode, placed: bool, is_vertical: bool):
         current_x, current_y = self._pos(anchor_x, anchor_y, offset, is_vertical)
         
         current_letter = self.boardstate[14 - current_y][current_x]
@@ -79,34 +117,40 @@ class MoveGenerator:
         if current_letter: #IF a letter L is already on this square then
             next_path = self._gaddag.next_arc(path, current_letter)
             if next_path is not None:
-                self._go_on(anchor_x, anchor_y, offset, current_letter, word, tiles, next_path, placed, is_vertical)
+                self._go_on(anchor_x, anchor_y, offset, current_letter, word, tray, next_path, placed, is_vertical)
 
-        elif tiles: #ELSE IF letters remain on the rack THEN
+        elif tray: #ELSE IF letters remain on the rack THEN
             cross = self._cross_checks.get((current_x, current_y, is_vertical), self._ALL_LETTERS)
 
-            for tile in set(tiles.get_unique_tiles()):
+            for tile in [t for t, n in tray.items() if n > 0 and t != '?']:
                 if tile not in cross:
                     continue
 
                 next_path = self._gaddag.next_arc(path, tile)
                 if next_path is not None:
-                    tiles.remove_tile(tile)
+                    tray[tile] -= 1
+                    if tray[tile] == 0:
+                        del tray[tile]
                     try:
-                        self._go_on(anchor_x, anchor_y, offset, tile, word, tiles, next_path, True, is_vertical)
+                        self._go_on(anchor_x, anchor_y, offset, tile, word, tray, next_path, True, is_vertical)
                     finally:
-                        tiles.add_tile(tile)
+                        tray[tile] += 1
 
-            if tiles.get_blank_count():
+
+            blank_count = tray.get('?', 0)
+            if blank_count:
                 for letter in cross:
                     next_path = self._gaddag.next_arc(path, letter)
                     if next_path is not None:
-                        tiles.remove_tile('?')
+                        tray['?'] -= 1
+                        if tray['?'] == 0:
+                            del tray['?']
                         try:
-                            self._go_on(anchor_x, anchor_y, offset, letter.lower(), word, tiles, next_path, True, is_vertical)
+                            self._go_on(anchor_x, anchor_y, offset, letter.lower(), word, tray, next_path, True, is_vertical)
                         finally:
-                            tiles.add_tile('?')
+                            tray['?'] += 1
 
-    def _go_on(self, anchor_x: int, anchor_y: int, offset: int, letter: chr, word: str, tiles: Tray, new_path: GADDAGNode, placed: bool, is_vertical: bool):
+    def _go_on(self, anchor_x: int, anchor_y: int, offset: int, letter: chr, word: str, tray: Counter, new_path: GADDAGNode, placed: bool, is_vertical: bool):
 
         current_x, current_y = self._pos(anchor_x, anchor_y, offset, is_vertical)
 
@@ -123,11 +167,11 @@ class MoveGenerator:
                 self._moves.add(Move(word, current_x, current_y, is_vertical))
 
             if 0 <= back_of_current_x and back_of_current_y < 15:
-                self._gen(anchor_x, anchor_y, offset - 1, word, tiles, new_path, placed, is_vertical)
+                self._gen(anchor_x, anchor_y, offset - 1, word, tray, new_path, placed, is_vertical)
 
             turn_path = self._gaddag.next_arc(new_path, '^')
             if turn_path is not None and no_letter_directly_back and 0 <= front_of_anchor_x < 15 and 0 <= front_of_anchor_y < 15:
-                self._gen(anchor_x, anchor_y, 1, word, tiles, turn_path, placed, is_vertical)
+                self._gen(anchor_x, anchor_y, 1, word, tray, turn_path, placed, is_vertical)
 
         else:
             word = word + letter
@@ -139,7 +183,7 @@ class MoveGenerator:
                 self._moves.add(Move(word, sx, sy, is_vertical))
 
             if front_of_current_x < 15 and 0 <= front_of_current_y:
-                self._gen(anchor_x, anchor_y, offset + 1, word, tiles, new_path, placed, is_vertical)
+                self._gen(anchor_x, anchor_y, offset + 1, word, tray, new_path, placed, is_vertical)
         
 
 

@@ -25,7 +25,7 @@ class Game:
         print("Player " + str(self._current_player_index) + " has " + str(tiles))
         print()
 
-        moves = self._moveGenerator.get_all_moves(self._board, tiles)
+        moves = self._moveGenerator.get_all_moves(self._board.snapshot(), tiles.snapshot())
 
         if not moves:
             print("No moves found")
@@ -111,7 +111,7 @@ class Game:
 
         current_player = self.get_current_player()
         tiles = current_player.get_player_tiles()
-        moves = self._moveGenerator.get_all_moves(self._board, tiles)
+        moves = self._moveGenerator.get_all_moves(self._board.snapshot(), tiles.snapshot())
 
         # self._moveEvaluator.set_board(self._board)
         # points_per_move = self._moveEvaluator.sort_by_points(moves) #Assigns points to moves
@@ -147,8 +147,8 @@ class Game:
 
         return new_snapshot
     
-    # def is_terminal(self, game_snapshot):
-    #     return game_snapshot[5] >= 2
+    def is_terminal(self, game_snapshot):
+        return game_snapshot[5] >= 2
 
     # def is_cutoff(self, depth):
     #     return depth > 0

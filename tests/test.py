@@ -23,6 +23,12 @@ def main():
 
 
     b.show_board()
+    
+
+    # for row in b.get_transposed():
+    #     print(' | '.join(cell if cell is not None else ' ' for cell in row))
+    # print()
+
     # print()
 
     # c = Board()
@@ -37,7 +43,7 @@ def main():
     print(t)
     print()
 
-    moves = mg.get_all_moves(b, t)
+    moves = mg.get_all_moves(b.snapshot(), t.snapshot())
     points_per_move = me.sort_by_points(moves)
 
     highest_moves = points_per_move[:15]
