@@ -6,3 +6,5 @@ gaddag.pkl
 gaddag.pkl
 *.egg-info/
 DEVELOPMENTlong.md
+alphabetical_word_list.txt
+scripts/listMaker.py

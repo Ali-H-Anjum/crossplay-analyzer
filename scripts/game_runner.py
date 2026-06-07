@@ -32,7 +32,7 @@ def testing(): #TODO build complete testing code like from lecture04 HW
 
 
 def main():
-    testing()
+    simulate_one_game()
 
 if __name__ == "__main__":
-    cProfile.run('main()')
+    cProfile.run('main()', sort = 'tottime')

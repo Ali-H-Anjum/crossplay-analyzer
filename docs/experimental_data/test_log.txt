@@ -1,3 +1,21 @@
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+  |   |   |   |   |   |   | L |   |   |   |   |   |   |  
+  |   |   |   |   |   |   | A |   |   |   |   |   |   |  
+  |   |   |   |   |   |   | N |   |   |   |   |   |   |  
+  |   |   |   |   |   |   | D |   |   |   |   |   |   |  
+  |   |   |   |   |   |   | A |   |   |   |   |   |   |  
+  |   |   |   |   |   | N | U | D | E | L | Y |   |   |  
+  |   |   |   |   | B | E | S | E | S |   |   |   |   |  
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+  |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+
+Tiles: ERSBEES
+
 (22, Word: BEE, Starting Position: (4, 5), Descending: False)
 (21, Word: REBS, Starting Position: (9, 8), Descending: False)
 (20, Word: REB, Starting Position: (9, 8), Descending: False)
@@ -41,10 +59,37 @@
 283
 
 Need test.py to match this output
+There are 24 anchors
 
-105275 function calls (99240 primitive calls) in 4.481 seconds
+###########################################################################################
 
-Overtime, this should shrink
+105275 function calls (99240 primitive calls) in ~ 5 seconds
 
-After some OOP reduction in move generation:
-88949 function calls (82914 primitive calls) in 4.298 seconds
+We need to reduce this as much as we can
+
+After some OOP reduction in move generation: (tuple for board, counter for tray)
+88949 function calls (82914 primitive calls) in ~ 4.3 seconds
+
+############################################################################################
+5/21:
+
+Getting every possible move takes about 25-30 milliseconds. 
+1. Learn Bitmasking
+
+move_generation._gen() is called 48 times primitively, 3408 total
+move_generation._go_on() is called 106 times primitively, 2781 total
+This means on average, move_generation._gen() recurses 71 times, move_generation._go_on() recurses 26 times 
+1. Seperate logic back into horizontal/vertical (Transpose should be ideal)
+
+gaddag.next_arc() is called 9216 times
+It only absolutely needs to be called at least once in move_generation._gen(), should find ways to reduce 9216 to get closer to 3408
+1. Pass new_arc into go_on (go_on needs to know if the next arc is '^')
+
+The GADDAG has 2768298 nodes
+1. Currently my "gaddag" is just huge Trie, Need to minimize it into DAWG structure 
+
+############################################################################################
+6/6
+
+
+

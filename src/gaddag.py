@@ -4,6 +4,13 @@ import os
 _CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ^'
 _CHAR_INDEX = {c: i for i, c in enumerate(_CHARS)}
 
+class GADDAGArc:
+    __slots__ = ['destination', 'letter_set']
+
+    def __init__(self, destination):
+        self.destination = destination
+        self.letter_set = set()
+
 
 class GADDAGNode:
     __slots__ = ['arcs', 'is_terminal']
@@ -12,10 +19,13 @@ class GADDAGNode:
         self.arcs = [None] * 27
         self.is_terminal = False
 
+    def get_destination(self, index):
+        arc = self.arcs[index]
+        return arc.destination if arc else None 
 
 class GADDAG:
     def __init__(self, path='wordList.txt', cache_path = 'gaddag.pkl'):
-        if os.path.exists(cache_path):
+        if os.path.exists(cache_path) and False:
             with open(cache_path, 'rb') as f:
                 cached = pickle.load(f)
                 self._root = cached._root
@@ -29,21 +39,19 @@ class GADDAG:
                     for word in line.strip().split():
                         self.add_word(word)
 
-            with open(cache_path, 'wb') as f:
-                pickle.dump(self, f)
+            # with open(cache_path, 'wb') as f:
+            #     pickle.dump(self, f)
+
+            print("The GADDAG has " + str(self._node_count) + " nodes")
 
     def get_root(self): 
         return self._root
     
-    def get_next(self, node, letter): 
-        return node.arcs[_CHAR_INDEX[letter]]
-    
     def next_arc(self, arc, letter):
         index = _CHAR_INDEX[letter]
-        return arc.arcs[index] if arc is not None else self._root.arcs[index]
-    
-    def is_on_arc(self, arc, letter): 
-        return self.next_arc(arc, letter) is not None
+        if arc is not None:
+            return arc.get_destination(index)
+        return self._root.get_destination(index)
 
     def add_word(self, word):
         length = len(word)
@@ -62,26 +70,11 @@ class GADDAG:
         for char in path:
             index = _CHAR_INDEX[char]
             if current.arcs[index] is None:
-                current.arcs[index] = GADDAGNode()
+                new_node = GADDAGNode()
+                current.arcs[index] = GADDAGArc(new_node)
                 self._node_count += 1
-            current = current.arcs[index]
-            
+            current = current.arcs[index].destination
         current.is_terminal = True
-    
-    def contains_whole_word(self, word):
-        if not word: return False
-        node = self.get_last_node_in_path(word[::-1] + '^')
-        return node is not None and node.is_terminal
-
-    def get_last_node_in_path(self, path, start = None):
-        current = self._root if start is None else start
-
-        for char in path:
-            index = _CHAR_INDEX[char]
-            current = current.arcs[index]
-            if current is None: return None
-
-        return current
 
     def cross_check(self, prefix, suffix):
         if not prefix and not suffix:
@@ -91,28 +84,32 @@ class GADDAG:
         valid = set()
 
         for L in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-            node = self._root.arcs[_CHAR_INDEX[L]]
-            if node is None:
+            arc = self._root.arcs[_CHAR_INDEX[L]]
+            if arc is None:
                 continue
+            node = arc.destination
 
             ok = True
             for c in rev_prefix:
-                node = node.arcs[_CHAR_INDEX[c]]
-                if node is None:
+                arc = node.arcs[_CHAR_INDEX[c]]
+                if arc is None:
                     ok = False
                     break
+                node = arc.destination
             if not ok:
                 continue
 
             if suffix:
-                node = node.arcs[_CHAR_INDEX['^']]
-                if node is None:
+                arc = node.arcs[_CHAR_INDEX['^']]
+                if arc is None:
                     continue
+                node = arc.destination
                 for c in suffix:
-                    node = node.arcs[_CHAR_INDEX[c]]
-                    if node is None:
+                    arc = node.arcs[_CHAR_INDEX[c]]
+                    if arc is None:
                         ok = False
                         break
+                    node = arc.destination
                 if not ok:
                     continue
 

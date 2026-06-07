@@ -169,7 +169,7 @@ class MoveGenerator:
             if 0 <= back_of_current_x and back_of_current_y < 15:
                 self._gen(anchor_x, anchor_y, offset - 1, word, tray, new_path, placed, is_vertical)
 
-            turn_path = self._gaddag.next_arc(new_path, '^')
+            turn_path = self._gaddag.next_arc(new_path, '^') #This could just be new_arc and sent forward by gen since we already had to calculate it once
             if turn_path is not None and no_letter_directly_back and 0 <= front_of_anchor_x < 15 and 0 <= front_of_anchor_y < 15:
                 self._gen(anchor_x, anchor_y, 1, word, tray, turn_path, placed, is_vertical)
 

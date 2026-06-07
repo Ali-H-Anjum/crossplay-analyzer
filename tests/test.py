@@ -8,20 +8,12 @@ from move_evaluator import MoveEvaluator
 import cProfile
 
 def main():
-    # with open('gaddag.pkl', 'rb') as f:
-    #     g = pickle.load(f)
-
     g = GADDAG()
-
     mg = MoveGenerator(g)
-
     b = Board()
-
     b.add_move(Move('LANDAU', 7, 12, True))
     b.add_move(Move('NUDELY', 6, 7, False))
     b.add_move(Move('BESES', 5, 6, False))
-
-
     b.show_board()
     
 
@@ -46,8 +38,8 @@ def main():
     moves = mg.get_all_moves(b.snapshot(), t.snapshot())
     points_per_move = me.sort_by_points(moves)
 
-    highest_moves = points_per_move[:15]
-    most_points, move_with_most_points = highest_moves[0]
+    # highest_moves = points_per_move[:15]
+    # most_points, move_with_most_points = highest_moves[0]
 
     word_finder_moves = me.sort_by_word_finder(points_per_move)
 
@@ -63,7 +55,9 @@ def main():
 
     # print(g.cross_check(word_before, word_after))
 
+    
+
 
 
 if __name__ == "__main__":
-    cProfile.run('main()')
+    cProfile.run('main()', sort = 'cumtime')
