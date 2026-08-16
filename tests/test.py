@@ -2,7 +2,7 @@ from board import Board
 from move import Move
 from tray import Tray
 from move_generator import MoveGenerator
-from gaddag import GADDAG, GADDAGNode, realGADDAG
+from gaddag import GADDAG, GADDAGNode
 from move_evaluator import MoveEvaluator
 
 import cProfile
