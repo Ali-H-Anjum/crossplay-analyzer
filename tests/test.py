@@ -2,13 +2,13 @@ from board import Board
 from move import Move
 from tray import Tray
 from move_generator import MoveGenerator
-from gaddag import GADDAG, GADDAGNode
+from gaddag import GADDAG, GADDAGNode, realGADDAG
 from move_evaluator import MoveEvaluator
 
 import cProfile
 
 def main():
-    g = GADDAG()
+    g = GADDAG("alphabetical_word_list.txt")
     mg = MoveGenerator(g)
     b = Board()
     b.add_move(Move('LANDAU', 7, 12, True))
