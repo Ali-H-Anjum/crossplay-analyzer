@@ -95,7 +95,7 @@ class OrderedAlphaBetaAgent:
         else:
             value, move = self.min_value(state, 0, -float('inf'), float('inf'))
 
-        print(f"Alpha-Beta Nodes explored: {self.nodes_explored} \n {move}")
+        print(f"Alpha-Beta Nodes explored: {self.nodes_explored} in {self.max_depth} depth \n {move}")
         return move, value
 
     def max_value(self, state, depth, alpha, beta):

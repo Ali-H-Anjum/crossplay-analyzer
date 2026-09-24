@@ -89,7 +89,12 @@ The GADDAG has 2768298 nodes
 1. Currently my "gaddag" is just huge Trie, Need to minimize it into DAWG structure 
 
 ############################################################################################
-6/6
+8/20:
+
+Minimized Gaddag work as intended
+
+Gaddag has 811989 nodes
+100530 function calls (90523 primitive calls) in 2.811 seconds
 
 
 

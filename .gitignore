@@ -12,3 +12,13 @@ OSPD.txt
 .vscode/settings.json
 test.txt
 test2.txt
+C++/Testing/
+GADDAG_UML/
+C++/Vision/Board.h
+C++/Vision/main.cpp
+GaddagCacheTest/
+C++/Vision/obj/
+C++/Vision/bin/
+C++/Vision/Vision.layout
+C++/Vision/Vision.depend
+C++/Vision/Vision.cbp

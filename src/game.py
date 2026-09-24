@@ -4,7 +4,7 @@ from move_generator import MoveGenerator
 from tile_bag import Tilebag
 from player import Player
 from move_evaluator import MoveEvaluator
-from gaddag import GADDAG, GADDAGNode
+from gaddag import Gaddag
 
 class Game:
     def __init__(self):
@@ -14,7 +14,7 @@ class Game:
         self._current_player_index = 0
         self._turns_since_tilebag_empty = 0
 
-        self._gaddag = GADDAG()
+        self._gaddag = Gaddag()
         self._moveGenerator = MoveGenerator(self._gaddag)
         self._moveEvaluator = MoveEvaluator(self._board)
 

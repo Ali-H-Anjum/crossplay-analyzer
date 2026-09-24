@@ -120,4 +120,4 @@ class MoveEvaluator:
                 duplicate_checker.add(move.get_word().upper())
                 unique_moves.append((points, move))
 
-        return unique_moves[:40]
+        return unique_moves[:10] # Return only the top n moves
