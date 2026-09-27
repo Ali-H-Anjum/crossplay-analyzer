@@ -14,7 +14,6 @@ test.txt
 test2.txt
 C++/Testing/
 GADDAG_UML/
-C++/Vision/Board.h
 C++/Vision/main.cpp
 GaddagCacheTest/
 C++/Vision/obj/
@@ -22,3 +21,10 @@ C++/Vision/bin/
 C++/Vision/Vision.layout
 C++/Vision/Vision.depend
 C++/Vision/Vision.cbp
+C++/TestingGaddagCache/
+C++/Vision/Board.h
+C++/Vision/BoardOps.h
+C++/Vision/Letter.h
+C++/Vision/Move.h
+C++/Vision/TileBag.h
+C++/Vision/Tray.h

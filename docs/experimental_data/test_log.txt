@@ -89,6 +89,10 @@ The GADDAG has 2768298 nodes
 1. Currently my "gaddag" is just huge Trie, Need to minimize it into DAWG structure 
 
 ############################################################################################
+7/9 (Short Return)
+Reorganizing gaddag so that its closer in scope to the paper
+
+############################################################################################
 8/20:
 
 Minimized Gaddag work as intended
@@ -96,5 +100,27 @@ Minimized Gaddag work as intended
 Gaddag has 811989 nodes
 100530 function calls (90523 primitive calls) in 2.811 seconds
 
+############################################################################################
+9/8 (Long Return)
+Bitmasking implementations in Python
 
+############################################################################################
+9/14
+Thinking of bitwise operations as functions
+
+
+############################################################################################
+9/21
+
+C++ Gaddag Ported 
+Cache testing with PCM
+
+############################################################################################
+9/23
+
+Cache Optimized Gaddag built in about 0.5 seconds now
+
+############################################################################################
+9/25
+Ported board 
 

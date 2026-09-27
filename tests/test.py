@@ -28,7 +28,6 @@ def main():
     # c.show_board()
 
 
-    me = MoveEvaluator(b)
 
     t = Tray(['E', 'R', 'S', 'B', 'E', 'E', 'S'])
 
@@ -36,6 +35,8 @@ def main():
     print()
 
     moves = mg.get_all_moves(b.snapshot(), t.snapshot())
+    
+    me = MoveEvaluator(b)
     points_per_move = me.sort_by_points(moves)
 
     # highest_moves = points_per_move[:15]
