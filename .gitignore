@@ -1,30 +1,58 @@
+# --- data / generated (word lists are third-party, don't publish them)
 wordList.txt
 NWL2023-Playability.txt
-__pycache__/
-gaddag.pkl
-gaddag.pkl
-gaddag.pkl
-*.egg-info/
-DEVELOPMENTlong.md
 alphabetical_word_list.txt
-scripts/listMaker.py
 OSPD.txt
-.vscode/settings.json
-test.txt
-test2.txt
-C++/Testing/
-GADDAG_UML/
-C++/Vision/main.cpp
-GaddagCacheTest/
-C++/Vision/obj/
-C++/Vision/bin/
-C++/Vision/Vision.layout
-C++/Vision/Vision.depend
-C++/Vision/Vision.cbp
-C++/TestingGaddagCache/
-C++/Vision/Board.h
-C++/Vision/BoardOps.h
-C++/Vision/Letter.h
-C++/Vision/Move.h
-C++/Vision/TileBag.h
-C++/Vision/Tray.h
+DEVELOPMENTlong.md
+ui/src/wordList_embedded.cpp
+
+# --- fonts (embedded copies and the source font files)
+ui/src/font*_embedded.cpp
+*.ttf
+*.otf
+*.woff
+*.woff2
+
+# --- clang tooling
+clang-uml-config.yml
+.clangd
+.clang-format
+.cache/
+diagrams/
+compile_commands.json
+.clang-uml
+
+# --- third-party source (build expects it at ../imgui)
+imgui/
+
+# --- C++ build output
+build/
+*.exe
+*.o
+*.obj
+*.a
+*.gch
+perf.data*
+*.orig
+
+# --- python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.pkl
+
+# --- editor
+.vscode/*
+!.vscode/c_cpp_properties.json
+!.vscode/settings.json
+.idea/
+*.swp
+
+# --- os
+.DS_Store
+Thumbs.db
+desktop.ini

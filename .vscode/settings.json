@@ -1,0 +1,8 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "cmake.sourceDirectory": "${workspaceFolder}/ui",
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.enablePersistentSessions": false,
+    "cmake.configureOnOpen": false,
+    "cmake.enableAutomaticKitScan": false
+}

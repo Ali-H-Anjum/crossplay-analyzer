@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "name": "MinGW",
+      "includePath": [
+        "${workspaceFolder}/ui/src",
+        "${workspaceFolder}/C++/Vision",
+        "${workspaceFolder}/imgui",
+        "${workspaceFolder}/imgui/backends"
+      ],
+      "compilerPath": "C:/mingw64/bin/g++.exe",
+      "cppStandard": "c++20",
+      "intelliSenseMode": "windows-gcc-x64"
+    }
+  ],
+  "version": 4
+}
