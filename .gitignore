@@ -60,3 +60,5 @@ desktop.ini
 docs/diagnostic_data/*
 !docs/diagnostic_data/.gitkeep
 tree.txt
+
+data/wordlists/
