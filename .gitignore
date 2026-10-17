@@ -57,8 +57,8 @@ __pycache__/
 Thumbs.db
 desktop.ini
 # Diagnostic run outputs (regeneratable, too large for git)
-docs/diagnostic_data/*
-!docs/diagnostic_data/.gitkeep
+data/runs/*
+!data/runs/.gitkeep
 tree.txt
 
 data/wordlists/
