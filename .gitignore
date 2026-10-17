@@ -3,7 +3,7 @@ wordList.txt
 NWL2023-Playability.txt
 alphabetical_word_list.txt
 OSPD.txt
-DEVELOPMENTlong.md
+docs/DEVELOPMENTlong.md
 ui/src/wordList_embedded.cpp
 
 # --- fonts (embedded copies and the source font files)
