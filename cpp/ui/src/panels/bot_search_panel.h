@@ -5,8 +5,8 @@
 #include <mutex>
 #include <string>
 #include "imgui.h"
-#include "DetSearch.h"
-#include "Mcts.h"
+#include "det_search.h"
+#include "mcts.h"
 
 enum class MoverKind { Greedy, Search };
 

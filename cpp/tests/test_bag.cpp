@@ -1,5 +1,5 @@
 #include "check.h"
-#include "TileBag.h"
+#include "tile_bag.h"
 
 static bool trayEq(const Tray& a, const Tray& b) {
     for (int i = 0; i < NUM_LETTER_SLOTS; ++i)

@@ -1,8 +1,8 @@
 #include "check.h"
 #include "test_common.h"
-#include "BoardOps.h"
-#include "CrossChecks.h"
-#include "ScoreFast.h"
+#include "board_ops.h"
+#include "cross_checks.h"
+#include "score_fast.h"
 #include <vector>
 
 TEST(scoreraw_matches_evaluator) {

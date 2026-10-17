@@ -3,10 +3,10 @@
 #include <bit>
 #include <cassert>
 #include <cstdint>
-#include "Board.h"
-#include "BoardOps.h"
-#include "CrossChecks.h"
-#include "MoveGen.h"
+#include "board.h"
+#include "board_ops.h"
+#include "cross_checks.h"
+#include "move_gen.h"
 
 constexpr int MAX_NEW_TILES = 7;
 

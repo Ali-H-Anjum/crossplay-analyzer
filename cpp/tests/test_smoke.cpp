@@ -1,7 +1,7 @@
 #include "check.h"
-#include "Board.h"
-#include "Tray.h"
-#include "MoveGen.h"
+#include "board.h"
+#include "tray.h"
+#include "move_gen.h"
 
 TEST(smoke_board_empty) {
     Board b{};

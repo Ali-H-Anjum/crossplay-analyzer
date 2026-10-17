@@ -6,7 +6,7 @@
 #include <memory>
 #include <thread>
 #include <vector>
-#include "DetSearch.h"
+#include "det_search.h"
 
 // ---- EDIT HERE: everything the user picks before an MCTS search starts ----
 struct MctsConfig {

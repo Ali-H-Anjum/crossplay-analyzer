@@ -1,5 +1,5 @@
 #include "check.h"
-#include "MoveEval.h"
+#include "move_eval.h"
 
 TEST(premium_array_matches_map) {
     for (int r = 0; r < BOARD_LENGTH; ++r)

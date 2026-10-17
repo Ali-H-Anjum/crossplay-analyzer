@@ -44,7 +44,7 @@ add_executable(crossplay_ui
     ui/src/wordList_embedded.cpp
     ui/src/font_mono_embedded.cpp
     ui/src/font_franklin_embedded.cpp
-    ${ENGINE_DIR}/gaddag/Gaddag.cpp
+    ${ENGINE_DIR}/gaddag/gaddag.cpp
     ${IMGUI_DIR}/imgui.cpp
     ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_tables.cpp
@@ -94,7 +94,7 @@ add_executable(engine_tests
     tests/test_prune.cpp
     tests/test_det.cpp
     tests/test_mcts.cpp
-    ${ENGINE_DIR}/gaddag/Gaddag.cpp
+    ${ENGINE_DIR}/gaddag/gaddag.cpp
 )
 
 target_include_directories(engine_tests PRIVATE

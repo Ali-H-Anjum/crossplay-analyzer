@@ -28,16 +28,16 @@
 #include <utility>
 #include <vector>
 
-#include "Letter.h"
-#include "Board.h"
-#include "Move.h"
-#include "Tray.h"
-#include "BoardOps.h"
-#include "CrossChecks.h"
-#include "Gaddag.h"
-#include "TileBag.h"
-#include "MoveGen.h"
-#include "MoveEval.h"
+#include "letter.h"
+#include "board.h"
+#include "move.h"
+#include "tray.h"
+#include "board_ops.h"
+#include "cross_checks.h"
+#include "gaddag.h"
+#include "tile_bag.h"
+#include "move_gen.h"
+#include "move_eval.h"
 
 extern const unsigned char kWordListData[];
 extern const std::size_t kWordListSize;

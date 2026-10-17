@@ -9,10 +9,10 @@
 #include <vector>
 #include <string>
 
-#include "Board.h"
-#include "Letter.h"
-#include "Move.h"
-#include "MoveGen.h"
+#include "board.h"
+#include "letter.h"
+#include "move.h"
+#include "move_gen.h"
 
 // Points per letter (A..Z + blank). Index = toIndex(Letter).
 inline constexpr std::array<uint8_t, NUM_LETTER_SLOTS> POINTS_PER_TILE = {

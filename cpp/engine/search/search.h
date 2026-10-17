@@ -5,9 +5,9 @@
 #include <chrono>
 #include <mutex>
 #include <vector>
-#include "SwapGen.h"
-#include "Zobrist.h"
-#include "TT.h"
+#include "swap_gen.h"
+#include "zobrist.h"
+#include "tt.h"
 
 enum MoveKind : uint8_t { MK_PLACE, MK_SWAP, MK_PASS };
 struct SMove { RawMove m{}; int pts = 0; int ord = 0; MoveKind kind = MK_PLACE; uint8_t swapIdx = 0; };

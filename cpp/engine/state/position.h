@@ -1,7 +1,7 @@
 #pragma once
-#include "ApplyMove.h"
-#include "ScoreFast.h"
-#include "TileBag.h"
+#include "apply_move.h"
+#include "score_fast.h"
+#include "tile_bag.h"
 
 struct Position {
     Board* b; AnchorLines al; const Gaddag* g; const Arc* init; TileBag* bag;

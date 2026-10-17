@@ -1,6 +1,6 @@
 #include "check.h"
 #include "test_common.h"
-#include "ApplyMove.h"
+#include "apply_move.h"
 
 static bool boardEq(const Board& a, const Board& b) {
     return a.letters_row == b.letters_row && a.letters_col == b.letters_col &&

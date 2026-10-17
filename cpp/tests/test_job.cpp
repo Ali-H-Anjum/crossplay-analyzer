@@ -2,7 +2,7 @@
 #include "test_common.h"
 #include <chrono>
 #include <thread>
-#include "SearchJob.h"
+#include "search_job.h"
 
 namespace {
 struct JobFix {

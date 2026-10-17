@@ -2,7 +2,7 @@
 #include "test_common.h"
 #include <chrono>
 #include <thread>
-#include "DetSearch.h"
+#include "det_search.h"
 
 namespace {
 struct DetFix {

@@ -1,5 +1,5 @@
 #pragma once
-#include "MoveEval.h"
+#include "move_eval.h"
 
 // Scores a RawMove against the PRE-move board. No heap use.
 inline MoveScore scoreRawFull(const Board& b, const RawMove& m) {

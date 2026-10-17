@@ -1,5 +1,5 @@
 #include "check.h"
-#include "SwapGen.h"
+#include "swap_gen.h"
 
 TEST(swapgen_candidates) {
     TileBag bag(3); Board b{}; Position p{}; p.b = &b; p.bag = &bag;

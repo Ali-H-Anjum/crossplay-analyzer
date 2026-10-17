@@ -6,10 +6,10 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "Move.h"
-#include "Tray.h"
-#include "Gaddag.h"
-#include "CrossChecks.h"
+#include "move.h"
+#include "tray.h"
+#include "gaddag.h"
+#include "cross_checks.h"
 
 // Steven Gordon's GADDAG move generation, in the two-phase shape the
 // Python used: extendLeft from the anchor, '^' turn, extendRight.

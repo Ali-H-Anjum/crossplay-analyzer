@@ -1,11 +1,11 @@
 #include "check.h"
 #include "test_common.h"
-#include "Board.h"
-#include "BoardOps.h"
-#include "CrossChecks.h"
-#include "MoveGen.h"
-#include "Tray.h"
-#include "Letter.h"
+#include "board.h"
+#include "board_ops.h"
+#include "cross_checks.h"
+#include "move_gen.h"
+#include "tray.h"
+#include "letter.h"
 #include <vector>
 
 TEST(onplay_matches_rebuild) {

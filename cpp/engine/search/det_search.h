@@ -6,7 +6,7 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
-#include "SearchJob.h"
+#include "search_job.h"
 
 // Tiles the searching side cannot see (opponent rack + bag): full set - board - own rack.
 inline std::array<uint8_t, NUM_LETTER_SLOTS> unseenPool(const Board& b, const Tray& own) {
