@@ -56,3 +56,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+# Diagnostic run outputs (regeneratable, too large for git)
+docs/diagnostic_data/*
+!docs/diagnostic_data/.gitkeep
+tree.txt
