@@ -1,5 +1,8 @@
 #pragma once
-// Part of the main.cpp split. Not standalone: main.cpp includes these in order.
+// Board + bag screen shell, tray interaction, and bag views.
+#include "widgets/screen_shell.h"
+#include "widgets/tray_widget.h"
+#include "widgets/bag_panel.h"
 
 // ================================================================ Player vs Greedy
 static void PvbStartGame(int firstPlayer);

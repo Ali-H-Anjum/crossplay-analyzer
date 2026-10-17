@@ -1,5 +1,6 @@
 #pragma once
-// Part of the main.cpp split. Not standalone: main.cpp includes these in order.
+// Drag-and-drop onto the board: CompleteTrayDrop.
+#include "widgets/drag_drop.h"
 
 // ================================================================ popups
 static void DrawBlankPopup() {
