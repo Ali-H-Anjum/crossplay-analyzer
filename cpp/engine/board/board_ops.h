@@ -1,13 +1,12 @@
-//BoardOps.h
+// BoardOps.h
 #pragma once
 
 #include <cassert>
-#include "board.h"
-#include "move.h"      // pulls in Letter.h (toBoardCode)
 
-inline bool inBounds(int row, int col) {
-    return row >= 0 && row <= 14 && col >= 0 && col <= 14;
-}
+#include "board.h"
+#include "move.h"  // pulls in Letter.h (toBoardCode)
+
+inline bool inBounds(int row, int col) { return row >= 0 && row <= 14 && col >= 0 && col <= 14; }
 
 // UI-side tile placement. Writes tiles only: anchors and cross-checks live in AnchorLines /
 // Board::cross_check and are refreshed by rebuild() (RefreshDerived) or onPlay().
@@ -37,4 +36,3 @@ inline void removeTile(Board& b, int row, int col) {
     b.col_occ[col] &= static_cast<uint16_t>(~(1u << row));
     b.is_blank.reset(idxR);
 }
-

@@ -1,4 +1,5 @@
 #pragma once
+#include "state/state.h"
 // Part of the main.cpp split. Not standalone: main.cpp includes these in order.
 
 // ================================================================ Legend
@@ -16,10 +17,10 @@ static void DrawLegendFull() {
     ImGui::Separator();
     ImGui::TextUnformatted("Cross-check heat");
     ImGui::Separator();
-    DrawSwatch(COL_HEAT_0,   "0 -- dead square");
+    DrawSwatch(COL_HEAT_0, "0 -- dead square");
     DrawSwatch(COL_HEAT_LOW, "1-5 -- very tight");
     DrawSwatch(COL_HEAT_MID, "6-15 -- moderate");
-    DrawSwatch(COL_HEAT_HI,  "16-25 -- wide open");
+    DrawSwatch(COL_HEAT_HI, "16-25 -- wide open");
     DrawSwatch(COL_BOARD_EMPTY, "26 -- unconstrained");
     ImGui::End();
 }
@@ -37,11 +38,15 @@ static void DrawLegendCompact() {
 // Renders the move history as columns: Turn | Who | Pts | Word | Dir | Start.
 // The label stored on each Entry is human-readable text like "NUDELY (7,6) H +22";
 // we parse it back into fields for display (no data-model change required).
-static bool ParseEntryLabel(const std::string& label,
-                            char* word, size_t wordSz,
-                            int& row, int& col, char& dir, int& pts) {
-    word[0] = '\0'; row = col = pts = 0; dir = '?';
-    if (label == "PASS") { std::snprintf(word, wordSz, "PASS"); return false; }
+static bool ParseEntryLabel(const std::string& label, char* word, size_t wordSz, int& row, int& col,
+                            char& dir, int& pts) {
+    word[0] = '\0';
+    row = col = pts = 0;
+    dir = '?';
+    if (label == "PASS") {
+        std::snprintf(word, wordSz, "PASS");
+        return false;
+    }
     // "%15s (%d,%d) %c +%d"
     char w[32] = {0};
     if (std::sscanf(label.c_str(), "%31s (%d,%d) %c +%d", w, &row, &col, &dir, &pts) != 5) {
@@ -57,9 +62,8 @@ static void DrawMoveHistoryTab(const ModeState& ms, size_t& lastSeen) {
     ImGui::BeginChild("##historyScroll", ImVec2(0, 0), true);
     {
         char header[80];
-        std::snprintf(header, sizeof header,
-                      "%-3s %-4s %+4s  %-15.15s  %-9s",
-                      "#", "Who", "Pts", "Word", "Dir & Pos");
+        std::snprintf(header, sizeof header, "%-3s %-4s %+4s  %-15.15s  %-9s", "#", "Who", "Pts",
+                      "Word", "Dir & Pos");
         ImGui::TextUnformatted(header);
         ImGui::Separator();
 
@@ -80,14 +84,12 @@ static void DrawMoveHistoryTab(const ModeState& ms, size_t& lastSeen) {
 
                 char label[160];
                 if (dir == '?') {
-                    std::snprintf(label, sizeof label,
-                                  "%-3d %-4s   --   %-15.15s  %s",
+                    std::snprintf(label, sizeof label, "%-3d %-4s   --   %-15.15s  %s",
                                   e.turnNumber, who, word, "-");
                 } else {
                     char posBuf[16];
                     std::snprintf(posBuf, sizeof posBuf, "%c (%2d,%2d)", dir, row, col);
-                    std::snprintf(label, sizeof label,
-                                  "%-3d %-4s %+4d  %-15.15s  %-9s",
+                    std::snprintf(label, sizeof label, "%-3d %-4s %+4d  %-15.15s  %-9s",
                                   e.turnNumber, who, pts, word, posBuf);
                 }
 
@@ -102,4 +104,3 @@ static void DrawMoveHistoryTab(const ModeState& ms, size_t& lastSeen) {
     if (ms.history.size() > lastSeen && ms.atEnd()) ImGui::SetScrollHereY(1.0f);
     lastSeen = ms.history.size();
 }
-

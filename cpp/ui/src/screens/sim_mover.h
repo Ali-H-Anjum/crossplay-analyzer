@@ -3,8 +3,9 @@
 // Depends on sim_game.h only (no UI headers). Callers pass an onTurnComplete callback
 // to avoid a circular dependency with sim_ui.h (which defines SimPushHistory).
 
-#include "sim_game.h"
 #include <functional>
+
+#include "sim_game.h"
 
 struct SimUiState;  // full definition in sim_ui.h
 

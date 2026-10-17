@@ -5,11 +5,11 @@
 // EMPTY_SQUARE, kRackSize), common/theme.h (DrawTileBody, DrawTileGlyph, kCell,
 // COL_TILE), state/state.h (ModeState, DragState, DragSource, g_ui, EndDrag),
 // state/board_rules.h (placeTile, removeTile, CanDropTile, RefreshDerived).
-#include "common/theme.h"
-#include "state/state.h"
-#include "state/board_rules.h"
-
 #include <string>
+
+#include "common/theme.h"
+#include "state/board_rules.h"
+#include "state/state.h"
 
 // How the current board responds to direct tile manipulation.
 enum class BoardKind { Pvb, Sim, Explore };
@@ -42,7 +42,9 @@ static void DropOnBoard(ModeState& ms, int r, int c) {
             const Letter L = isBlank ? Letter::Blank : g_ui.drag.letter;
             if (isBlank) {
                 // Defer blank assignment to the popup; remember where the drop landed.
-                g_ui.blankMs = &ms; g_ui.blankDropR = r; g_ui.blankDropC = c;
+                g_ui.blankMs = &ms;
+                g_ui.blankDropR = r;
+                g_ui.blankDropC = c;
                 g_ui.blankPopupOpen = true;
             } else {
                 if (ms.trayA.count(L) > 0) {
@@ -81,7 +83,7 @@ static void DrawDragGhost() {
     const float cell = kCell;
     const ImVec2 p0(mp.x - cell * 0.5f, mp.y - cell * 0.5f);
     DrawTileBody(dl, p0, cell, COL_TILE);
-    const char buf[2] = { toChar(g_ui.drag.letter), 0 };
-    DrawTileGlyph(dl, p0, cell, buf[0],
-                  g_ui.drag.isBlank ? 0 : LetterPoints(g_ui.drag.letter), true);
+    const char buf[2] = {toChar(g_ui.drag.letter), 0};
+    DrawTileGlyph(dl, p0, cell, buf[0], g_ui.drag.isBlank ? 0 : LetterPoints(g_ui.drag.letter),
+                  true);
 }

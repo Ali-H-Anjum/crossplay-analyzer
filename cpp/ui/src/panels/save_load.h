@@ -1,4 +1,13 @@
 ﻿#pragma once
+
+#include "sim_ui.h"
+
+
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+namespace fs = std::filesystem;
+
 // Part of the main.cpp split. Not standalone: main.cpp includes these in order.
 
 // ================================================================ save / load
@@ -26,10 +35,14 @@ static int AlnumFilter(ImGuiInputTextCallbackData* d) {
 
 static const char* ModeName(AppMode m) {
     switch (m) {
-        case AppMode::Exploration:    return "exploration";
-        case AppMode::PlayerVsBot:    return "pvb";
-        case AppMode::BotVsBot: return "sim";
-        default:                      return "unknown";
+        case AppMode::Exploration:
+            return "exploration";
+        case AppMode::PlayerVsBot:
+            return "pvb";
+        case AppMode::BotVsBot:
+            return "sim";
+        default:
+            return "unknown";
     }
 }
 
@@ -46,11 +59,18 @@ static void WriteSnapshot(std::ostream& o, const Snapshot& s) {
         }
     }
     o << "board " << brd << "\n";
-    o << "trayA"; for (int i = 0; i < NUM_LETTER_SLOTS; ++i) o << ' ' << (int)s.trayA.counts[i]; o << "\n";
-    o << "trayB"; for (int i = 0; i < NUM_LETTER_SLOTS; ++i) o << ' ' << (int)s.trayB.counts[i]; o << "\n";
-    o << "bagcounts"; for (int i = 0; i < NUM_LETTER_SLOTS; ++i) o << ' ' << (int)s.bagCounts[i]; o << "\n";
+    o << "trayA";
+    for (int i = 0; i < NUM_LETTER_SLOTS; ++i) o << ' ' << (int)s.trayA.counts[i];
+    o << "\n";
+    o << "trayB";
+    for (int i = 0; i < NUM_LETTER_SLOTS; ++i) o << ' ' << (int)s.trayB.counts[i];
+    o << "\n";
+    o << "bagcounts";
+    for (int i = 0; i < NUM_LETTER_SLOTS; ++i) o << ' ' << (int)s.bagCounts[i];
+    o << "\n";
     o << "bag " << s.bagTotal;
-    for (int i = 0; i < (int)s.bagTotal && i < TOTAL_TILES; ++i) o << ' ' << (int)toIndex(s.bagTiles[i]);
+    for (int i = 0; i < (int)s.bagTotal && i < TOTAL_TILES; ++i)
+        o << ' ' << (int)toIndex(s.bagTiles[i]);
     o << "\n";
     o << "rng " << s.bagRng << "\n";
     o << "score " << s.score[0] << ' ' << s.score[1] << "\n";
@@ -84,14 +104,16 @@ static bool ReadSnapshot(std::istream& in, Snapshot& s) {
     if (!readTray("trayA", s.trayA) || !readTray("trayB", s.trayB)) return false;
     if (!(in >> tag) || tag != "bagcounts") return false;
     for (int i = 0; i < NUM_LETTER_SLOTS; ++i) {
-        int n; if (!(in >> n) || n < 0 || n > 255) return false;
+        int n;
+        if (!(in >> n) || n < 0 || n > 255) return false;
         s.bagCounts[i] = (uint8_t)n;
     }
     int total;
     if (!(in >> tag >> total) || tag != "bag" || total < 0 || total > TOTAL_TILES) return false;
     s.bagTotal = (uint16_t)total;
     for (int i = 0; i < total; ++i) {
-        int v; if (!(in >> v) || v < 0 || v >= NUM_LETTER_SLOTS) return false;
+        int v;
+        if (!(in >> v) || v < 0 || v >= NUM_LETTER_SLOTS) return false;
         s.bagTiles[i] = fromIndex((uint8_t)v);
     }
     if (!(in >> tag) || tag != "rng" || !(in >> s.bagRng)) return false;
@@ -101,7 +123,10 @@ static bool ReadSnapshot(std::istream& in, Snapshot& s) {
 
 static bool SaveState(const fs::path& file, std::string& err) {
     std::ofstream out(file, std::ios::trunc);
-    if (!out) { err = "Could not open file for writing."; return false; }
+    if (!out) {
+        err = "Could not open file for writing.";
+        return false;
+    }
     ModeState& ms = StateForMode(g_mode);
     out << "VISION_STATE 3\n";
     out << "mode " << ModeName(g_mode) << "\n";
@@ -111,8 +136,10 @@ static bool SaveState(const fs::path& file, std::string& err) {
             << (int)g_pvbUi.gameOver << ' ' << g_pvbUi.winner << "\n";
     else
         out << "pvb 0 0 0 -1\n";
-    out << "current\n";  WriteSnapshot(out, SnapshotOf(ms));
-    out << "initial\n";  WriteSnapshot(out, ms.initial);
+    out << "current\n";
+    WriteSnapshot(out, SnapshotOf(ms));
+    out << "initial\n";
+    WriteSnapshot(out, ms.initial);
     out << "entries " << ms.history.size() << "\n";
     for (const Entry& e : ms.history) {
         out << "entry " << e.turnNumber << ' ' << e.player << "\n";
@@ -120,7 +147,10 @@ static bool SaveState(const fs::path& file, std::string& err) {
         WriteSnapshot(out, e);
     }
     out.flush();
-    if (!out) { err = "Write failed."; return false; }
+    if (!out) {
+        err = "Write failed.";
+        return false;
+    }
     return true;
 }
 
@@ -134,26 +164,60 @@ struct LoadedState {
 
 static bool ReadStateFile(const fs::path& file, LoadedState& L, std::string& err) {
     std::ifstream in(file);
-    if (!in) { err = "Could not open file."; return false; }
-    std::string tag; int version = 0;
-    if (!(in >> tag >> version) || tag != "VISION_STATE") { err = "Not a Vision save file."; return false; }
-    if (version != 3) { err = "Unsupported save version (" + std::to_string(version) + ")."; return false; }
-    if (!(in >> tag >> L.mode) || tag != "mode") { err = "Corrupt file (mode)."; return false; }
-    if (!(in >> tag >> L.cursor) || tag != "cursor") { err = "Corrupt file (cursor)."; return false; }
-    if (!(in >> tag >> L.pvbTurn >> L.pvbPasses >> L.pvbOver >> L.pvbWinner) || tag != "pvb") { err = "Corrupt file (pvb)."; return false; }
-    if (!(in >> tag) || tag != "current" || !ReadSnapshot(in, L.current)) { err = "Corrupt file (current)."; return false; }
-    if (!(in >> tag) || tag != "initial" || !ReadSnapshot(in, L.initial)) { err = "Corrupt file (initial)."; return false; }
+    if (!in) {
+        err = "Could not open file.";
+        return false;
+    }
+    std::string tag;
+    int version = 0;
+    if (!(in >> tag >> version) || tag != "VISION_STATE") {
+        err = "Not a Vision save file.";
+        return false;
+    }
+    if (version != 3) {
+        err = "Unsupported save version (" + std::to_string(version) + ").";
+        return false;
+    }
+    if (!(in >> tag >> L.mode) || tag != "mode") {
+        err = "Corrupt file (mode).";
+        return false;
+    }
+    if (!(in >> tag >> L.cursor) || tag != "cursor") {
+        err = "Corrupt file (cursor).";
+        return false;
+    }
+    if (!(in >> tag >> L.pvbTurn >> L.pvbPasses >> L.pvbOver >> L.pvbWinner) || tag != "pvb") {
+        err = "Corrupt file (pvb).";
+        return false;
+    }
+    if (!(in >> tag) || tag != "current" || !ReadSnapshot(in, L.current)) {
+        err = "Corrupt file (current).";
+        return false;
+    }
+    if (!(in >> tag) || tag != "initial" || !ReadSnapshot(in, L.initial)) {
+        err = "Corrupt file (initial).";
+        return false;
+    }
     int n;
-    if (!(in >> tag >> n) || tag != "entries" || n < 0 || n > 100000) { err = "Corrupt file (entries)."; return false; }
+    if (!(in >> tag >> n) || tag != "entries" || n < 0 || n > 100000) {
+        err = "Corrupt file (entries).";
+        return false;
+    }
     for (int i = 0; i < n; ++i) {
         Entry e;
-        if (!(in >> tag >> e.turnNumber >> e.player) || tag != "entry") { err = "Corrupt file (entry)."; return false; }
+        if (!(in >> tag >> e.turnNumber >> e.player) || tag != "entry") {
+            err = "Corrupt file (entry).";
+            return false;
+        }
         std::string line;
-        std::getline(in, line);                  // rest of the "entry" line
-        std::getline(in, line);                  // "label ..."
+        std::getline(in, line);  // rest of the "entry" line
+        std::getline(in, line);  // "label ..."
         e.label = line.size() > 6 ? line.substr(6) : std::string();
         Snapshot s;
-        if (!ReadSnapshot(in, s)) { err = "Corrupt file (entry snapshot)."; return false; }
+        if (!ReadSnapshot(in, s)) {
+            err = "Corrupt file (entry snapshot).";
+            return false;
+        }
         static_cast<Snapshot&>(e) = s;
         L.entries.push_back(std::move(e));
     }
@@ -170,7 +234,7 @@ static bool ApplyLoadedState(LoadedState& L, std::string& err) {
     if (g_mode != AppMode::BotVsBot && !ms.bag) ms.bag = std::make_unique<TileBag>(uint64_t{1});
     ms.history = std::move(L.entries);
     ms.initial = L.initial;
-    ms.cursor  = L.cursor;
+    ms.cursor = L.cursor;
     EndDrag();
     if (g_mode == AppMode::BotVsBot) {
         g_simUi.started = true;
@@ -205,4 +269,3 @@ static void RefreshLoadList() {
     std::sort(g_ui.loadFiles.begin(), g_ui.loadFiles.end());
     g_ui.loadListDirty = false;
 }
-

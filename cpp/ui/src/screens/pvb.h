@@ -1,8 +1,8 @@
 #pragma once
 // Board + bag screen shell, tray interaction, and bag views.
+#include "widgets/bag_panel.h"
 #include "widgets/screen_shell.h"
 #include "widgets/tray_widget.h"
-#include "widgets/bag_panel.h"
 
 // ================================================================ Player vs Greedy
 static void PvbStartGame(int firstPlayer);
@@ -15,7 +15,10 @@ static int RackValue(const Tray& t) {
 
 static Placement PvbEvaluateTurn() {
     Placement ps = EvaluatePlacement(g_pvb.board, g_pvb.turnStart().board);
-    if (ps.ok && !g_pvb.boardValid) { ps.ok = false; ps.error = "Board has invalid word(s)."; }
+    if (ps.ok && !g_pvb.boardValid) {
+        ps.ok = false;
+        ps.error = "Board has invalid word(s).";
+    }
     return ps;
 }
 
@@ -30,12 +33,13 @@ static void PvbFinishTurn(int player) {
     const Tray& mine = (player == 0) ? ms.trayA : ms.trayB;
     const bool bagEmpty = !ms.bag || ms.bag->size() == 0;
     bool over = false;
-    if (bagEmpty && mine.size() == 0) {                 // went out
+    if (bagEmpty && mine.size() == 0) {  // went out
         const int a = RackValue(ms.trayA), b = RackValue(ms.trayB);
-        ms.score[0] -= a; ms.score[1] -= b;
+        ms.score[0] -= a;
+        ms.score[1] -= b;
         ms.score[player] += a + b;
         over = true;
-    } else if (g_pvbUi.consecutivePasses >= 2) {           // both sides passed
+    } else if (g_pvbUi.consecutivePasses >= 2) {  // both sides passed
         ms.score[0] -= RackValue(ms.trayA);
         ms.score[1] -= RackValue(ms.trayB);
         over = true;
@@ -43,7 +47,7 @@ static void PvbFinishTurn(int player) {
     if (over) {
         g_pvbUi.gameOver = true;
         g_pvbUi.winner = (ms.score[0] > ms.score[1]) ? 0 : (ms.score[1] > ms.score[0]) ? 1 : -1;
-        if (!ms.history.empty()) {                      // final history entry shows final scores
+        if (!ms.history.empty()) {  // final history entry shows final scores
             ms.history.back().score[0] = ms.score[0];
             ms.history.back().score[1] = ms.score[1];
         }
@@ -55,10 +59,13 @@ static void PvbFinishTurn(int player) {
 
 static void PvbPlayMove() {
     const Placement ps = PvbEvaluateTurn();
-    if (!ps.ok) { g_ui.lastAction = "Cannot play: " + ps.error; return; }
+    if (!ps.ok) {
+        g_ui.lastAction = "Cannot play: " + ps.error;
+        return;
+    }
     g_pvb.score[0] += ps.points;
     g_pvbUi.consecutivePasses = 0;
-    PvbRefill(g_pvb.trayA);                      // refill first so the history entry matches the result
+    PvbRefill(g_pvb.trayA);  // refill first so the history entry matches the result
     PushEntry(g_pvb, FormatMove(ps), 0);
     g_ui.lastAction = "Played " + ps.word + ".";
     PvbFinishTurn(0);
@@ -74,14 +81,18 @@ static void PvbHumanPass() {
 
 static void PvbBotTurn() {
     ModeState& ms = g_pvb;
-    MoveEvaluator ev; ev.setBoard(&ms.board);
+    MoveEvaluator ev;
+    ev.setBoard(&ms.board);
     MoveList sink;
     generateMovesFromScratch(*g_gaddag, ms.board, ms.trayB, sink);
     const RawMove* best = nullptr;
     int bestScore = -1;
     for (auto& rm : sink.moves) {
         const int sc = ev.score(rm).points;
-        if (sc > bestScore) { bestScore = sc; best = &rm; }
+        if (sc > bestScore) {
+            bestScore = sc;
+            best = &rm;
+        }
     }
     if (!best) {
         ++g_pvbUi.consecutivePasses;
@@ -130,20 +141,26 @@ static void PvbStartGame(int firstPlayer) {
 
 static void RequestRematchOrTitle(ConfirmAction a) {
     const bool inProgress = !g_pvbUi.gameOver && !g_pvb.history.empty();
-    if (inProgress) { g_ui.confirmAction = a; g_ui.confirmBackOpen = true; return; }
-    if (a == ConfirmAction::Title) LeaveToTitle();
-    else PvbStartGame((int)(std::random_device{}() & 1));
+    if (inProgress) {
+        g_ui.confirmAction = a;
+        g_ui.confirmBackOpen = true;
+        return;
+    }
+    if (a == ConfirmAction::Title)
+        LeaveToTitle();
+    else
+        PvbStartGame((int)(std::random_device{}() & 1));
 }
 
-static void PvbTopOnBack()    { RequestRematchOrTitle(ConfirmAction::Title); }
+static void PvbTopOnBack() { RequestRematchOrTitle(ConfirmAction::Title); }
 static void PvbTopOnRematch() { RequestRematchOrTitle(ConfirmAction::Rematch); }
 
 static void DrawPvbTop() {
     TopStripCallbacks cb;
-    cb.onBack    = PvbTopOnBack;
+    cb.onBack = PvbTopOnBack;
     cb.onRematch = PvbTopOnRematch;
-    cb.extra     = nullptr;
-    cb.modeName  = "Player vs Greedy";
+    cb.extra = nullptr;
+    cb.modeName = "Player vs Greedy";
     DrawModeTopStrip(g_pvb, cb);
 }
 
@@ -183,18 +200,24 @@ static void DrawPvbCream() {
     if (!interactive) ImGui::EndDisabled();
     PopPanelButton();
 
-    if (hasUncommitted && !ps.ok && !ps.error.empty()) ImGui::TextDisabled("%s", ps.error.c_str());
-    else if (hasUncommitted && ps.ok) ImGui::TextDisabled("%s: +%d", ps.word.c_str(), ps.points);
-    else ImGui::TextDisabled("Last: %s", g_ui.lastAction.c_str());
+    if (hasUncommitted && !ps.ok && !ps.error.empty())
+        ImGui::TextDisabled("%s", ps.error.c_str());
+    else if (hasUncommitted && ps.ok)
+        ImGui::TextDisabled("%s: +%d", ps.word.c_str(), ps.points);
+    else
+        ImGui::TextDisabled("Last: %s", g_ui.lastAction.c_str());
 
     ImGui::Separator();
     const bool viewing = !g_pvb.atEnd();
-    const char* statusTxt = g_pvbUi.gameOver ? "GAME OVER" :
-                            (viewing ? "VIEWING HISTORY" :
-                             (g_pvbUi.turn == 0 ? "YOUR TURN" : "BOT'S TURN"));
-    const ImU32 statusCol = g_pvbUi.gameOver ? IM_COL32(220, 80, 80, 255) :
-                            (viewing ? IM_COL32(200, 160, 60, 255) :
-                             (g_pvbUi.turn == 0 ? IM_COL32(80, 180, 80, 255) : IM_COL32(220, 180, 60, 255)));
+    const char* statusTxt =
+        g_pvbUi.gameOver
+            ? "GAME OVER"
+            : (viewing ? "VIEWING HISTORY" : (g_pvbUi.turn == 0 ? "YOUR TURN" : "BOT'S TURN"));
+    const ImU32 statusCol = g_pvbUi.gameOver
+                                ? IM_COL32(220, 80, 80, 255)
+                                : (viewing ? IM_COL32(200, 160, 60, 255)
+                                           : (g_pvbUi.turn == 0 ? IM_COL32(80, 180, 80, 255)
+                                                                : IM_COL32(220, 180, 60, 255)));
     DrawScoresLine("You", g_pvb.score[0], "Bot", g_pvb.score[1], statusTxt, statusCol);
 
     ImGui::End();
@@ -202,9 +225,8 @@ static void DrawPvbCream() {
 }
 
 static void DrawPvbMode() {
-    if (!BeginModeScreen(AppMode::PlayerVsBot, kTopPvb, g_ui.dockBuiltPvb,
-                         "Legend##legend", "Cream##pvb", "Right Panel##pvb", 180.0f, 440.0f,
-                         DrawPvbTop))
+    if (!BeginModeScreen(AppMode::PlayerVsBot, kTopPvb, g_ui.dockBuiltPvb, "Legend##legend",
+                         "Cream##pvb", "Right Panel##pvb", 180.0f, 440.0f, DrawPvbTop))
         return;
 
     DrawPvbCream();
@@ -215,20 +237,27 @@ static void DrawPvbMode() {
         if (t >= 0) GoToCursor(g_pvb, t);
     }
     ImGui::Separator();
-    { static size_t seen = 0; DrawMoveHistoryTab(g_pvb, seen); }
+    {
+        static size_t seen = 0;
+        DrawMoveHistoryTab(g_pvb, seen);
+    }
     ImGui::End();
 
     DrawLegendCompact();
 
     if (!g_pvbUi.gameOver && g_pvbUi.turn == 1 && g_pvb.atEnd()) {
-        if (g_pvbUi.botWait > 0) --g_pvbUi.botWait;
-        else PvbBotTurn();
+        if (g_pvbUi.botWait > 0)
+            --g_pvbUi.botWait;
+        else
+            PvbBotTurn();
     }
 
-    const bool dialogOpen = g_ui.blankPopupOpen || g_ui.confirmBackOpen || g_ui.savePopupOpen || g_ui.loadPopupOpen;
+    const bool dialogOpen =
+        g_ui.blankPopupOpen || g_ui.confirmBackOpen || g_ui.savePopupOpen || g_ui.loadPopupOpen;
     if (g_pvbUi.turn == 0 && !g_pvbUi.gameOver && g_pvb.atEnd() && !dialogOpen &&
         !ImGui::GetIO().WantTextInput &&
-        (ImGui::IsKeyPressed(ImGuiKey_Enter, false) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter, false))) {
+        (ImGui::IsKeyPressed(ImGuiKey_Enter, false) ||
+         ImGui::IsKeyPressed(ImGuiKey_KeypadEnter, false))) {
         if (PvbEvaluateTurn().ok) PvbPlayMove();
     }
 
@@ -237,17 +266,22 @@ static void DrawPvbMode() {
         ImGui::SetNextWindowSize(ImVec2(360, 0), ImGuiCond_Appearing);
         ImGui::Begin("Game Over##pvb", nullptr, POPUP_FLAGS | ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("Final: You = %d   Bot = %d", g_pvb.score[0], g_pvb.score[1]);
-        if (g_pvbUi.winner < 0) ImGui::TextUnformatted("Tie!");
-        else if (g_pvbUi.winner == 0) ImGui::TextUnformatted("You win!");
-        else ImGui::TextUnformatted("Bot wins.");
+        if (g_pvbUi.winner < 0)
+            ImGui::TextUnformatted("Tie!");
+        else if (g_pvbUi.winner == 0)
+            ImGui::TextUnformatted("You win!");
+        else
+            ImGui::TextUnformatted("Bot wins.");
         ImGui::Separator();
-        const bool back    = ImGui::Button("Back to Title", ImVec2(-1, 32));
+        const bool back = ImGui::Button("Back to Title", ImVec2(-1, 32));
         const bool rematch = ImGui::Button("Rematch", ImVec2(-1, 32));
-        const bool view    = ImGui::Button("View Board", ImVec2(-1, 0));
+        const bool view = ImGui::Button("View Board", ImVec2(-1, 0));
         ImGui::End();
-        if (back)         LeaveToTitle();
-        else if (rematch) PvbStartGame((int)(std::random_device{}() & 1));
-        else if (view)    g_pvbUi.gameOverDismissed = true;
+        if (back)
+            LeaveToTitle();
+        else if (rematch)
+            PvbStartGame((int)(std::random_device{}() & 1));
+        else if (view)
+            g_pvbUi.gameOverDismissed = true;
     }
 }
-

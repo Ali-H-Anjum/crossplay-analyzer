@@ -1,23 +1,24 @@
-//MoveGen.h
+// MoveGen.h
 #pragma once
 
 #include <array>
+#include <bit>
 #include <cctype>
 #include <cstdint>
-#include <bit>
 #include <string>
 #include <vector>
+
+#include "cross_checks.h"
+#include "gaddag.h"
 #include "move.h"
 #include "tray.h"
-#include "gaddag.h"
-#include "cross_checks.h"
 
 // Steven Gordon's GADDAG move generation, in the two-phase shape the
 // Python used: extendLeft from the anchor, '^' turn, extendRight.
 // Generation never writes to the Board's tiles; the only mutable state
 // is the rack counts, decremented and restored around each recursion.
 
-inline constexpr bool DEDUPE_ANCHORS     = true;
+inline constexpr bool DEDUPE_ANCHORS = true;
 inline constexpr bool DEDUPE_SINGLE_TILE = true;
 
 inline constexpr int BLANK_SLOT = toIndex(Letter::Blank);
@@ -25,8 +26,8 @@ inline constexpr int BLANK_SLOT = toIndex(Letter::Blank);
 struct RawMove {
     std::array<uint8_t, BOARD_LENGTH> letters;
     uint16_t blank_mask;
-    uint8_t  row, col, len;
-    bool     is_descending;
+    uint8_t row, col, len;
+    bool is_descending;
 };
 
 inline Move toMove(const RawMove& m) {
@@ -38,7 +39,7 @@ inline Move toMove(const RawMove& m) {
             ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
         w.push_back(ch);
     }
-    return Move{ w, m.row, m.col, m.is_descending };
+    return Move{w, m.row, m.col, m.is_descending};
 }
 
 struct MoveList {
@@ -47,23 +48,25 @@ struct MoveList {
 };
 
 struct GenState {
-    const Gaddag*     gd = nullptr;      // NEW: needed for step / node lookups
-    const uint8_t*    line = nullptr;    // letters along this line
-    const uint32_t*   cross = nullptr;   // cross-check masks along this line
+    const Gaddag* gd = nullptr;       // NEW: needed for step / node lookups
+    const uint8_t* line = nullptr;    // letters along this line
+    const uint32_t* cross = nullptr;  // cross-check masks along this line
     std::array<uint8_t, NUM_LETTER_SLOTS> rack{};
-    uint32_t          rack_mask = 0;
-    uint16_t          occ = 0;
-    uint16_t          line_anchors = 0;
-    int               anchor_pos = 0;
-    uint8_t           line_idx = 0;
-    bool              vertical = false;
-    bool              right_clear = false;
-    bool              skip_single_tile = false;
+    uint32_t rack_mask = 0;
+    uint16_t occ = 0;
+    uint16_t line_anchors = 0;
+    int anchor_pos = 0;
+    uint8_t line_idx = 0;
+    bool vertical = false;
+    bool right_clear = false;
+    bool skip_single_tile = false;
     std::array<uint8_t, BOARD_LENGTH> word{};
 };
 
-template <class Sink> void extendLeft (GenState& s, Sink& out, int pos, const Arc& arc, uint16_t blanks);
-template <class Sink> void extendRight(GenState& s, Sink& out, int pos, const Arc& arc, uint16_t blanks, int lo);
+template <class Sink>
+void extendLeft(GenState& s, Sink& out, int pos, const Arc& arc, uint16_t blanks);
+template <class Sink>
+void extendRight(GenState& s, Sink& out, int pos, const Arc& arc, uint16_t blanks, int lo);
 
 inline bool clearBefore(const GenState& s, int pos) {
     return pos == 0 || !((s.occ >> (pos - 1)) & 1u);
@@ -84,8 +87,15 @@ inline void emitMove(const GenState& s, Sink& out, int lo, int hi, uint16_t blan
     m.len = static_cast<uint8_t>(hi - lo + 1);
     for (int i = 0; i < m.len; ++i) m.letters[i] = s.word[lo + i];
     m.blank_mask = static_cast<uint16_t>(blanks >> lo);
-    if (s.vertical) { m.row = static_cast<uint8_t>(lo); m.col = s.line_idx; m.is_descending = true; }
-    else            { m.row = s.line_idx; m.col = static_cast<uint8_t>(lo); m.is_descending = false; }
+    if (s.vertical) {
+        m.row = static_cast<uint8_t>(lo);
+        m.col = s.line_idx;
+        m.is_descending = true;
+    } else {
+        m.row = s.line_idx;
+        m.col = static_cast<uint8_t>(lo);
+        m.is_descending = false;
+    }
     out(m);
 }
 
@@ -108,8 +118,8 @@ inline void tryRack(GenState& s, uint32_t cand, int pos, uint16_t blanks, Step&&
 // Left half. `arc` is the arc INTO the current state; `node` its destination.
 // `next` is the arc OUT of the state we just landed on, on letter idx.
 template <class Sink>
-inline void stepLeft(GenState& s, Sink& out, int pos, int idx,
-                     const Arc& arc, const Node& node, uint16_t blanks) {
+inline void stepLeft(GenState& s, Sink& out, int pos, int idx, const Arc& arc, const Node& node,
+                     uint16_t blanks) {
     s.word[pos] = static_cast<uint8_t>(idx + 1);
     const bool left_clear = clearBefore(s, pos);
 
@@ -128,8 +138,8 @@ inline void stepLeft(GenState& s, Sink& out, int pos, int idx,
 }
 
 template <class Sink>
-inline void stepRight(GenState& s, Sink& out, int pos, int idx,
-                      const Arc& arc, const Node& node, uint16_t blanks, int lo) {
+inline void stepRight(GenState& s, Sink& out, int pos, int idx, const Arc& arc, const Node& node,
+                      uint16_t blanks, int lo) {
     s.word[pos] = static_cast<uint8_t>(idx + 1);
 
     if (((arc.letter_set_mask >> idx) & 1u) && clearAfter(s, pos))
@@ -154,9 +164,8 @@ void extendLeft(GenState& s, Sink& out, int pos, const Arc& arc, uint16_t blanks
     }
     const uint32_t cand = (arc.letter_set_mask | node.arc_mask) & s.cross[pos] & ALL_LETTERS;
     if (!cand) return;
-    tryRack(s, cand, pos, blanks, [&](int idx, uint16_t bl) {
-        stepLeft(s, out, pos, idx, arc, node, bl);
-    });
+    tryRack(s, cand, pos, blanks,
+            [&](int idx, uint16_t bl) { stepLeft(s, out, pos, idx, arc, node, bl); });
 }
 
 template <class Sink>
@@ -169,18 +178,17 @@ void extendRight(GenState& s, Sink& out, int pos, const Arc& arc, uint16_t blank
     }
     const uint32_t cand = (arc.letter_set_mask | node.arc_mask) & s.cross[pos] & ALL_LETTERS;
     if (!cand) return;
-    tryRack(s, cand, pos, blanks, [&](int idx, uint16_t bl) {
-        stepRight(s, out, pos, idx, arc, node, bl, lo);
-    });
+    tryRack(s, cand, pos, blanks,
+            [&](int idx, uint16_t bl) { stepRight(s, out, pos, idx, arc, node, bl, lo); });
 }
 
 template <class Sink>
-inline void generateMoves(const Gaddag& g, const Board& b, const AnchorLines& al,
-                          const Tray& tray, Sink& out) {
+inline void generateMoves(const Gaddag& g, const Board& b, const AnchorLines& al, const Tray& tray,
+                          Sink& out) {
     const Arc& init = g.get_init();
 
     GenState s;
-    s.gd = &g;                       // NEW
+    s.gd = &g;  // NEW
     s.rack = tray.counts;
     s.rack_mask = tray.uniqueLetterMask();
 

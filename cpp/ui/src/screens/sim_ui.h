@@ -2,47 +2,45 @@
 // Sim UI: ImGui rendering and UI state for Bot vs Bot mode.
 // Depends on sim_game.h, sim_stats.h, sim_csv.h, sim_mover.h and widget/screen headers.
 
-#include "sim_game.h"
-#include "sim_stats.h"
-#include "sim_csv.h"
-#include "sim_mover.h"
-#include "state/state.h"
-#include "state/board_rules.h"
-#include "widgets/screen_shell.h"
-#include "widgets/tray_widget.h"
-#include "widgets/bag_panel.h"
-#include "widgets/board_canvas.h"
-#include "widgets/top_strip.h"
-#include "panels/bot_search_panel.h"
-#include "panels/history_panel.h"
-#include "common/theme.h"
-
 #include <cmath>
 #include <cstdio>
 #include <random>
 #include <thread>
 
+#include "common/theme.h"
+#include "panels/bot_search_panel.h"
+#include "panels/history_panel.h"
+#include "sim_csv.h"
+#include "sim_game.h"
+#include "sim_mover.h"
+#include "sim_stats.h"
+#include "state/board_rules.h"
+#include "state/state.h"
+#include "widgets/bag_panel.h"
+#include "widgets/board_canvas.h"
+#include "widgets/screen_shell.h"
+#include "widgets/top_strip.h"
+#include "widgets/tray_widget.h"
+
 // ================================================================ Sim UI state
 struct SimUiState {
-    float  speedMs = 60.0f;
+    float speedMs = 60.0f;
     double lastStep = 0.0;
-    bool   autoRunning = false;
-    bool   stepPending = false;
-    bool   replay = false;
-    bool   started = false;
-    int    nGames = 20;
+    bool autoRunning = false;
+    bool stepPending = false;
+    bool replay = false;
+    bool started = false;
+    int nGames = 20;
     BatchRun batch;
     SimGame sim;
-    int    nParallel = 1;
-    bool   perfInfo = false;
+    int nParallel = 1;
+    bool perfInfo = false;
 };
 
 static SimUiState g_simUi;
 
 // ================================================================ Sim view sync (snapshot-based)
-static const Snapshot& SimViewSnapshot() {
-    return g_simState.turnStart();
-}
+static const Snapshot& SimViewSnapshot() { return g_simState.turnStart(); }
 
 static void SimSyncView() { ApplyVisible(g_simState, SimViewSnapshot()); }
 
@@ -53,13 +51,18 @@ static void SimGoTo(int target) {
 
 static void SimPushHistory(const SimGame::Turn& t) {
     Entry e;
-    static_cast<Snapshot&>(e) = MakeSnapshot(g_simUi.sim.board, g_simUi.sim.trays[0], g_simUi.sim.trays[1],
-                                             g_simUi.sim.bag.get(), g_simUi.sim.score[0], g_simUi.sim.score[1]);
+    static_cast<Snapshot&>(e) =
+        MakeSnapshot(g_simUi.sim.board, g_simUi.sim.trays[0], g_simUi.sim.trays[1],
+                     g_simUi.sim.bag.get(), g_simUi.sim.score[0], g_simUi.sim.score[1]);
     e.turnNumber = t.turnNumber;
     e.player = t.player;
-    if (t.swapped)      e.label = "SWAP " + t.swapLetters;
-    else if (t.passed)  e.label = "PASS";
-    else                e.label = FormatMoveLabel(t.move.word, t.move.row, t.move.col, t.move.is_descending, t.score);
+    if (t.swapped)
+        e.label = "SWAP " + t.swapLetters;
+    else if (t.passed)
+        e.label = "PASS";
+    else
+        e.label =
+            FormatMoveLabel(t.move.word, t.move.row, t.move.col, t.move.is_descending, t.score);
     g_simState.history.push_back(std::move(e));
     g_simState.cursor = (int)g_simState.history.size();
     SimSyncView();
@@ -67,11 +70,13 @@ static void SimPushHistory(const SimGame::Turn& t) {
 
 // ================================================================ Sim stepping
 static bool SimStepAndRecord() {
-    return ::SimStepAndRecord(g_simUi.sim, g_simUi, [](const SimGame::Turn& t) { SimPushHistory(t); });
+    return ::SimStepAndRecord(g_simUi.sim, g_simUi,
+                              [](const SimGame::Turn& t) { SimPushHistory(t); });
 }
 
 static bool SimTryAdvanceAsync() {
-    return ::SimTryAdvanceAsync(g_simUi.sim, g_simUi, [](const SimGame::Turn& t) { SimPushHistory(t); });
+    return ::SimTryAdvanceAsync(g_simUi.sim, g_simUi,
+                                [](const SimGame::Turn& t) { SimPushHistory(t); });
 }
 
 static void SimReset() {
@@ -80,8 +85,9 @@ static void SimReset() {
     g_simUi.sim.reset(g_gaddag, seed);
     g_simState.history.clear();
     g_simState.cursor = 0;
-    g_simState.initial = MakeSnapshot(g_simUi.sim.board, g_simUi.sim.trays[0], g_simUi.sim.trays[1],
-                                      g_simUi.sim.bag.get(), g_simUi.sim.score[0], g_simUi.sim.score[1]);
+    g_simState.initial =
+        MakeSnapshot(g_simUi.sim.board, g_simUi.sim.trays[0], g_simUi.sim.trays[1],
+                     g_simUi.sim.bag.get(), g_simUi.sim.score[0], g_simUi.sim.score[1]);
     SimSyncView();
     g_simUi.started = true;
     g_simUi.replay = false;
@@ -94,13 +100,17 @@ static void BatchStart(int n, int parallel) {
     BatchRun& b = g_simUi.batch;
     if (b.running || !g_gaddag) return;
     b.stop();
-    b.cancel = false; b.finished = false; b.done = 0; b.next = 0;
+    b.cancel = false;
+    b.finished = false;
+    b.done = 0;
+    b.next = 0;
     b.total = std::clamp(n, 1, 1000);
     if (b.total > 1 && (b.total & 1)) ++b.total;
     const int cores = std::max(1, (int)std::thread::hardware_concurrency());
     b.parallel = std::clamp(parallel, 1, std::min(cores, b.total));
     b.perfInfo = g_simUi.perfInfo;
-    b.summary.clear(); b.showSummary = false;
+    b.summary.clear();
+    b.showSummary = false;
     for (int i = 0; i < 2; ++i) {
         CopyMoverSettings(b.cfg[i], g_simUi.sim.movers[i]);
         if (b.parallel > 1) b.cfg[i].search.threads = 1;
@@ -110,7 +120,8 @@ static void BatchStart(int n, int parallel) {
     b.runId = TimeStamp();
     b.res.assign(b.total, BatchGameRes{});
     b.t0 = std::chrono::steady_clock::now();
-    g_simUi.autoRunning = false; g_simUi.stepPending = false;
+    g_simUi.autoRunning = false;
+    g_simUi.stepPending = false;
     b.running = true;
     b.alive = b.parallel;
     for (int i = 0; i < b.parallel; ++i) b.pool.emplace_back([&b] { b.worker(g_gaddag); });
@@ -118,7 +129,11 @@ static void BatchStart(int n, int parallel) {
 
 static void BatchPoll() {
     BatchRun& b = g_simUi.batch;
-    if (b.running && b.finished) { b.stop(); b.running = false; b.showSummary = true; }
+    if (b.running && b.finished) {
+        b.stop();
+        b.running = false;
+        b.showSummary = true;
+    }
 }
 
 static void DrawBatchPopup() {
@@ -129,7 +144,8 @@ static void DrawBatchPopup() {
                  POPUP_FLAGS | ImGuiWindowFlags_AlwaysAutoResize);
     if (b.running) {
         const int done = b.done;
-        const double el = std::chrono::duration<double>(std::chrono::steady_clock::now() - b.t0).count();
+        const double el =
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - b.t0).count();
         ImGui::Text("Game %d / %d    %.0f s elapsed", std::min(done + 1, b.total), b.total, el);
         ImGui::ProgressBar(b.total ? (float)done / (float)b.total : 0.0f, ImVec2(420, 0));
         if (ImGui::Button("Cancel", ImVec2(100, 28))) b.cancel = true;
@@ -137,16 +153,24 @@ static void DrawBatchPopup() {
         ImGui::InputTextMultiline("##sum", b.summary.data(), b.summary.size() + 1, ImVec2(900, 520),
                                   ImGuiInputTextFlags_ReadOnly);
         static double copiedAt = -10.0;
-        if (ImGui::Button("Copy", ImVec2(100, 28))) { ImGui::SetClipboardText(b.summary.c_str()); copiedAt = ImGui::GetTime(); }
+        if (ImGui::Button("Copy", ImVec2(100, 28))) {
+            ImGui::SetClipboardText(b.summary.c_str());
+            copiedAt = ImGui::GetTime();
+        }
         ImGui::SameLine();
         if (ImGui::Button("Close", ImVec2(100, 28))) b.showSummary = false;
-        if (ImGui::GetTime() - copiedAt < 2.0) { ImGui::SameLine(); ImGui::TextDisabled("Copied."); }
+        if (ImGui::GetTime() - copiedAt < 2.0) {
+            ImGui::SameLine();
+            ImGui::TextDisabled("Copied.");
+        }
     }
     ImGui::End();
 }
 static void SimTopOnBack() {
     BatchRun& b = g_simUi.batch;
-    b.stop(); b.running = false; b.showSummary = false;
+    b.stop();
+    b.running = false;
+    b.showSummary = false;
     LeaveToTitle();
 }
 static void SimTopOnRematch() { SimReset(); }
@@ -182,7 +206,8 @@ static void SimTopExtra() {
     ImGui::SameLine();
     ImGui::SetNextItemWidth(50);
     ImGui::InputInt("Parallel", &g_simUi.nParallel, 0, 0);
-    g_simUi.nParallel = std::clamp(g_simUi.nParallel, 1, std::max(1, (int)std::thread::hardware_concurrency()));
+    g_simUi.nParallel =
+        std::clamp(g_simUi.nParallel, 1, std::max(1, (int)std::thread::hardware_concurrency()));
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip(
             "Games played at once.\n"
@@ -203,18 +228,19 @@ static void SimTopExtra() {
 
 static void DrawSimTop() {
     TopStripCallbacks cb;
-    cb.onBack    = SimTopOnBack;
+    cb.onBack = SimTopOnBack;
     cb.onRematch = SimTopOnRematch;
-    cb.extra     = SimTopExtra;
-    cb.modeName  = "Bot vs Bot";
+    cb.extra = SimTopExtra;
+    cb.modeName = "Bot vs Bot";
     DrawModeTopStrip(g_simState, cb);
 }
 
 static void DrawBotThinkingBar(int p) {
     BotPanel& bp = g_simUi.sim.movers[p].search;
     if (!bp.running()) return;
-    const double sec = bp.det ? bp.det->elapsedMs() / 1000.0
-                     : bp.mcts ? bp.mcts->elapsedMs() / 1000.0 : 0.0;
+    const double sec = bp.det    ? bp.det->elapsedMs() / 1000.0
+                       : bp.mcts ? bp.mcts->elapsedMs() / 1000.0
+                                 : 0.0;
     if (ImGui::Button("Stop", ImVec2(80, 28))) {
         g_simUi.autoRunning = false;
         g_simUi.stepPending = true;
@@ -256,18 +282,18 @@ static void DrawSimCream() {
     ImGui::Separator();
 
     const auto& sim = g_simUi.sim;
-    const int  p = (int)(sim.turns.size() & 1);
+    const int p = (int)(sim.turns.size() & 1);
     const bool atEnd = g_simState.atEnd();
     const bool thinking = !g_simUi.replay && !sim.gameOver && sim.movers[p].search.running();
-    const char* statusTxt = !atEnd ? "VIEWING HISTORY" :
-                            g_simUi.replay ? "REPLAY" :
-                            sim.gameOver ? "GAME OVER" :
-                            thinking ? (p == 0 ? "P1 THINKING" : "P2 THINKING") :
-                            (g_simState.history.empty() ? "READY" : "RUNNING");
-    const ImU32 statusCol = !atEnd ? IM_COL32(200, 160, 60, 255) :
-                            (g_simUi.replay || sim.gameOver) ? IM_COL32(220, 80, 80, 255) :
-                            thinking ? IM_COL32(80, 150, 220, 255) :
-                            IM_COL32(80, 180, 80, 255);
+    const char* statusTxt = !atEnd           ? "VIEWING HISTORY"
+                            : g_simUi.replay ? "REPLAY"
+                            : sim.gameOver   ? "GAME OVER"
+                            : thinking       ? (p == 0 ? "P1 THINKING" : "P2 THINKING")
+                                             : (g_simState.history.empty() ? "READY" : "RUNNING");
+    const ImU32 statusCol = !atEnd                             ? IM_COL32(200, 160, 60, 255)
+                            : (g_simUi.replay || sim.gameOver) ? IM_COL32(220, 80, 80, 255)
+                            : thinking                         ? IM_COL32(80, 150, 220, 255)
+                                                               : IM_COL32(80, 180, 80, 255);
     {
         const float w = ImGui::GetContentRegionAvail().x;
         ImGui::SetWindowFontScale(1.8f);
@@ -287,9 +313,8 @@ static void DrawSimMode() {
     if (!g_simUi.started) SimReset();
     BatchPoll();
 
-    if (!BeginModeScreen(AppMode::BotVsBot, kTopSim, g_ui.dockBuiltSim,
-                         "Left Panel##sim", "Cream##sim", "Right Panel##sim", 300.0f, 440.0f,
-                         DrawSimTop))
+    if (!BeginModeScreen(AppMode::BotVsBot, kTopSim, g_ui.dockBuiltSim, "Left Panel##sim",
+                         "Cream##sim", "Right Panel##sim", 300.0f, 440.0f, DrawSimTop))
         return;
 
     DrawSimCream();

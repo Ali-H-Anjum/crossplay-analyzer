@@ -1,10 +1,11 @@
-//Move.h
+// Move.h
 
 #pragma once
 
+#include <cctype>
 #include <string>
 #include <vector>
-#include <cctype>
+
 #include "letter.h"
 
 // A single resolved letter of a Move, at a board square.
@@ -12,7 +13,7 @@ struct LetterPlacement {
     Letter letter;
     int row;
     int col;
-    bool is_blank; // true if this letter came from a blank tile
+    bool is_blank;  // true if this letter came from a blank tile
 };
 
 // A placed word in UI-facing form. Coordinates are (row, col), row 0 = top.
@@ -32,13 +33,12 @@ struct Move {
         for (char ch : word) {
             bool blank = std::islower(static_cast<unsigned char>(ch)) != 0;
             char upper = static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
-            positions.push_back({ letterFromChar(upper), r, c, blank });
-            if (is_descending) ++r; else ++c;
+            positions.push_back({letterFromChar(upper), r, c, blank});
+            if (is_descending)
+                ++r;
+            else
+                ++c;
         }
         return positions;
     }
 };
-
-
-
-

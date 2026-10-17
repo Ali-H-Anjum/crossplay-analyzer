@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+
 #include "gaddag.h"
 
 #ifndef WORDLIST_PATH

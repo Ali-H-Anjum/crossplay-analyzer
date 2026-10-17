@@ -1,8 +1,8 @@
 #pragma once
 // Board + bag screen shell, tray interaction, and bag views.
+#include "widgets/bag_panel.h"
 #include "widgets/screen_shell.h"
 #include "widgets/tray_widget.h"
-#include "widgets/bag_panel.h"
 
 // ================================================================ Exploration
 static void ExplorationReset() {
@@ -19,22 +19,27 @@ static void ExplorationReset() {
 }
 
 static void LoadTestingCaseIntoExploration() {
-    ExplorationReset();   // initial snapshot = empty board, full bag
+    ExplorationReset();  // initial snapshot = empty board, full bag
 
-    struct MoveSpec { const char* word; int row, col; bool desc; int player; };
+    struct MoveSpec {
+        const char* word;
+        int row, col;
+        bool desc;
+        int player;
+    };
     const MoveSpec specs[] = {
-        {"LANDAU", 2, 7, true,  0},
+        {"LANDAU", 2, 7, true, 0},
         {"NUDELY", 7, 6, false, 1},
-        {"BESES",  8, 5, false, 0},
+        {"BESES", 8, 5, false, 0},
     };
     for (const auto& s : specs) {
         const Board before = g_ex.board;
-        Move mv{ s.word, s.row, s.col, s.desc };
+        Move mv{s.word, s.row, s.col, s.desc};
         for (const auto& pl : mv.letterPositions()) {
             if (g_ex.board.letters_row[sq(pl.row, pl.col)] != EMPTY_SQUARE) continue;
             placeTile(g_ex.board, pl.row, pl.col, pl.letter, pl.is_blank);
             const Letter tl = pl.is_blank ? Letter::Blank : pl.letter;
-            if (g_ex.bag->count(tl) > 0) g_ex.bag->removeLetter(tl);   // keep the bag consistent
+            if (g_ex.bag->count(tl) > 0) g_ex.bag->removeLetter(tl);  // keep the bag consistent
         }
         RefreshDerived(g_ex);
         const Placement ps = EvaluatePlacement(g_ex.board, before);
@@ -58,24 +63,28 @@ static void LoadTestingCaseIntoExploration() {
 static void ExUndoTurn() {
     // Revert only the board; the tray may have been modified outside the turn
     // (added tiles from the bag, random tile) and shouldn't be rolled back.
-    if (g_ex.cursor == 0) g_ex.board = g_ex.initial.board;
-    else                  g_ex.board = g_ex.history[g_ex.cursor - 1].board;
+    if (g_ex.cursor == 0)
+        g_ex.board = g_ex.initial.board;
+    else
+        g_ex.board = g_ex.history[g_ex.cursor - 1].board;
     RefreshDerived(g_ex);
     EndDrag();
     g_ui.blankPopupOpen = false;
     g_ui.lastAction = "Reverted to last committed.";
 }
 
-static void ExTopOnBack()    { LeaveToTitle(); }
+static void ExTopOnBack() { LeaveToTitle(); }
 static void ExTopOnRematch() { ExplorationReset(); }
-static void ExTopExtra()     { if (ImGui::Button("Load Testing Case")) LoadTestingCaseIntoExploration(); }
+static void ExTopExtra() {
+    if (ImGui::Button("Load Testing Case")) LoadTestingCaseIntoExploration();
+}
 
 static void DrawExplorationTop() {
     TopStripCallbacks cb;
-    cb.onBack    = ExTopOnBack;
+    cb.onBack = ExTopOnBack;
     cb.onRematch = ExTopOnRematch;
-    cb.extra     = ExTopExtra;
-    cb.modeName  = "Exploration";
+    cb.extra = ExTopExtra;
+    cb.modeName = "Exploration";
     DrawModeTopStrip(g_ex, cb);
 }
 
@@ -93,16 +102,16 @@ static void DrawExplorationCream() {
 
     const bool hasUncommitted = HasUncommitted(g_ex);
     const Placement exPS = (atEnd && hasUncommitted)
-        ? EvaluatePlacement(g_ex.board, g_ex.turnStart().board)
-        : Placement{};
+                               ? EvaluatePlacement(g_ex.board, g_ex.turnStart().board)
+                               : Placement{};
     const bool hasHighlight = (g_mg.hlMoveIdx >= 0);
     const RawMove* botMove = BotPlayable();
 
     // Play Move: staged tiles form a valid placement, or a Move Generation row is highlighted,
     // or a Bot Search row is selected. The last two need nothing staged.
-    const bool canPlayStaged    = atEnd && hasUncommitted && g_ex.boardValid && exPS.ok;
+    const bool canPlayStaged = atEnd && hasUncommitted && g_ex.boardValid && exPS.ok;
     const bool canPlayHighlight = atEnd && hasHighlight && !hasUncommitted && g_ex.boardValid;
-    const bool canPlayBot       = atEnd && !hasHighlight && botMove && g_ex.boardValid;
+    const bool canPlayBot = atEnd && !hasHighlight && botMove && g_ex.boardValid;
     const bool canPlay = canPlayStaged || canPlayHighlight || canPlayBot;
     const bool canUndo = atEnd && hasUncommitted;
 
@@ -114,13 +123,16 @@ static void DrawExplorationCream() {
             g_ui.lastAction = "Move committed.";
         } else if (canPlayHighlight) {
             const std::vector<ScoredMove>* listPtr = &g_mg.allMoves;
-            if (g_mg.view == MoveView::Unique) listPtr = &g_mg.uniqueMoves;
-            else if (g_mg.view == MoveView::TopN) listPtr = &g_mg.topNMoves;
+            if (g_mg.view == MoveView::Unique)
+                listPtr = &g_mg.uniqueMoves;
+            else if (g_mg.view == MoveView::TopN)
+                listPtr = &g_mg.topNMoves;
             const auto& list = *listPtr;
             if (g_mg.hlMoveIdx < (int)list.size()) {
                 const RawMove rm = list[g_mg.hlMoveIdx].rm;
                 ApplyHighlightedMove(g_ex, rm);
-                // Evaluate AFTER applying: before, the staged diff is empty and the label was always "(play)".
+                // Evaluate AFTER applying: before, the staged diff is empty and the label was
+                // always "(play)".
                 const Placement ps = EvaluatePlacement(g_ex.board, g_ex.turnStart().board);
                 PushEntry(g_ex, ps.ok ? FormatMove(ps) : std::string("(play)"), -1);
                 g_mg.hlMoveIdx = -1;
@@ -128,7 +140,7 @@ static void DrawExplorationCream() {
                 g_mg.movesStale = true;
             }
         } else if (canPlayBot) {
-            const RawMove rm = *botMove;               // copy: selRaw is cleared below
+            const RawMove rm = *botMove;  // copy: selRaw is cleared below
             ApplyHighlightedMove(g_ex, rm);
             const Placement ps = EvaluatePlacement(g_ex.board, g_ex.turnStart().board);
             PushEntry(g_ex, ps.ok ? FormatMove(ps) : std::string("(play)"), -1);
@@ -177,8 +189,10 @@ static void DrawExplorationCream() {
     if (canPlayHighlight || canPlayBot) {
         ImGui::TextDisabled("Highlighted move ready.");
     } else if (atEnd && hasUncommitted) {
-        if (exPS.ok) ImGui::Text("Pending move: %s  (+%d)", exPS.word.c_str(), exPS.points);
-        else         ImGui::TextDisabled("Pending move: %s", exPS.error.c_str());
+        if (exPS.ok)
+            ImGui::Text("Pending move: %s  (+%d)", exPS.word.c_str(), exPS.points);
+        else
+            ImGui::TextDisabled("Pending move: %s", exPS.error.c_str());
     }
     ImGui::TextDisabled("Last: %s", g_ui.lastAction.c_str());
 
@@ -188,9 +202,8 @@ static void DrawExplorationCream() {
 
 // ================================================================ Exploration mode
 static void DrawExplorationMode() {
-    if (!BeginModeScreen(AppMode::Exploration, kTopEx, g_ui.dockBuiltEx,
-                         "Legend##legend", "Cream##ex", "Right Panel##ex", 180.0f, 440.0f,
-                         DrawExplorationTop))
+    if (!BeginModeScreen(AppMode::Exploration, kTopEx, g_ui.dockBuiltEx, "Legend##legend",
+                         "Cream##ex", "Right Panel##ex", 180.0f, 440.0f, DrawExplorationTop))
         return;
 
     DrawExplorationCream();
@@ -219,8 +232,7 @@ static void DrawExplorationMode() {
     DrawLegendFull();
 
     ImGuiIO& io = ImGui::GetIO();
-    if (!io.WantTextInput && io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z) &&
-        g_ex.atEnd() && HasUncommitted(g_ex))
+    if (!io.WantTextInput && io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z) && g_ex.atEnd() &&
+        HasUncommitted(g_ex))
         ExUndoTurn();
 }
-

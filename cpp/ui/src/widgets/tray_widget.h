@@ -5,11 +5,11 @@
 // (DrawTileBody, DrawTileGlyph, COL_RACK_SHELF, COL_TILE, kRackSize),
 // state/state.h (ModeState, Tray, g_ui, DragState, DragSource),
 // state/board_rules.h (TrayOrder, TrayLetters, BagReturn).
-#include "common/theme.h"
-#include "state/state.h"
-#include "state/board_rules.h"
-
 #include <algorithm>
+
+#include "common/theme.h"
+#include "state/board_rules.h"
+#include "state/state.h"
 
 // Draws a static rack strip (no interaction). Returns nothing; hoverIdxOut is set
 // when the mouse is over a tile slot (interactive mode only).
@@ -23,14 +23,16 @@ static void DrawTrayStrip(const TrayOrder& order, bool interactive, int* hoverId
 
     // Shelf the tiles sit on: starts below the tiles' midline so it shows underneath them.
     dl->AddRectFilled(ImVec2(origin.x - 10.0f, origin.y + cell * 0.72f),
-                      ImVec2(origin.x + rackW + 10.0f, origin.y + cell + 10.0f),
-                      COL_RACK_SHELF, 6.0f);
+                      ImVec2(origin.x + rackW + 10.0f, origin.y + cell + 10.0f), COL_RACK_SHELF,
+                      6.0f);
 
     for (int i = 0; i < order.size(); ++i) {
         const ImVec2 p0(origin.x + i * (cell + gap), origin.y);
         DrawTileBody(dl, p0, cell, COL_TILE);
-        if (order[i] == Letter::Blank) DrawTileGlyph(dl, p0, cell, ' ', 0, true);
-        else                            DrawTileGlyph(dl, p0, cell, toChar(order[i]), LetterPoints(order[i]), true);
+        if (order[i] == Letter::Blank)
+            DrawTileGlyph(dl, p0, cell, ' ', 0, true);
+        else
+            DrawTileGlyph(dl, p0, cell, toChar(order[i]), LetterPoints(order[i]), true);
     }
     ImGui::Dummy(ImVec2(rackW, cell + 12.0f));
 
@@ -39,7 +41,8 @@ static void DrawTrayStrip(const TrayOrder& order, bool interactive, int* hoverId
         if (interactive && winHovered) {
             ImVec2 mouse = ImGui::GetMousePos();
             ImVec2 tMax(origin.x + slots * (cell + gap) - gap, origin.y + cell);
-            if (mouse.x >= origin.x && mouse.x < tMax.x && mouse.y >= origin.y && mouse.y < tMax.y) {
+            if (mouse.x >= origin.x && mouse.x < tMax.x && mouse.y >= origin.y &&
+                mouse.y < tMax.y) {
                 int i = (int)((mouse.x - origin.x) / (cell + gap));
                 if (i >= 0 && i < order.size()) *hoverIdxOut = i;
             }

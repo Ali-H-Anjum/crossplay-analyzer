@@ -1,5 +1,5 @@
-//Gaddag.cpp
-#include "gaddag.h"   // own header first
+// Gaddag.cpp
+#include "gaddag.h"  // own header first
 
 #include <bit>        // popcount, countr_zero
 #include <cctype>     // toupper
@@ -12,7 +12,7 @@ Gaddag::Gaddag(const std::string& path) {
     nodes.reserve(NODE_COUNT);
     scratch.reserve(NODE_COUNT * ARC_SLOTS);
 
-    root = makeNode();                  // node 0
+    root = makeNode();  // node 0
     init.destination_state = root;
 
     std::ifstream file(path);
@@ -43,7 +43,7 @@ Arc& Gaddag::get_or_create_arc(uint32_t st, char ch) {
     const int idx = char_to_index(ch);
     Node& n = nodes[st];
     n.arc_mask |= (1u << idx);
-    return scratch[n.arc_offset + idx];   // scratch layout: offset + idx
+    return scratch[n.arc_offset + idx];  // scratch layout: offset + idx
 }
 
 // Compact scratch into one pool, arcs ascending by idx ('^' last), then free scratch.
@@ -76,7 +76,7 @@ uint32_t Gaddag::add_final_arc(uint32_t st, char c1, char c2) {
         const uint32_t d = makeNode();
         get_or_create_arc(st, c1).destination_state = d;
     }
-    Arc& arc = get_or_create_arc(st, c1);     // no allocation after this point
+    Arc& arc = get_or_create_arc(st, c1);  // no allocation after this point
     arc.letter_set_mask |= (1u << char_to_index(c2));
     return arc.destination_state;
 }
@@ -95,21 +95,20 @@ void Gaddag::add_word(const std::string& word) {
     const int n = static_cast<int>(word.size());
 
     uint32_t current_state = root;
-    for (int i = n - 1; i >= 2; --i)            // range(n-1, 1, -1)
+    for (int i = n - 1; i >= 2; --i)  // range(n-1, 1, -1)
         current_state = add_arc(current_state, word[i]);
     add_final_arc(current_state, word[1], word[0]);
 
     current_state = root;
-    for (int i = n - 2; i >= 0; --i)            // range(n-2, -1, -1)
+    for (int i = n - 2; i >= 0; --i)  // range(n-2, -1, -1)
         current_state = add_arc(current_state, word[i]);
     current_state = add_final_arc(current_state, SEPARATOR_CHAR, word[n - 1]);
 
     bool first_iteration = true;
-    for (int m = n - 2; m >= 1; --m) {          // range(n-2, 0, -1)
+    for (int m = n - 2; m >= 1; --m) {  // range(n-2, 0, -1)
         uint32_t force_st = current_state;
         current_state = root;
-        for (int i = m - 1; i >= 0; --i)
-            current_state = add_arc(current_state, word[i]);
+        for (int i = m - 1; i >= 0; --i) current_state = add_arc(current_state, word[i]);
         current_state = add_arc(current_state, SEPARATOR_CHAR);
         Arc& arc = force_arc(current_state, word[m], force_st);
 

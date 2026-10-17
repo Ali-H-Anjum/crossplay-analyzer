@@ -1,24 +1,24 @@
 #pragma once
 #include <array>
 #include <cstdint>
+
 #include "position.h"
 
 // ---- EDIT HERE: features and weights -------------------------------------
 enum Feat : int { F_SCORE, F_LEAVE, F_LANES, F_COUNT };
 using Weights = std::array<int, F_COUNT>;
 //                                    SCORE LEAVE LANES      (tenths of a point per unit)
-inline constexpr Weights W_BAG     = {  10,    1,   15 };    // bag still has tiles
-inline constexpr Weights W_ENDGAME = {  10,    0,    0 };    // bag empty
+inline constexpr Weights W_BAG = {10, 1, 15};     // bag still has tiles
+inline constexpr Weights W_ENDGAME = {10, 0, 0};  // bag empty
 
 // PLACEHOLDER leave values (tenths of a point), Scrabble-ish, NOT tuned for Crossplay.
 // Index = letter A..Z, then blank. Same order as POINTS_PER_TILE.
 inline constexpr std::array<int16_t, NUM_LETTER_SLOTS> LEAVE = {
-    /*A*/ 5,  /*B*/ -20, /*C*/ 0,   /*D*/ 0,   /*E*/ 10,  /*F*/ -20,
-    /*G*/ -20,/*H*/ 5,   /*I*/ -5,  /*J*/ -30, /*K*/ -10, /*L*/ 0,
-    /*M*/ 0,  /*N*/ 5,   /*O*/ -10, /*P*/ -5,  /*Q*/ -70, /*R*/ 10,
-    /*S*/ 80, /*T*/ 0,   /*U*/ -30, /*V*/ -50, /*W*/ -40, /*X*/ 30,
-    /*Y*/ -20,/*Z*/ 20,  /*Blank*/ 250
-};
+    /*A*/ 5,   /*B*/ -20, /*C*/ 0,      /*D*/ 0,   /*E*/ 10,  /*F*/ -20,
+    /*G*/ -20, /*H*/ 5,   /*I*/ -5,     /*J*/ -30, /*K*/ -10, /*L*/ 0,
+    /*M*/ 0,   /*N*/ 5,   /*O*/ -10,    /*P*/ -5,  /*Q*/ -70, /*R*/ 10,
+    /*S*/ 80,  /*T*/ 0,   /*U*/ -30,    /*V*/ -50, /*W*/ -40, /*X*/ 30,
+    /*Y*/ -20, /*Z*/ 20,  /*Blank*/ 250};
 // ---------------------------------------------------------------------------
 
 inline int leaveValue(const Tray& t) {
@@ -27,8 +27,9 @@ inline int leaveValue(const Tray& t) {
     return v;
 }
 
-inline const std::array<uint8_t, 16> kBigPremium = [] {   // all DW + TW squares
-    std::array<uint8_t, 16> a{}; int n = 0;
+inline const std::array<uint8_t, 16> kBigPremium = [] {  // all DW + TW squares
+    std::array<uint8_t, 16> a{};
+    int n = 0;
     for (int i = 0; i < NUM_SQUARES; ++i)
         if (kPremium[i] == MULT_DW || kPremium[i] == MULT_TW) a[n++] = static_cast<uint8_t>(i);
     return a;

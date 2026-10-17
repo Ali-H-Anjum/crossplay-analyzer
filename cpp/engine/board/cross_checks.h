@@ -5,18 +5,21 @@
 #include <array>
 #include <bit>
 #include <cstdint>
+
 #include "board.h"
+#include "gaddag.h"  // needed: step/next_arc/arena access
 #include "node.h"
-#include "gaddag.h"   // needed: step/next_arc/arena access
 
 constexpr uint32_t LINE_BITS = (1u << BOARD_LENGTH) - 1;
 
-struct AnchorLines {                       // by_col is the transpose of by_row
+struct AnchorLines {  // by_col is the transpose of by_row
     std::array<uint16_t, BOARD_LENGTH> by_row{};
     std::array<uint16_t, BOARD_LENGTH> by_col{};
 };
 
-struct Placed { int r, c; };
+struct Placed {
+    int r, c;
+};
 
 inline bool boardIsEmpty(const Board& b) {
     uint16_t any = 0;
@@ -24,28 +27,29 @@ inline bool boardIsEmpty(const Board& b) {
     return any == 0;
 }
 
-// Legal-letter mask for empty square g of a line (letters ln, occupancy occ). Needs >=1 adjacent tile.
-inline uint32_t crossMask(const uint8_t* ln, uint32_t occ, int g,
-                          const Gaddag& gd, const Arc& init) {
-    const int nb = std::countl_one(static_cast<uint16_t>(occ << (16 - g)));   // tiles before g
-    const int na = std::countr_one(occ >> (g + 1));                           // tiles after g
+// Legal-letter mask for empty square g of a line (letters ln, occupancy occ). Needs >=1 adjacent
+// tile.
+inline uint32_t crossMask(const uint8_t* ln, uint32_t occ, int g, const Gaddag& gd,
+                          const Arc& init) {
+    const int nb = std::countl_one(static_cast<uint16_t>(occ << (16 - g)));  // tiles before g
+    const int na = std::countr_one(occ >> (g + 1));                          // tiles after g
     const int lo = g - nb, hi = g + na;
 
-    auto walk = [&](const Arc* a, int from, int to, int d) {   // tiles from..to (exclusive of to)
+    auto walk = [&](const Arc* a, int from, int to, int d) {  // tiles from..to (exclusive of to)
         for (int k = from; a && k != to; k += d) a = gd.step(*a, boardCodeToIndex(ln[k]));
         return a;
     };
     auto setOf = [](const Arc* a) { return a ? a->letter_set_mask & ALL_LETTERS : 0u; };
 
-    if (!nb) return setOf(walk(&init, hi, g, -1));             // suffix only
+    if (!nb) return setOf(walk(&init, hi, g, -1));  // suffix only
 
-    const Arc* a = walk(&init, g - 1, lo - 1, -1);             // rev(prefix)
-        a = a ? gd.step(*a, SEPARATOR_INDEX) : nullptr;
-    if (!a || !na) return setOf(a);                            // prefix only
+    const Arc* a = walk(&init, g - 1, lo - 1, -1);  // rev(prefix)
+    a = a ? gd.step(*a, SEPARATOR_INDEX) : nullptr;
+    if (!a || !na) return setOf(a);  // prefix only
 
-    const Node& n = gd.node(a->destination_state);             // both sides
+    const Node& n = gd.node(a->destination_state);  // both sides
     const int last = boardCodeToIndex(ln[hi]);
-    const Arc* base = gd.arc_span().data() + n.arc_offset;     // packed, ascending; counter == rank
+    const Arc* base = gd.arc_span().data() + n.arc_offset;  // packed, ascending; counter == rank
     uint32_t res = 0;
     for (uint32_t m = n.arc_mask & ALL_LETTERS; m; m &= m - 1, ++base) {
         const int x = std::countr_zero(m);
@@ -65,8 +69,14 @@ inline void refreshRunEnds(const uint16_t* perpOcc, const uint8_t* perpLetters, 
     const uint8_t* ln = &perpLetters[sq(pos, 0)];
     const uint32_t below = ~occ & ((1u << line) - 1);
     const uint32_t above = ~occ & ~((2u << line) - 1) & LINE_BITS;
-    if (below) { const int t = 31 - std::countl_zero(below); out[sq(t, pos)] = crossMask(ln, occ, t, gd, init); }
-    if (above) { const int t = std::countr_zero(above);      out[sq(t, pos)] = crossMask(ln, occ, t, gd, init); }
+    if (below) {
+        const int t = 31 - std::countl_zero(below);
+        out[sq(t, pos)] = crossMask(ln, occ, t, gd, init);
+    }
+    if (above) {
+        const int t = std::countr_zero(above);
+        out[sq(t, pos)] = crossMask(ln, occ, t, gd, init);
+    }
 }
 
 inline void markAnchor(const Board& b, AnchorLines& al, int r, int c) {
@@ -81,19 +91,25 @@ inline void markAnchor(const Board& b, AnchorLines& al, int r, int c) {
 //   cross_check[0] = column constraint on this square (used by HORIZONTAL moves, which
 //                    require each new tile's perpendicular column word to be valid).
 //   cross_check[1] = row constraint on this square (used by VERTICAL moves).
-inline void touchTile(Board& b, AnchorLines& al, const Gaddag& gd, const Arc& init,
-                      int r, int c, bool colWord, bool rowWord) {
+inline void touchTile(Board& b, AnchorLines& al, const Gaddag& gd, const Arc& init, int r, int c,
+                      bool colWord, bool rowWord) {
     al.by_row[r] &= static_cast<uint16_t>(~(1u << c));
     al.by_col[c] &= static_cast<uint16_t>(~(1u << r));
-    markAnchor(b, al, r, c - 1); markAnchor(b, al, r, c + 1);
-    markAnchor(b, al, r - 1, c); markAnchor(b, al, r + 1, c);
-    if (colWord) refreshRunEnds(b.col_occ.data(), b.letters_col.data(), b.cross_check[0].data(), gd, init, r, c);
-    if (rowWord) refreshRunEnds(b.row_occ.data(), b.letters_row.data(), b.cross_check[1].data(), gd, init, c, r);
+    markAnchor(b, al, r, c - 1);
+    markAnchor(b, al, r, c + 1);
+    markAnchor(b, al, r - 1, c);
+    markAnchor(b, al, r + 1, c);
+    if (colWord)
+        refreshRunEnds(b.col_occ.data(), b.letters_col.data(), b.cross_check[0].data(), gd, init, r,
+                       c);
+    if (rowWord)
+        refreshRunEnds(b.row_occ.data(), b.letters_row.data(), b.cross_check[1].data(), gd, init, c,
+                       r);
 }
 
 // Call after occ/letters already contain the new tiles. Cost: ~2 walks per tile, not ~30 lines.
-inline void onPlay(Board& b, AnchorLines& al, const Gaddag& gd, const Arc& init,
-                   const Placed* t, int n, bool horizontal) {
+inline void onPlay(Board& b, AnchorLines& al, const Gaddag& gd, const Arc& init, const Placed* t,
+                   int n, bool horizontal) {
     for (int i = 0; i < n; ++i)
         touchTile(b, al, gd, init, t[i].r, t[i].c, horizontal || i == 0, !horizontal || i == 0);
 }

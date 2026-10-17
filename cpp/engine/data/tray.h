@@ -1,9 +1,10 @@
-//Tray.h
+// Tray.h
 #pragma once
 
 #include <array>
 #include <cstdint>
 #include <string>
+
 #include "letter.h"
 
 // A rack stored as one count per letter (A-Z plus Blank) rather than a
@@ -39,6 +40,3 @@ struct Tray {
         return mask;
     }
 };
-
-
-

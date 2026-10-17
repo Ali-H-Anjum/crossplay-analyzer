@@ -19,9 +19,8 @@ static void PushCreamStyle() {
 static void PopCreamStyle() { ImGui::PopStyleColor(5); }
 
 // ================================================================ shared screen pieces
-static void DrawScoresLine(const char* leftLabel, int leftScore,
-                           const char* rightLabel, int rightScore,
-                           const char* statusText, ImU32 statusCol) {
+static void DrawScoresLine(const char* leftLabel, int leftScore, const char* rightLabel,
+                           int rightScore, const char* statusText, ImU32 statusCol) {
     ImGui::SetWindowFontScale(1.3f);
     ImGui::Text("%s: %d    %s: %d", leftLabel, leftScore, rightLabel, rightScore);
     ImGui::SameLine();

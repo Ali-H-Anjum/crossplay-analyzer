@@ -1,4 +1,4 @@
-//TileBag.h
+// TileBag.h
 #pragma once
 
 #include <algorithm>
@@ -6,16 +6,16 @@
 #include <cstdint>
 #include <random>
 #include <utility>
+
 #include "letter.h"
 #include "tray.h"
 
 inline constexpr std::array<uint8_t, NUM_LETTER_SLOTS> DEFAULT_TILE_COUNTS = {
-    /* A */ 9, /* B */ 2, /* C */ 2, /* D */ 4, /* E */ 12, /* F */ 2,
-    /* G */ 3, /* H */ 3, /* I */ 8, /* J */ 1, /* K */ 1, /* L */ 4,
-    /* M */ 2, /* N */ 5, /* O */ 8, /* P */ 2, /* Q */ 1, /* R */ 6,
-    /* S */ 5, /* T */ 6, /* U */ 3, /* V */ 2, /* W */ 2, /* X */ 1,
-    /* Y */ 2, /* Z */ 1, /* Blank */ 3
-};
+    /* A */ 9, /* B */ 2, /* C */ 2,    /* D */ 4, /* E */ 12, /* F */ 2,
+    /* G */ 3, /* H */ 3, /* I */ 8,    /* J */ 1, /* K */ 1,  /* L */ 4,
+    /* M */ 2, /* N */ 5, /* O */ 8,    /* P */ 2, /* Q */ 1,  /* R */ 6,
+    /* S */ 5, /* T */ 6, /* U */ 3,    /* V */ 2, /* W */ 2,  /* X */ 1,
+    /* Y */ 2, /* Z */ 1, /* Blank */ 3};
 
 inline constexpr uint16_t TOTAL_TILES = 100;
 
@@ -29,7 +29,10 @@ inline constexpr std::array<Letter, TOTAL_TILES> FULL_BAG = [] {
     return bag;
 }();
 
-struct SwapUndo { std::array<Letter, 7> old{}; uint8_t k = 0; };
+struct SwapUndo {
+    std::array<Letter, 7> old{};
+    uint8_t k = 0;
+};
 
 // tiles[0 .. total)            tiles still in the bag
 // tiles[total .. TOTAL_TILES)  tiles out of the bag, most recent draw first
@@ -55,8 +58,7 @@ struct TileBag {
     // Reverses the most recent drawInto(tray, n): takes those n tiles back
     // out of the tray and returns them to the bag.
     void undoDraw(Tray& tray, uint8_t n) {
-        for (uint8_t i = 0; i < n; ++i)
-            tray.removeTile(tiles[total + i]);
+        for (uint8_t i = 0; i < n; ++i) tray.removeTile(tiles[total + i]);
         total += n;
     }
 
@@ -83,7 +85,8 @@ struct TileBag {
     // --- add these, public ---
     uint8_t count(Letter l) const {
         uint8_t n = 0;
-        for (uint16_t i = 0; i < total; ++i) if (tiles[i] == l) ++n;
+        for (uint16_t i = 0; i < total; ++i)
+            if (tiles[i] == l) ++n;
         return n;
     }
     std::array<uint8_t, NUM_LETTER_SLOTS> counts() const {
@@ -116,7 +119,7 @@ struct TileBag {
     std::mt19937_64 rngCopy() const { return rng; }
     void restoreRng(const std::mt19937_64& r) { rng = r; }
 
-        // Swap: draw k from the top, then put ret[0..k) back at the bottom (displaced
+    // Swap: draw k from the top, then put ret[0..k) back at the bottom (displaced
     // bottom tiles move to the top). Requires k <= size(). Undo is strictly LIFO.
     void swapIn(Tray& tray, const Letter* ret, uint8_t k, SwapUndo& u) {
         u.k = k;
@@ -139,7 +142,7 @@ struct TileBag {
         undoDraw(tray, u.k);
     }
 
-private:
+   private:
     std::array<Letter, TOTAL_TILES> tiles = FULL_BAG;
     uint16_t total = TOTAL_TILES;
     std::mt19937_64 rng;

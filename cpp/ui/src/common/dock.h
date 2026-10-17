@@ -5,10 +5,10 @@
 static void LockDockTree(ImGuiDockNode* n) {
     if (!n) return;
     // Public and private flag enums are different types; combine them as plain ints.
-    n->LocalFlags |= (ImGuiDockNodeFlags)((int)ImGuiDockNodeFlags_NoDockingSplit |
-                                          (int)ImGuiDockNodeFlags_NoDockingOverMe |
-                                          (int)ImGuiDockNodeFlags_NoResize |
-                                          (int)ImGuiDockNodeFlags_NoTabBar);
+    n->LocalFlags |=
+        (ImGuiDockNodeFlags)((int)ImGuiDockNodeFlags_NoDockingSplit |
+                             (int)ImGuiDockNodeFlags_NoDockingOverMe |
+                             (int)ImGuiDockNodeFlags_NoResize | (int)ImGuiDockNodeFlags_NoTabBar);
     LockDockTree(n->ChildNodes[0]);
     LockDockTree(n->ChildNodes[1]);
 }
@@ -25,22 +25,25 @@ static AppMode g_mode = AppMode::Title;
 // ImGui::GetID() would hash differently in the two places.
 static ImGuiID DockIdFor(AppMode m) {
     switch (m) {
-        case AppMode::Exploration:    return ImHashStr("Dock_Exploration");
-        case AppMode::PlayerVsBot:    return ImHashStr("Dock_PvG");
-        case AppMode::BotVsBot: return ImHashStr("Dock_GvG");
-        default:                      return ImHashStr("Dock_Title");
+        case AppMode::Exploration:
+            return ImHashStr("Dock_Exploration");
+        case AppMode::PlayerVsBot:
+            return ImHashStr("Dock_PvG");
+        case AppMode::BotVsBot:
+            return ImHashStr("Dock_GvG");
+        default:
+            return ImHashStr("Dock_Title");
     }
 }
 
-static const char* kTopEx  = "Vision -- Exploration##top";
+static const char* kTopEx = "Vision -- Exploration##top";
 static const char* kTopPvb = "Vision -- PvG##top";
 static const char* kTopSim = "Vision -- GvG##top";
 
 // Fixed dock layout: top strip across the width, legend on the left (fixed px),
 // cream body in the middle (flex), right panel on the right (fixed px).
-static void BuildDock(ImGuiID dockId, const char* topName,
-                      const char* leftName, const char* creamName, const char* rightName,
-                      float leftW, float rightW) {
+static void BuildDock(ImGuiID dockId, const char* topName, const char* leftName,
+                      const char* creamName, const char* rightName, float leftW, float rightW) {
     ImGui::DockBuilderRemoveNode(dockId);
     ImGui::DockBuilderAddNode(dockId, ImGuiDockNodeFlags_None);
     ImGui::DockBuilderSetNodeSize(dockId, ImGui::GetMainViewport()->WorkSize);
@@ -54,7 +57,8 @@ static void BuildDock(ImGuiID dockId, const char* topName,
     ImGuiID left = ImGui::DockBuilderSplitNode(body, ImGuiDir_Left, leftW / totalW, nullptr, &rest);
 
     ImGuiID rightCol;
-    ImGuiID middle = ImGui::DockBuilderSplitNode(rest, ImGuiDir_Left, 1.0f - rightW / totalW, nullptr, &rightCol);
+    ImGuiID middle = ImGui::DockBuilderSplitNode(rest, ImGuiDir_Left, 1.0f - rightW / totalW,
+                                                 nullptr, &rightCol);
 
     // Pin the horizontal nodes to exact pixel widths.
     if (ImGuiDockNode* n = ImGui::DockBuilderGetNode(left)) {
@@ -73,4 +77,3 @@ static void BuildDock(ImGuiID dockId, const char* topName,
 
     FinishAndLock(dockId);
 }
-

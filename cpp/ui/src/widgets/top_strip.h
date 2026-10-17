@@ -12,11 +12,11 @@ static void PushTopAccent() {
 
 // Button colours for cream-background panels (Explore / PvB / Sim body).
 static void PushPanelButton() {
-    ImGui::PushStyleColor(ImGuiCol_Button,        IM_COL32( 60, 100, 160, 255));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32( 80, 125, 190, 255));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  IM_COL32( 45,  80, 135, 255));
-    ImGui::PushStyleColor(ImGuiCol_Text,          IM_COL32(255, 255, 255, 255));
-    ImGui::PushStyleColor(ImGuiCol_TextDisabled,  IM_COL32(160, 165, 175, 255));
+    ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(60, 100, 160, 255));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(80, 125, 190, 255));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(45, 80, 135, 255));
+    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
+    ImGui::PushStyleColor(ImGuiCol_TextDisabled, IM_COL32(160, 165, 175, 255));
 }
 static void PopPanelButton() { ImGui::PopStyleColor(5); }
 
@@ -25,11 +25,20 @@ static void PopTopAccent() {
     ImGui::PopStyleColor(3);
 }
 static void TopGroupSep() {
-    ImGui::SameLine(); ImGui::Dummy(ImVec2(12, 0)); ImGui::SameLine();
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(12, 0));
+    ImGui::SameLine();
 }
 
-static void OpenSavePopup() { g_ui.saveMessage.clear(); g_ui.savePopupOpen = true; }
-static void OpenLoadPopup() { g_ui.loadMessage.clear(); g_ui.loadListDirty = true; g_ui.loadPopupOpen = true; }
+static void OpenSavePopup() {
+    g_ui.saveMessage.clear();
+    g_ui.savePopupOpen = true;
+}
+static void OpenLoadPopup() {
+    g_ui.loadMessage.clear();
+    g_ui.loadListDirty = true;
+    g_ui.loadPopupOpen = true;
+}
 
 static void DrawSaveLoadButtons() {
     const float bw = 100.0f;
@@ -74,17 +83,24 @@ struct TopStripCallbacks {
     void (*onBack)() = nullptr;
     void (*onRematch)() = nullptr;
     void (*extra)() = nullptr;
-    const char* modeName = nullptr;   // centered in the strip; may be null
+    const char* modeName = nullptr;  // centered in the strip; may be null
 };
 
 static void DrawModeTopStrip(const ModeState& ms, const TopStripCallbacks& cb) {
-    (void)ms;   // nav moved to the Move History panel; kept for signature compatibility
+    (void)ms;  // nav moved to the Move History panel; kept for signature compatibility
     PushTopAccent();
-    if (ImGui::Button("Back to Title")) { cb.onBack(); PopTopAccent(); return; }
+    if (ImGui::Button("Back to Title")) {
+        cb.onBack();
+        PopTopAccent();
+        return;
+    }
     TopGroupSep();
     if (ImGui::Button("Rematch")) cb.onRematch();
     TopGroupSep();
-    if (cb.extra) { cb.extra(); TopGroupSep(); }
+    if (cb.extra) {
+        cb.extra();
+        TopGroupSep();
+    }
 
     // Centered mode name. Compute where the Save/Load block will end so we can center
     // the name in the space between the cursor's current X and that block's start.
@@ -95,7 +111,8 @@ static void DrawModeTopStrip(const ModeState& ms, const TopStripCallbacks& cb) {
         const float saveLoadX = stripW - saveLoadW;
 
         const float nameW = ImGui::CalcTextSize(cb.modeName).x;
-        const float nameX = ImGui::GetCursorPosX() + (saveLoadX - ImGui::GetCursorPosX() - nameW) * 0.5f;
+        const float nameX =
+            ImGui::GetCursorPosX() + (saveLoadX - ImGui::GetCursorPosX() - nameW) * 0.5f;
         if (nameX > ImGui::GetCursorPosX()) ImGui::SetCursorPosX(nameX);
         ImGui::TextDisabled("%s", cb.modeName);
         ImGui::SameLine();
@@ -109,7 +126,8 @@ static void LeaveToTitle() {
     EndDrag();
     g_ui.blankPopupOpen = false;
     g_ui.addTilePopupOpen = false;
-    g_ui.savePopupOpen = false;      // Save/Load are mode-specific; leaving them open would act on the wrong state
+    g_ui.savePopupOpen =
+        false;  // Save/Load are mode-specific; leaving them open would act on the wrong state
     g_ui.loadPopupOpen = false;
     g_ui.confirmBackOpen = false;
     g_mode = AppMode::Title;
@@ -119,8 +137,7 @@ static void LeaveToTitle() {
 // via the top strip during this call. Callers must return immediately if it returns false.
 static bool BeginModeScreen(AppMode mode, const char* topName, bool& dockBuiltFlag,
                             const char* leftName, const char* creamName, const char* rightName,
-                            float leftW, float rightW,
-                            void (*drawTop)()) {
+                            float leftW, float rightW, void (*drawTop)()) {
     if (!dockBuiltFlag) {
         BuildDock(DockIdFor(mode), topName, leftName, creamName, rightName, leftW, rightW);
         dockBuiltFlag = true;
@@ -130,4 +147,3 @@ static bool BeginModeScreen(AppMode mode, const char* topName, bool& dockBuiltFl
     ImGui::End();
     return g_mode == mode;
 }
-

@@ -1,12 +1,13 @@
-#include "check.h"
-#include "test_common.h"
+#include <vector>
+
 #include "board.h"
 #include "board_ops.h"
+#include "check.h"
 #include "cross_checks.h"
-#include "move_gen.h"
-#include "tray.h"
 #include "letter.h"
-#include <vector>
+#include "move_gen.h"
+#include "test_common.h"
+#include "tray.h"
 
 TEST(onplay_matches_rebuild) {
     const Gaddag& g = testGaddag();
@@ -32,7 +33,10 @@ TEST(onplay_matches_rebuild) {
             const RawMove& m = sink.moves[(ply * 37 + k) % sink.moves.size()];
             for (int i = 0; i < m.len; ++i) {
                 int r = m.row + (m.is_descending ? i : 0), c = m.col + (m.is_descending ? 0 : i);
-                if (b.letters_row[sq(r, c)] == EMPTY_SQUARE) { pick = &m; break; }
+                if (b.letters_row[sq(r, c)] == EMPTY_SQUARE) {
+                    pick = &m;
+                    break;
+                }
             }
         }
         CHECK(pick != nullptr);
@@ -44,8 +48,11 @@ TEST(onplay_matches_rebuild) {
         for (int i = 0; i < m.len; ++i) {
             int r = m.row + (m.is_descending ? i : 0), c = m.col + (m.is_descending ? 0 : i);
             if (b.letters_row[sq(r, c)] != EMPTY_SQUARE) continue;
-            placeTile(b, r, c, letterFromChar(char('A' + m.letters[i] - 1)), (m.blank_mask >> i) & 1);
-            Placed p; p.r = r; p.c = c;
+            placeTile(b, r, c, letterFromChar(char('A' + m.letters[i] - 1)),
+                      (m.blank_mask >> i) & 1);
+            Placed p;
+            p.r = r;
+            p.c = c;
             placed.push_back(p);
         }
         onPlay(b, al, g, init, placed.data(), (int)placed.size(), !m.is_descending);
