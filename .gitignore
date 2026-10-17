@@ -1,31 +1,28 @@
-# --- data / generated (word lists are third-party, don't publish them)
+# ─── data / generated ─────────────────────────────────────────────
+# Word lists are third-party, don't publish them
 wordList.txt
 NWL2023-Playability.txt
 alphabetical_word_list.txt
 OSPD.txt
-docs/DEVELOPMENTlong.md
-ui/src/wordList_embedded.cpp
+data/wordlists/
 
-# --- fonts (embedded copies and the source font files)
-ui/src/font*_embedded.cpp
+# Diagnostic run outputs (regeneratable, too large for git)
+data/runs/*
+!data/runs/.gitkeep
+
+# Embedded assets generated from data (big, regeneratable)
+cpp/ui/src/font*_embedded.cpp
+cpp/ui/src/wordList_embedded.cpp
 *.ttf
 *.otf
 *.woff
 *.woff2
 
-# --- clang tooling
-clang-uml-config.yml
-.clangd
-.clang-format
-.cache/
-diagrams/
-compile_commands.json
-.clang-uml
+# Private working notes
+docs/DEVELOPMENTlong.md
+tree.txt
 
-# --- third-party source (build expects it at ../imgui)
-imgui/
-
-# --- C++ build output
+# ─── build output ────────────────────────────────────────────────
 build/
 *.exe
 *.o
@@ -35,7 +32,19 @@ build/
 perf.data*
 *.orig
 
-# --- python
+# ─── third-party source (vendored, not tracked) ──────────────────
+imgui/
+
+# ─── C++ tooling ─────────────────────────────────────────────────
+clang-uml-config.yml
+compile_commands.json
+.clangd
+.clang-format
+.clang-uml
+.cache/
+diagrams/
+
+# ─── python ──────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -45,20 +54,14 @@ __pycache__/
 .ruff_cache/
 *.pkl
 
-# --- editor
+# ─── editor ──────────────────────────────────────────────────────
 .vscode/*
 !.vscode/c_cpp_properties.json
 !.vscode/settings.json
 .idea/
 *.swp
 
-# --- os
+# ─── os ──────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 desktop.ini
-# Diagnostic run outputs (regeneratable, too large for git)
-data/runs/*
-!data/runs/.gitkeep
-tree.txt
-
-data/wordlists/
