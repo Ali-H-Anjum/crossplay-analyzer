@@ -11,16 +11,40 @@ endif()
 
 find_package(SDL2 CONFIG REQUIRED)
 
-set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../imgui)
-set(ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../C++/Vision)
+set(IMGUI_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/../imgui)
+set(ENGINE_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/engine)
+set(UI_SRC_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/ui/src)
+
+# All engine subfolders are include roots, so headers stay flat-importable
+# (e.g. #include "Board.h" works regardless of which engine/ folder it lives in).
+set(ENGINE_INCLUDE_DIRS
+    ${ENGINE_DIR}/types
+    ${ENGINE_DIR}/data
+    ${ENGINE_DIR}/gaddag
+    ${ENGINE_DIR}/board
+    ${ENGINE_DIR}/moves
+    ${ENGINE_DIR}/scoring
+    ${ENGINE_DIR}/state
+    ${ENGINE_DIR}/search
+)
+
+# Same idea for the UI: every subfolder is an include root.
+set(UI_INCLUDE_DIRS
+    ${UI_SRC_DIR}
+    ${UI_SRC_DIR}/common
+    ${UI_SRC_DIR}/state
+    ${UI_SRC_DIR}/widgets
+    ${UI_SRC_DIR}/panels
+    ${UI_SRC_DIR}/screens
+)
 
 add_executable(crossplay_ui
-    src/main.cpp
-    src/diagram_root.cpp
-    src/wordList_embedded.cpp
-    src/font_mono_embedded.cpp
-    src/font_franklin_embedded.cpp
-    ${ENGINE_DIR}/Gaddag.cpp
+    main.cpp
+    ui/tools/diagram_root.cpp
+    ui/src/wordList_embedded.cpp
+    ui/src/font_mono_embedded.cpp
+    ui/src/font_franklin_embedded.cpp
+    ${ENGINE_DIR}/gaddag/Gaddag.cpp
     ${IMGUI_DIR}/imgui.cpp
     ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_tables.cpp
@@ -32,7 +56,8 @@ add_executable(crossplay_ui
 target_include_directories(crossplay_ui PRIVATE
     ${IMGUI_DIR}
     ${IMGUI_DIR}/backends
-    ${ENGINE_DIR}
+    ${ENGINE_INCLUDE_DIRS}
+    ${UI_INCLUDE_DIRS}
 )
 
 target_link_libraries(crossplay_ui PRIVATE
@@ -40,7 +65,7 @@ target_link_libraries(crossplay_ui PRIVATE
     SDL2::SDL2
 )
 
-set(WORDLIST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../wordList.txt")
+set(WORDLIST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../data/wordlists/wordList.txt")
 if (EXISTS "${WORDLIST_SOURCE}")
     add_custom_command(TARGET crossplay_ui POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -69,15 +94,15 @@ add_executable(engine_tests
     tests/test_prune.cpp
     tests/test_det.cpp
     tests/test_mcts.cpp
-    ${ENGINE_DIR}/Gaddag.cpp
+    ${ENGINE_DIR}/gaddag/Gaddag.cpp
 )
 
 target_include_directories(engine_tests PRIVATE
-    ${ENGINE_DIR}
+    ${ENGINE_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 
-get_filename_component(DIAG_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../docs/diagnostic_data" ABSOLUTE)
+get_filename_component(DIAG_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../data/runs" ABSOLUTE)
 target_compile_definitions(crossplay_ui PRIVATE DIAG_DATA_DIR="${DIAG_DATA_DIR}")
 
 target_compile_definitions(engine_tests PRIVATE WORDLIST_PATH="${WORDLIST_SOURCE}")
