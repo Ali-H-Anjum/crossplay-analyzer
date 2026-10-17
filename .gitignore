@@ -65,3 +65,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Keep only the README screenshots, ignore the rest
+docs/screenshots/*
+!docs/screenshots/simulation.png
+!docs/screenshots/exploration.png
