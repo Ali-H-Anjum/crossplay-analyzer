@@ -29,6 +29,8 @@ struct DetConfig {
     int      threads = 0;        // parallel determinizations, one thread each; 0 = cores - 1 (at least 1)
     uint64_t seed    = 12345;    // same seed + fixed depth = same result
     int rootMaxMoves = 60;
+    bool     knownOpp = false;   // true: use oppRack as the opponent's rack instead of sampling one
+    Tray     oppRack{};
 };
 // ---------------------------------------------------------------------------
 
@@ -56,7 +58,12 @@ public:
         const int n = d.threads > 0 ? d.threads : defaultThreads();
         SearchConfig jc = c; jc.rootValues = true; jc.rootMaxMoves = d.rootMaxMoves;
 
-        const auto pool = unseenPool(*root.b, root.tray[me]);
+        auto pool = unseenPool(*root.b, root.tray[me]);
+        if (d.knownOpp)                                  // opponent rack given: the bag is whatever is left
+            for (int i = 0; i < NUM_LETTER_SLOTS; ++i) {
+                const uint8_t k = d.oppRack.counts[i];
+                pool[i] = pool[i] > k ? static_cast<uint8_t>(pool[i] - k) : 0;
+            }
         int total = 0; for (uint8_t v : pool) total += v;
         const uint8_t oppN = static_cast<uint8_t>(std::min(7, total));   // refilled to 7 while the bag has tiles
 
@@ -66,10 +73,12 @@ public:
             Position pos = root;
             pos.bag = &bag;
             pos.tray[me ^ 1] = Tray{};
-            bag.drawNextInto(pos.tray[me ^ 1], oppN);
+            if (d.knownOpp) pos.tray[me ^ 1] = d.oppRack;
+            else            bag.drawNextInto(pos.tray[me ^ 1], oppN);
             jobs.push_back(std::make_unique<SearchJob>(pos, jc));        // copies board + bag, starts its thread
         }
     }
+    
     DetSearch(const DetSearch&) = delete;
     DetSearch& operator=(const DetSearch&) = delete;
 

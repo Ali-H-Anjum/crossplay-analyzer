@@ -23,7 +23,7 @@ inline constexpr std::array<int16_t, NUM_LETTER_SLOTS> LEAVE = {
 
 inline int leaveValue(const Tray& t) {
     int v = 0;
-    for (int i = 0; i < NUM_LETTER_SLOTS; ++i) v += LEAVE[i] * t.count(fromIndex(static_cast<uint8_t>(i)));
+    for (int i = 0; i < NUM_LETTER_SLOTS; ++i) v += LEAVE[i] * t.counts[i];
     return v;
 }
 
