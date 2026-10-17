@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <bit>
 #include <cstdint>
-#include "Position.h"
+#include "position.h"
 
 inline uint64_t mix64(uint64_t x) {                       // splitmix64 finalizer
     x ^= x >> 30; x *= 0xBF58476D1CE4E5B9ull;

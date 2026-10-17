@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <span>
 
-#include "Arc.h" // Arc, NUM_LETTERS, NULL_NODE
+#include "arc.h" // Arc, NUM_LETTERS, NULL_NODE
 
 inline constexpr int ARC_SLOTS = NUM_LETTERS + 1; // 27
 

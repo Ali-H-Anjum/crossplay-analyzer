@@ -5,9 +5,9 @@
 #include <array>
 #include <bit>
 #include <cstdint>
-#include "Board.h"
-#include "Node.h"
-#include "Gaddag.h"   // needed: step/next_arc/arena access
+#include "board.h"
+#include "node.h"
+#include "gaddag.h"   // needed: step/next_arc/arena access
 
 constexpr uint32_t LINE_BITS = (1u << BOARD_LENGTH) - 1;
 

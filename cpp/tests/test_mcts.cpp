@@ -2,7 +2,7 @@
 #include "test_common.h"
 #include <chrono>
 #include <thread>
-#include "Mcts.h"
+#include "mcts.h"
 
 namespace {
 struct MFix {

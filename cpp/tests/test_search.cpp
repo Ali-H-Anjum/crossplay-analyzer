@@ -1,7 +1,7 @@
 #include "check.h"
 #include "test_common.h"
 #include <chrono>
-#include "Search.h"
+#include "search.h"
 
 struct Fixture {
     Board b{}; TileBag bag; Position p;

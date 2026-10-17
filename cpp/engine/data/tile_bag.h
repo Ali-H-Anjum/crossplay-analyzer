@@ -6,8 +6,8 @@
 #include <cstdint>
 #include <random>
 #include <utility>
-#include "Letter.h"
-#include "Tray.h"
+#include "letter.h"
+#include "tray.h"
 
 inline constexpr std::array<uint8_t, NUM_LETTER_SLOTS> DEFAULT_TILE_COUNTS = {
     /* A */ 9, /* B */ 2, /* C */ 2, /* D */ 4, /* E */ 12, /* F */ 2,

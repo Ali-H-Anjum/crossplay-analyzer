@@ -1,6 +1,6 @@
 #pragma once
 #include <thread>
-#include "Search.h"
+#include "search.h"
 
 // Owns a private copy of the position. Hold it in a std::unique_ptr (it embeds a 4 KB Board).
 class SearchJob {

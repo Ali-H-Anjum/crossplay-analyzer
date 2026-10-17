@@ -1,7 +1,7 @@
 #include "check.h"
 #include "test_common.h"
 #include <chrono>
-#include "Search.h"
+#include "search.h"
 
 namespace {
 struct PrFix {

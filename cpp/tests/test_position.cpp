@@ -1,6 +1,6 @@
 #include "check.h"
 #include "test_common.h"
-#include "Position.h"
+#include "position.h"
 
 static bool trayEq(const Tray& a, const Tray& b) {
     for (int i = 0; i < NUM_LETTER_SLOTS; ++i)

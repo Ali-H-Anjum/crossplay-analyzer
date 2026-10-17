@@ -4,10 +4,13 @@ project(crossplay_ui CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (MINGW)
     add_link_options(-static-libgcc -static-libstdc++ -static)
 endif()
+
+add_compile_options(-Wall -Wextra)
 
 find_package(SDL2 CONFIG REQUIRED)
 

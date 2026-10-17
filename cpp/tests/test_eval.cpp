@@ -1,6 +1,6 @@
 #include "check.h"
 #include "test_common.h"
-#include "Eval.h"
+#include "eval.h"
 
 static void setup(Position& p, Board& b, TileBag& bag, const Gaddag& g) {
     p.b = &b; p.g = &g; p.init = &g.get_init(); p.bag = &bag;

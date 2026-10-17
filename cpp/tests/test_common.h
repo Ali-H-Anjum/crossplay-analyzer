@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Gaddag.h"
+#include "gaddag.h"
 
 #ifndef WORDLIST_PATH
 #error "WORDLIST_PATH not defined (see CMakeLists)"

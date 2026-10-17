@@ -1,5 +1,5 @@
 #pragma once
-#include "Eval.h"
+#include "eval.h"
 
 // Up to 2 swap candidates for the side to move. Returns how many were written.
 inline int swapCandidates(const Position& p, Tray out[2]) {

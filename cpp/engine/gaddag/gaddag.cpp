@@ -1,5 +1,5 @@
 //Gaddag.cpp
-#include "Gaddag.h"   // own header first
+#include "gaddag.h"   // own header first
 
 #include <bit>        // popcount, countr_zero
 #include <cctype>     // toupper

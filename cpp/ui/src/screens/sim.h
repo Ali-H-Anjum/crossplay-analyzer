@@ -7,7 +7,7 @@
 #include <ctime>
 #include <filesystem>
 #include <fstream>
-#include "Eval.h"
+#include "eval.h"
 // Part of the main.cpp split. Not standalone: main.cpp includes these in order.
 // Requires State.h to be included before this file (uses ModeState, Snapshot, Entry).
 
@@ -78,7 +78,7 @@ struct SimGame {
     Board      board{};
     Tray       trays[2]{};
     std::vector<Letter> trayOrder[2];
-    TileBag*   bag = nullptr;
+    std::unique_ptr<TileBag> bag;
     uint16_t   bagSize = 0;
     int        score[2] = {0,0};
     bool       gameOver = false;
@@ -135,14 +135,13 @@ struct SimGame {
     struct ScoredMove { RawMove rm; MoveScore sc; };
     ScoredMove bestScratch{};
 
-    ~SimGame() { delete bag; }
+    ~SimGame() = default;
 
     // ---------------- setup ----------------
     void reset(Gaddag* g, uint64_t newSeed) {
         gd   = g;
         seed = newSeed;
-        delete bag;
-        bag = new TileBag(seed);
+        bag = std::make_unique<TileBag>(seed);
 
         board = Board{};
         for (int i = 0; i < 2; ++i) {
@@ -1208,7 +1207,7 @@ static void SimGoTo(int target) {
 static void SimPushHistory(const SimGame::Turn& t) {
     Entry e;
     static_cast<Snapshot&>(e) = MakeSnapshot(g_simUi.sim.board, g_simUi.sim.trays[0], g_simUi.sim.trays[1],
-                                             g_simUi.sim.bag, g_simUi.sim.score[0], g_simUi.sim.score[1]);
+                                             g_simUi.sim.bag.get(), g_simUi.sim.score[0], g_simUi.sim.score[1]);
     e.turnNumber = t.turnNumber;
     e.player = t.player;
     if (t.swapped)      e.label = "SWAP " + t.swapLetters;
@@ -1259,7 +1258,7 @@ static void SimReset() {
     g_simState.history.clear();
     g_simState.cursor = 0;
     g_simState.initial = MakeSnapshot(g_simUi.sim.board, g_simUi.sim.trays[0], g_simUi.sim.trays[1],
-                                      g_simUi.sim.bag, g_simUi.sim.score[0], g_simUi.sim.score[1]);
+                                      g_simUi.sim.bag.get(), g_simUi.sim.score[0], g_simUi.sim.score[1]);
     SimSyncView();
     g_simUi.started = true;
     g_simUi.replay = false;

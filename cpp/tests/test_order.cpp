@@ -1,6 +1,6 @@
 #include "check.h"
 #include "test_common.h"
-#include "Search.h"
+#include "search.h"
 
 namespace {
 struct OrdFix {

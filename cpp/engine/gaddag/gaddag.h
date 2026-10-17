@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "Arc.h"   // NULL_NODE
-#include "Node.h"
+#include "arc.h"   // NULL_NODE
+#include "node.h"
 
 class Gaddag {
 public:

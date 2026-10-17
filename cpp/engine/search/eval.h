@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 #include <cstdint>
-#include "Position.h"
+#include "position.h"
 
 // ---- EDIT HERE: features and weights -------------------------------------
 enum Feat : int { F_SCORE, F_LEAVE, F_LANES, F_COUNT };

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <cctype>
-#include "Letter.h"
+#include "letter.h"
 
 // A single resolved letter of a Move, at a board square.
 struct LetterPlacement {

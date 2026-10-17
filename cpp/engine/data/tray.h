@@ -4,7 +4,7 @@
 #include <array>
 #include <cstdint>
 #include <string>
-#include "Letter.h"
+#include "letter.h"
 
 // A rack stored as one count per letter (A-Z plus Blank) rather than a
 // list of tiles. Order never matters for move generation, and "how many

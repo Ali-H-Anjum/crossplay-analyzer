@@ -3,7 +3,7 @@
 
 #include <cstdint>   // UINT32_MAX
 
-#include "Letter.h" // NUM_LETTERS, toIndex, letterFromChar, <cstdint>, uint32_t
+#include "letter.h" // NUM_LETTERS, toIndex, letterFromChar, <cstdint>, uint32_t
 
 inline constexpr char SEPARATOR_CHAR = '^';
 inline constexpr int  SEPARATOR_INDEX = NUM_LETTERS;

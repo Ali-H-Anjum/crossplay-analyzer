@@ -2,8 +2,8 @@
 #pragma once
 
 #include <cassert>
-#include "Board.h"
-#include "Move.h"      // pulls in Letter.h (toBoardCode)
+#include "board.h"
+#include "move.h"      // pulls in Letter.h (toBoardCode)
 
 inline bool inBounds(int row, int col) {
     return row >= 0 && row <= 14 && col >= 0 && col <= 14;

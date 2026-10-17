@@ -4,6 +4,7 @@
 #include <array>
 #include <cctype>
 #include <cstdint>
+#include <bit>
 #include <string>
 #include <vector>
 #include "move.h"
@@ -76,7 +77,7 @@ inline void emitMove(const GenState& s, Sink& out, int lo, int hi, uint16_t blan
     if constexpr (DEDUPE_SINGLE_TILE) {
         if (s.skip_single_tile) {
             const uint32_t span = ((2u << hi) - 1u) & ~((1u << lo) - 1u);
-            if (__builtin_popcount(span & ~static_cast<uint32_t>(s.occ)) == 1) return;
+            if (std::popcount(span & ~static_cast<uint32_t>(s.occ)) == 1) return;
         }
     }
     RawMove m{};
@@ -91,7 +92,7 @@ inline void emitMove(const GenState& s, Sink& out, int lo, int hi, uint16_t blan
 template <class Step>
 inline void tryRack(GenState& s, uint32_t cand, int pos, uint16_t blanks, Step&& step) {
     for (uint32_t m = cand & s.rack_mask; m; m &= m - 1) {
-        const int idx = __builtin_ctz(m);
+        const int idx = std::countr_zero(m);
         if (--s.rack[idx] == 0) s.rack_mask &= ~(1u << idx);
         step(idx, blanks);
         if (s.rack[idx]++ == 0) s.rack_mask |= (1u << idx);
@@ -195,7 +196,7 @@ inline void generateMoves(const Gaddag& g, const Board& b, const AnchorLines& al
         s.occ = b.row_occ[r];
         s.line_anchors = bits;
         for (; bits; bits = static_cast<uint16_t>(bits & (bits - 1))) {
-            s.anchor_pos = __builtin_ctz(bits);
+            s.anchor_pos = std::countr_zero(bits);
             s.right_clear = clearAfter(s, s.anchor_pos);
             extendLeft(s, out, s.anchor_pos, init, 0);
         }
@@ -212,7 +213,7 @@ inline void generateMoves(const Gaddag& g, const Board& b, const AnchorLines& al
         s.occ = b.col_occ[c];
         s.line_anchors = bits;
         for (; bits; bits = static_cast<uint16_t>(bits & (bits - 1))) {
-            const int r = __builtin_ctz(bits);
+            const int r = std::countr_zero(bits);
             s.anchor_pos = r;
             s.right_clear = clearAfter(s, r);
             const uint32_t ro = b.row_occ[r];
