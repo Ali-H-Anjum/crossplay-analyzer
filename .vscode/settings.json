@@ -1,4 +1,6 @@
 {
+    "editor.formatOnSave": true,
+    "C_Cpp.clang_format_style": "file",
     "python-envs.defaultEnvManager": "ms-python.python:venv",
     "cmake.sourceDirectory": "${workspaceFolder}/cpp",
     "cmake.buildDirectory": "${workspaceFolder}/cpp/build",
