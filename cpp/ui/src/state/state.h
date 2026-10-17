@@ -78,10 +78,10 @@ struct ModeState {
     }
 };
 
-static ModeState g_ex;
-static ModeState g_pvb;
-static ModeState g_simState;
-static BotPanel g_bot;
+inline ModeState g_ex;
+inline ModeState g_pvb;
+inline ModeState g_simState;
+inline BotPanel g_bot;
 
 static ModeState& StateForMode(AppMode m) {
     return m == AppMode::Exploration ? g_ex : m == AppMode::PlayerVsBot ? g_pvb : g_simState;
@@ -127,7 +127,7 @@ struct UiState {
     float lastViewportH = 0.0f;
 };
 
-static UiState g_ui;
+inline UiState g_ui;
 
 static void EndDrag() {
     g_ui.dragging = false;
@@ -151,7 +151,7 @@ struct PvbUiState {
     bool gameOverDismissed = false;  // "Game Over" card closed so the final board can be inspected
 };
 
-static PvbUiState g_pvbUi;
+inline PvbUiState g_pvbUi;
 
 // ================================================================ move-generation panel state
 struct ScoredMove {
@@ -192,4 +192,4 @@ struct MoveGenState {
     }
 };
 
-static MoveGenState g_mg;
+inline MoveGenState g_mg;

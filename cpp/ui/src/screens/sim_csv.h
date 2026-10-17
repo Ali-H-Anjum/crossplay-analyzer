@@ -58,7 +58,7 @@ inline void BatchRun::playGame(Gaddag* gd, int g) {
     ++done;
 }
 
-inline void BatchRun::sectionsC(std::string& s, int games) {
+inline void BatchRun::sectionsC(std::string& s, int /*games*/) {
     auto add = [&](const char* fmt, auto... a) {
         char b[512];
         std::snprintf(b, sizeof b, fmt, a...);
@@ -384,12 +384,12 @@ inline void BatchRun::summarize() {
         for (double v : pm) psd += (v - pmean) * (v - pmean);
         psd = std::sqrt(psd / (double)(P - 1));
     }
-    const double pci = P > 1 ? 1.96 * psd / std::sqrt((double)P) : 0.0;
-    auto need = [&](double X) {
+    (void)P; (void)psd; (void)P; // (removed unused pci)
+    [[maybe_unused]] auto need = [&](double X) {
         return psd > 0 ? 2 * (int)std::ceil(std::pow(1.96 * psd / X, 2)) : 0;
     };
 
-    const double secs =
+    [[maybe_unused]] const double secs =
         std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
     std::string s;
     auto add = [&](const char* fmt, auto... a) {

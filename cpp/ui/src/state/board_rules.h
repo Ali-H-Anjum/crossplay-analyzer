@@ -40,7 +40,7 @@ static void ValidateBoardFull(ModeState& ms) {
     });
 }
 
-static bool IsSquareInInvalidRun(const ModeState& ms, int r, int c) {
+[[maybe_unused]] static bool IsSquareInInvalidRun(const ModeState& ms, int r, int c) {
     for (const auto& run : ms.invalidRuns) {
         if (run.descending) {
             if (c == run.c0 && r >= run.r0 && r <= run.r1) return true;

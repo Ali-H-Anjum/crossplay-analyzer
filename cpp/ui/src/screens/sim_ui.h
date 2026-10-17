@@ -37,7 +37,7 @@ struct SimUiState {
     bool perfInfo = false;
 };
 
-static SimUiState g_simUi;
+inline SimUiState g_simUi;
 
 // ================================================================ Sim view sync (snapshot-based)
 static const Snapshot& SimViewSnapshot() { return g_simState.turnStart(); }
@@ -69,7 +69,7 @@ static void SimPushHistory(const SimGame::Turn& t) {
 }
 
 // ================================================================ Sim stepping
-static bool SimStepAndRecord() {
+[[maybe_unused]] static bool SimStepAndRecord() {
     return ::SimStepAndRecord(g_simUi.sim, g_simUi,
                               [](const SimGame::Turn& t) { SimPushHistory(t); });
 }

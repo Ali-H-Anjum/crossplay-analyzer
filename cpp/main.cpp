@@ -40,7 +40,7 @@ static std::string MaterializeEmbeddedWordList() {
     return f ? out.string() : std::string{};
 }
 
-int main(int argc, char** argv) {
+int main(int /*argc*/, char** /*argv*/) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
         std::printf("SDL_Init: %s\n", SDL_GetError());
         return 1;

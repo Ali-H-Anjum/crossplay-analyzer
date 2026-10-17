@@ -12,7 +12,7 @@ struct SimUiState;  // full definition in sim_ui.h
 // Advance the sim one turn using the async step machine.
 // Returns true when a turn was completed (onTurnComplete is invoked).
 // Returns false if still thinking or game over.
-inline bool SimTryAdvanceAsync(SimGame& sim, SimUiState& ui,
+inline bool SimTryAdvanceAsync(SimGame& sim, SimUiState& /*ui*/,
                                std::function<void(const SimGame::Turn&)> onTurnComplete) {
     if (sim.gameOver) return false;
     const int before = (int)sim.turns.size();
@@ -37,7 +37,7 @@ inline bool SimTryAdvanceAsync(SimGame& sim, SimUiState& ui,
 
 // Record one synchronous greedy turn.
 // Returns true when a turn was completed (onTurnComplete is invoked).
-inline bool SimStepAndRecord(SimGame& sim, SimUiState& ui,
+inline bool SimStepAndRecord(SimGame& sim, SimUiState& /*ui*/,
                              std::function<void(const SimGame::Turn&)> onTurnComplete) {
     if (sim.gameOver) return false;
     const int before = (int)sim.turns.size();

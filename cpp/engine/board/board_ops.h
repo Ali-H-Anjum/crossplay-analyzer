@@ -6,7 +6,7 @@
 #include "board.h"
 #include "move.h"  // pulls in Letter.h (toBoardCode)
 
-inline bool inBounds(int row, int col) { return row >= 0 && row <= 14 && col >= 0 && col <= 14; }
+inline bool inBounds(int row, int col) { return row >= 0 && row < BOARD_LENGTH && col >= 0 && col < BOARD_LENGTH; }
 
 // UI-side tile placement. Writes tiles only: anchors and cross-checks live in AnchorLines /
 // Board::cross_check and are refreshed by rebuild() (RefreshDerived) or onPlay().

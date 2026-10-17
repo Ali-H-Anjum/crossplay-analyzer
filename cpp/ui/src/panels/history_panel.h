@@ -62,7 +62,7 @@ static void DrawMoveHistoryTab(const ModeState& ms, size_t& lastSeen) {
     ImGui::BeginChild("##historyScroll", ImVec2(0, 0), true);
     {
         char header[80];
-        std::snprintf(header, sizeof header, "%-3s %-4s %+4s  %-15.15s  %-9s", "#", "Who", "Pts",
+        std::snprintf(header, sizeof header, "%-3s %-4s %+4d  %-15.15s  %-9s", "#", "Who", 0,
                       "Word", "Dir & Pos");
         ImGui::TextUnformatted(header);
         ImGui::Separator();

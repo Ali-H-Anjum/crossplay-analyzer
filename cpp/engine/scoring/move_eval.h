@@ -26,83 +26,36 @@ enum Mult : uint8_t { MULT_NONE = 0, MULT_DL = 1, MULT_TL = 2, MULT_DW = 3, MULT
 
 // Premium layout keyed by (row, col) -- row 0 = top, col 0 = left.
 // Matches the printed board layout.
-inline const std::unordered_map<int, Mult>& premiumMap() {
-    static const std::unordered_map<int, Mult> m = [] {
-        std::unordered_map<int, Mult> t;
-        auto put = [&](int r, int c, Mult v) { t[r * BOARD_LENGTH + c] = v; };
+// Premium layout keyed by (row, col) -- row 0 = top, col 0 = left.
+// Matches the printed board layout.
+inline constexpr std::array<Mult, NUM_SQUARES> kPremium = [] {
+    std::array<Mult, NUM_SQUARES> t{};
+    auto put = [&](int r, int c, Mult v) { t[r * BOARD_LENGTH + c] = v; };
 
-        // DL
-        put(9, 7, MULT_DL);
-        put(7, 9, MULT_DL);
-        put(5, 7, MULT_DL);
-        put(7, 5, MULT_DL);
-        put(14, 7, MULT_DL);
-        put(7, 14, MULT_DL);
-        put(0, 7, MULT_DL);
-        put(7, 0, MULT_DL);
-        put(12, 10, MULT_DL);
-        put(11, 11, MULT_DL);
-        put(10, 12, MULT_DL);
-        put(4, 12, MULT_DL);
-        put(3, 11, MULT_DL);
-        put(2, 10, MULT_DL);
-        put(2, 4, MULT_DL);
-        put(3, 3, MULT_DL);
-        put(4, 2, MULT_DL);
-        put(10, 2, MULT_DL);
-        put(11, 3, MULT_DL);
-        put(12, 4, MULT_DL);
+    // DL
+    put(9, 7, MULT_DL); put(7, 9, MULT_DL); put(5, 7, MULT_DL); put(7, 5, MULT_DL);
+    put(14, 7, MULT_DL); put(7, 14, MULT_DL); put(0, 7, MULT_DL); put(7, 0, MULT_DL);
+    put(12, 10, MULT_DL); put(11, 11, MULT_DL); put(10, 12, MULT_DL); put(4, 12, MULT_DL);
+    put(3, 11, MULT_DL); put(2, 10, MULT_DL);
+    put(2, 4, MULT_DL); put(3, 3, MULT_DL); put(4, 2, MULT_DL); put(10, 2, MULT_DL);
+    put(11, 3, MULT_DL); put(12, 4, MULT_DL);
 
-        // TL
-        put(10, 9, MULT_TL);
-        put(9, 10, MULT_TL);
-        put(5, 10, MULT_TL);
-        put(4, 9, MULT_TL);
-        put(4, 5, MULT_TL);
-        put(5, 4, MULT_TL);
-        put(9, 4, MULT_TL);
-        put(10, 5, MULT_TL);
-        put(13, 6, MULT_TL);
-        put(13, 8, MULT_TL);
-        put(8, 13, MULT_TL);
-        put(6, 13, MULT_TL);
-        put(1, 8, MULT_TL);
-        put(1, 6, MULT_TL);
-        put(6, 1, MULT_TL);
-        put(8, 1, MULT_TL);
-        put(14, 0, MULT_TL);
-        put(14, 14, MULT_TL);
-        put(0, 14, MULT_TL);
-        put(0, 0, MULT_TL);
+    // TL
+    put(10, 9, MULT_TL); put(9, 10, MULT_TL); put(5, 10, MULT_TL); put(4, 9, MULT_TL);
+    put(4, 5, MULT_TL); put(5, 4, MULT_TL); put(9, 4, MULT_TL); put(10, 5, MULT_TL);
+    put(13, 6, MULT_TL); put(13, 8, MULT_TL); put(8, 13, MULT_TL); put(6, 13, MULT_TL);
+    put(1, 8, MULT_TL); put(1, 6, MULT_TL); put(6, 1, MULT_TL); put(8, 1, MULT_TL);
+    put(14, 0, MULT_TL); put(14, 14, MULT_TL); put(0, 14, MULT_TL); put(0, 0, MULT_TL);
 
-        // DW
-        put(11, 7, MULT_DW);
-        put(7, 11, MULT_DW);
-        put(3, 7, MULT_DW);
-        put(7, 3, MULT_DW);
-        put(13, 1, MULT_DW);
-        put(13, 13, MULT_DW);
-        put(1, 13, MULT_DW);
-        put(1, 1, MULT_DW);
+    // DW
+    put(11, 7, MULT_DW); put(7, 11, MULT_DW); put(3, 7, MULT_DW); put(7, 3, MULT_DW);
+    put(13, 1, MULT_DW); put(13, 13, MULT_DW); put(1, 13, MULT_DW); put(1, 1, MULT_DW);
 
-        // TW
-        put(14, 11, MULT_TW);
-        put(11, 14, MULT_TW);
-        put(3, 14, MULT_TW);
-        put(0, 11, MULT_TW);
-        put(0, 3, MULT_TW);
-        put(3, 0, MULT_TW);
-        put(11, 0, MULT_TW);
-        put(14, 3, MULT_TW);
+    // TW
+    put(14, 11, MULT_TW); put(11, 14, MULT_TW); put(3, 14, MULT_TW); put(0, 11, MULT_TW);
+    put(0, 3, MULT_TW);
+    put(3, 0, MULT_TW); put(11, 0, MULT_TW); put(14, 3, MULT_TW);
 
-        return t;
-    }();
-    return m;
-}
-
-inline const std::array<Mult, NUM_SQUARES> kPremium = [] {
-    std::array<Mult, NUM_SQUARES> t{};  // MULT_NONE == 0
-    for (const auto& [k, v] : premiumMap()) t[k] = v;
     return t;
 }();
 
