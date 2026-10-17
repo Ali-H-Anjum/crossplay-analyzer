@@ -2,7 +2,6 @@
 
 #include "sim_ui.h"
 
-
 #include <filesystem>
 #include <fstream>
 #include <iostream>

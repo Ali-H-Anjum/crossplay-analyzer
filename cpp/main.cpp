@@ -21,11 +21,9 @@
 #include "widgets/top_strip.h"
 #include "widgets/tray_widget.h"
 
-
 // Global font pointers (defined here, declared extern in common.h)
 ImFont* g_fontMono = nullptr;
 ImFont* g_fontFranklin = nullptr;
-
 
 // ================================================================ main
 static std::string MaterializeEmbeddedWordList() {
