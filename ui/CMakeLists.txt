@@ -16,6 +16,7 @@ set(ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../C++/Vision)
 
 add_executable(crossplay_ui
     src/main.cpp
+    src/diagram_root.cpp
     src/wordList_embedded.cpp
     src/font_mono_embedded.cpp
     src/font_franklin_embedded.cpp
@@ -75,5 +76,8 @@ target_include_directories(engine_tests PRIVATE
     ${ENGINE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
+
+get_filename_component(DIAG_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../docs/diagnostic_data" ABSOLUTE)
+target_compile_definitions(crossplay_ui PRIVATE DIAG_DATA_DIR="${DIAG_DATA_DIR}")
 
 target_compile_definitions(engine_tests PRIVATE WORDLIST_PATH="${WORDLIST_SOURCE}")

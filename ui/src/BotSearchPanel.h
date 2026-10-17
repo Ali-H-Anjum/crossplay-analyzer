@@ -8,26 +8,27 @@
 #include "DetSearch.h"
 #include "Mcts.h"
 
+enum class MoverKind { Greedy, Search };
+
 struct BotPanel {
     int  algo = 0;                       // 0 = Alpha-Beta (determinized), 1 = MCTS
     int  threads = 0;                    // 0 = cores - 1
     bool iterative = true;
-    int  abSeconds = 600, mctsSeconds = 600;   // default 10 minutes; Stop ends it early
+    int  abSeconds = 600, mctsSeconds = 600;
     SearchConfig sc; DetConfig dc; MctsConfig mc;
 
     std::unique_ptr<DetSearch>  det;
     std::unique_ptr<MctsSearch> mcts;
     DetResult detRes; MctsResult mctsRes;
     bool haveResult = false; int resultAlgo = 0;
-    int  sel = -1;                       // selected row in the ranked list
-    bool selPlace = false; RawMove selRaw{};   // the selected row's move, valid when selPlace
-    Board rootBoard{};                   // board the search ran on (used for move points)
-    Tray  rootRack{};                    // rack the search ran on
+    int  sel = -1;
+    bool selPlace = false; RawMove selRaw{};
+    Board rootBoard{};
+    Tray  rootRack{};
 
     BotPanel() { sc.killers = true; sc.lmr = true; }
     bool running() const { return det != nullptr || mcts != nullptr; }
     void clearSel() { sel = -1; selPlace = false; }
-    // The selected placed move, or nullptr.
     const RawMove* selected() const { return (haveResult && selPlace) ? &selRaw : nullptr; }
 
     void start(const Gaddag& g, const Board& b, const Tray& rack) {
@@ -55,9 +56,8 @@ struct BotPanel {
         if (mcts && mcts->finished()) { mctsRes = mcts->take(); mcts.reset(); haveResult = true; resultAlgo = 1; clearSel(); }
     }
     void cancel()   { if (det) det->cancel(); if (mcts) mcts->cancel(); }
-    void shutdown() { cancel(); det.reset(); mcts.reset(); }   // joins all threads
+    void shutdown() { cancel(); det.reset(); mcts.reset(); }
 
-    // ---- shared cell formats (same as Move Generation: 0-based, H/V) ----
     int pts(const SMove& s) const { return s.kind == MK_PLACE ? scoreRaw(rootBoard, s.m) : 0; }
     std::string fmtWord(const SMove& s, const Tray& thrown) const {
         if (s.kind == MK_PASS) return "PASS";
@@ -91,7 +91,6 @@ struct BotPanel {
     }
 };
 
-// Scrollable, clickable rows. label(i, buf, n) formats row i; moveAt(i) returns its SMove.
 template <class Label, class MoveAt>
 inline void DrawRankRows(BotPanel& bp, int count, Label label, MoveAt moveAt, void (*onSelect)(const RawMove*)) {
     const float h = std::max(220.0f, ImGui::GetContentRegionAvail().y);
@@ -117,24 +116,53 @@ inline void DrawRankRows(BotPanel& bp, int count, Label label, MoveAt moveAt, vo
     ImGui::EndChild();
 }
 
-inline void DrawBotSearchTab(BotPanel& bp, const Gaddag& g, const Board& board, const Tray& rack, bool boardValid,
-                             void (*onSelect)(const RawMove*)) {
-    bp.poll();
-    const bool running = bp.running();
+// Renders only the settings widgets (no start/stop, no results panel).
+// `disabled` greys out the whole panel.
+// If `kindOut` is non-null, the top of the panel shows a 3-way selector
+// (Greedy / Determinized AB / MCTS) and writes the choice back. When Greedy
+// is selected, the search-specific settings are hidden.
+inline void DrawBotConfigPanel(BotPanel& bp, bool disabled, MoverKind* kindOut = nullptr) {
+    if (disabled) ImGui::BeginDisabled();
 
-    ImGui::BeginDisabled(running);
+    if (kindOut) {
+        // Encode 3 choices into a single index: 0 = Greedy, 1 = AB, 2 = MCTS.
+        int combined = (*kindOut == MoverKind::Greedy) ? 0 : (1 + bp.algo);
+        ImGui::SetNextItemWidth(180);
+        if (ImGui::Combo("Algorithm", &combined, "Greedy\0Determinized AB\0MCTS\0")) {
+            if (combined == 0) {
+                *kindOut = MoverKind::Greedy;
+            } else {
+                *kindOut = MoverKind::Search;
+                bp.algo  = combined - 1;
+            }
+        }
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip(
+                "Greedy: pick the highest-scoring single move, no lookahead.\n"
+                "Instant per move. Weakest.\n\n"
+                "Determinized AB: alpha-beta on a sampled full-information state.\n"
+                "Pros: fast, strong with good heuristics.\n"
+                "Cons: assumes opponent's tiles are known (strategy fusion).\n\n"
+                "MCTS: Monte Carlo Tree Search with random playouts.\n"
+                "Pros: handles uncertainty more naturally.\n"
+                "Cons: slower, weaker without strong rollouts.");
 
-    ImGui::SetNextItemWidth(150);
-    ImGui::Combo("Algorithm", &bp.algo, "Determinized AB\0MCTS\0");
-    if (ImGui::IsItemHovered())
-        ImGui::SetTooltip(
-            "Which search to run.\n"
-            "Determinized AB: alpha-beta on a sampled full-information state.\n"
-            "Pros: fast, strong with good heuristics.\n"
-            "Cons: assumes opponent's tiles are known (strategy fusion).\n\n"
-            "MCTS: Monte Carlo Tree Search with random playouts.\n"
-            "Pros: handles uncertainty more naturally.\n"
-            "Cons: slower, weaker without strong rollouts.");
+        if (*kindOut == MoverKind::Greedy) {
+            if (disabled) ImGui::EndDisabled();
+            return;
+        }
+    } else {
+        ImGui::SetNextItemWidth(150);
+        ImGui::Combo("Algorithm", &bp.algo, "Determinized AB\0MCTS\0");
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip(
+                "Determinized AB: alpha-beta on a sampled full-information state.\n"
+                "Pros: fast, strong with good heuristics.\n"
+                "Cons: assumes opponent's tiles are known (strategy fusion).\n\n"
+                "MCTS: Monte Carlo Tree Search with random playouts.\n"
+                "Pros: handles uncertainty more naturally.\n"
+                "Cons: slower, weaker without strong rollouts.");
+    }
 
     ImGui::SetNextItemWidth(120);
     ImGui::InputInt("Threads (0 = cores-1)", &bp.threads);
@@ -174,7 +202,7 @@ inline void DrawBotSearchTab(BotPanel& bp, const Gaddag& g, const Board& board, 
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip(
                 "Sort moves by a cheap estimate before searching.\n"
-                "Pros: best moves searched first → earlier cutoffs → much faster.\n"
+                "Pros: best moves searched first -> earlier cutoffs -> much faster.\n"
                 "Cons: none meaningful.");
 
         ImGui::Checkbox("Killer move heuristic", &bp.sc.killers);
@@ -269,14 +297,23 @@ inline void DrawBotSearchTab(BotPanel& bp, const Gaddag& g, const Board& board, 
         ImGui::SeparatorText("Rollout");
 
         ImGui::SetNextItemWidth(120);
-        ImGui::InputInt("Rollout plies (0 = to end)", &bp.mc.rolloutMaxPlies);
+        ImGui::InputInt("Rollout plies (0 = all)", &bp.mc.rolloutMaxPlies);
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip(
                 "How many plies to simulate from a leaf.\n"
                 "0 = play to end of game (accurate but slow).\n"
                 "Higher values are more accurate but slower.");
     }
-    ImGui::EndDisabled();
+
+    if (disabled) ImGui::EndDisabled();
+}
+
+inline void DrawBotSearchTab(BotPanel& bp, const Gaddag& g, const Board& board, const Tray& rack, bool boardValid,
+                             void (*onSelect)(const RawMove*)) {
+    bp.poll();
+    const bool running = bp.running();
+
+    DrawBotConfigPanel(bp, running);
 
     ImGui::Separator();
     const bool canStart = !running && boardValid && rack.size() > 0;
